@@ -2,20 +2,39 @@ import { useState } from 'react'
 import { SubjectSelector, getAccentClasses } from './components/SubjectSelector'
 import { ProblemInput } from './components/ProblemInput'
 import { LessonView } from './components/LessonView'
+import { HistoryDrawer } from './components/HistoryDrawer'
 import { useLesson } from './hooks/useLesson'
+import { useHistory } from './hooks/useHistory'
 
 export default function App() {
   const [subject, setSubject] = useState('math')
+  const [showHistory, setShowHistory] = useState(false)
+
   const {
     lesson, loading, error,
     activeStep, completedSteps, showAnswer,
-    generate, nextStep, reset,
+    generate, restore, nextStep, reset,
   } = useLesson()
+
+  const { history, saveLesson, deleteLesson, clearHistory } = useHistory()
 
   const accentClasses = getAccentClasses(subject)
 
   function handleSubmit(problem) {
-    generate(subject, problem)
+    generate(subject, problem, (lessonData) => {
+      saveLesson({
+        id: Date.now().toString(),
+        subject,
+        problem,
+        lesson: lessonData,
+        createdAt: new Date().toISOString(),
+      })
+    })
+  }
+
+  function handleRestore(entry) {
+    setSubject(entry.subject)
+    restore(entry.lesson)
   }
 
   const isIdle = !lesson && !loading && !error
@@ -23,7 +42,7 @@ export default function App() {
   return (
     <div className="min-h-dvh flex flex-col">
 
-      {/* Dynamic radial glow — transitions per subject */}
+      {/* Dynamic radial glow per subject */}
       <div
         aria-hidden="true"
         className="fixed inset-0 pointer-events-none z-0"
@@ -33,15 +52,43 @@ export default function App() {
         }}
       />
 
+      {/* History drawer */}
+      <HistoryDrawer
+        open={showHistory}
+        onClose={() => setShowHistory(false)}
+        history={history}
+        onSelect={handleRestore}
+        onDelete={deleteLesson}
+        onClear={clearHistory}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#07070c]/85 backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          {/* Wordmark */}
+
+          {/* Left: history toggle + wordmark */}
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowHistory(true)}
+              aria-label="Abrir histórico de lições"
+              className="relative w-8 h-8 rounded-xl flex items-center justify-center
+                         text-white/35 hover:text-white/70 hover:bg-white/8
+                         transition-colors duration-150 focus-ring"
+            >
+              <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
+                <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.25"/>
+                <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {/* Dot badge when history has items */}
+              {history.length > 0 && (
+                <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${accentClasses.dot}`} />
+              )}
+            </button>
+
             <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
               WiseLab
             </span>
-            {/* Active subject badge */}
+
             <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-widest ${accentClasses.badge}`}>
               {subject === 'math' ? 'Matemática' : subject === 'physics' ? 'Física' : 'Química'}
             </span>
@@ -57,7 +104,6 @@ export default function App() {
         {/* ── Hero + input ── */}
         {(isIdle || (loading && !lesson)) && (
           <div className="mb-10 space-y-8">
-            {/* Typographic hero */}
             <div className="space-y-3">
               <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${accentClasses.text}`}>
                 Tutor de IA
@@ -80,7 +126,7 @@ export default function App() {
           </div>
         )}
 
-        {/* ── Error state (no lesson) ── */}
+        {/* ── Error state ── */}
         {error && !lesson && (
           <div className="space-y-5 mb-8">
             <div className="rounded-2xl border border-red-500/25 bg-red-500/8 p-5">
@@ -121,11 +167,9 @@ export default function App() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/[0.05] py-5">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+          <span className="text-xs text-white/15">© 2025 WiseLab</span>
           <span className="text-xs text-white/15">
-            © 2025 WiseLab
-          </span>
-          <span className="text-xs text-white/15">
-            Powered by Ollama · chave exposta no bundle — usar proxy em produção
+            Powered by Ollama · usar proxy em produção
           </span>
         </div>
       </footer>
