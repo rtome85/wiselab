@@ -97,6 +97,12 @@
   animation: pulse-ring 2s ease-in-out infinite;
 }
 
+/* ─── KaTeX dark theme ──────────────────────────────── */
+
+.katex { color: rgba(255,255,255,0.85); font-size: 1em; }
+.katex-block .katex-display { margin: 0; }
+.katex-block { text-align: center; }
+
 /* ─── Focus ring ────────────────────────────────────── */
 
 .focus-ring:focus-visible {

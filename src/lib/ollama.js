@@ -18,7 +18,7 @@ The JSON must follow this exact structure:
     {
       "title": "Step title",
       "explanation": "Clear explanation of this step",
-      "formula": "optional LaTeX-like formula or null",
+      "formula": "LaTeX expression string (no $ delimiters, e.g. \\frac{mv^2}{2} or F = ma) or null",
       "visual": "optional ASCII diagram/table or null",
       "tip": "optional insight or common mistake to avoid or null"
     }
@@ -32,7 +32,9 @@ Rules:
 - Keep explanations concise and clear
 - Use ASCII visuals for geometry, graphs, or tables when helpful
 - The final_answer should be complete and clear
-- real_world should be brief and relatable`;
+- real_world should be brief and relatable
+- In formula field: write raw LaTeX without $ delimiters (e.g. "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
+- In text fields (explanation, tip, final_answer): wrap inline math with $...$ (e.g. "using $F = ma$")`;
 
 export async function generateLesson(subject, problem) {
   const userMessage = `Subject: ${subject}\nProblem: ${problem}`;
