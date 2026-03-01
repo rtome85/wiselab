@@ -14,6 +14,9 @@ function LockedStep({ index }) {
   )
 }
 
+import { MathBlock } from './MathBlock'
+import { MathText } from './MathText'
+
 export function StepCard({ step, index, isActive, isCompleted, accentClasses }) {
   const isVisible = isActive || isCompleted
 
@@ -55,14 +58,10 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses }) 
       {/* Body */}
       <div className="px-5 pb-5 pl-[3.25rem] space-y-3">
         {/* Explanation */}
-        <p className="text-white/60 text-sm leading-relaxed">{step.explanation}</p>
+        <MathText className="text-white/60 text-sm leading-relaxed">{step.explanation}</MathText>
 
         {/* Formula block */}
-        {step.formula && (
-          <div className="px-4 py-3 rounded-xl bg-black/25 border border-white/8">
-            <p className="font-mono text-sm text-white/85 text-center tracking-wide">{step.formula}</p>
-          </div>
-        )}
+        {step.formula && <MathBlock formula={step.formula} />}
 
         {/* ASCII Visual */}
         {step.visual && (
@@ -75,7 +74,7 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses }) 
         {step.tip && (
           <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-amber-500/8 border border-amber-500/20">
             <span className="text-base leading-none flex-shrink-0 mt-px">💡</span>
-            <p className="text-amber-200/75 text-xs leading-relaxed">{step.tip}</p>
+            <MathText className="text-amber-200/75 text-xs leading-relaxed">{step.tip}</MathText>
           </div>
         )}
       </div>

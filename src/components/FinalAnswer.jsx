@@ -1,3 +1,5 @@
+import { MathText } from './MathText'
+
 export function FinalAnswer({ lesson, accentClasses, onReset }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] overflow-hidden animate-fadeIn">
@@ -19,7 +21,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
             <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest">Resposta Final</h3>
           </div>
           <div className={`px-4 py-3.5 rounded-xl border ${accentClasses.border} bg-white/[0.04]`}>
-            <p className="text-white/85 text-sm leading-relaxed">{lesson.final_answer}</p>
+            <MathText className="text-white/85 text-sm leading-relaxed">{lesson.final_answer}</MathText>
           </div>
         </div>
 
@@ -31,7 +33,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
               <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest">No Mundo Real</h3>
             </div>
             <div className="px-4 py-3.5 rounded-xl border border-white/8 bg-white/[0.02]">
-              <p className="text-white/55 text-sm leading-relaxed">{lesson.real_world}</p>
+              <MathText className="text-white/55 text-sm leading-relaxed">{lesson.real_world}</MathText>
             </div>
           </div>
         )}
