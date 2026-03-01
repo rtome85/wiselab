@@ -9,7 +9,7 @@ export function useLesson() {
   const [completedSteps, setCompletedSteps] = useState(new Set())
   const [showAnswer, setShowAnswer] = useState(false)
 
-  const generate = useCallback(async (subject, problem) => {
+  const generate = useCallback(async (subject, problem, onSuccess) => {
     setLoading(true)
     setError(null)
     setLesson(null)
@@ -20,11 +20,21 @@ export function useLesson() {
     try {
       const data = await generateLesson(subject, problem)
       setLesson(data)
+      onSuccess?.(data)
     } catch (err) {
       setError(err.message || 'Erro ao gerar a lição.')
     } finally {
       setLoading(false)
     }
+  }, [])
+
+  const restore = useCallback((lessonData) => {
+    setLesson(lessonData)
+    setActiveStep(0)
+    setCompletedSteps(new Set())
+    setShowAnswer(false)
+    setError(null)
+    setLoading(false)
   }, [])
 
   const nextStep = useCallback(() => {
@@ -60,6 +70,7 @@ export function useLesson() {
     completedSteps,
     showAnswer,
     generate,
+    restore,
     nextStep,
     reset,
   }
