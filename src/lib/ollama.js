@@ -36,6 +36,50 @@ Rules:
 - In formula field: write raw LaTeX without $ delimiters (e.g. "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
 - In text fields (explanation, tip, final_answer): wrap inline math with $...$ (e.g. "using $F = ma$")`;
 
+/**
+ * Fix common model JSON output issues without breaking structural whitespace:
+ * - Literal newlines/carriage returns inside string values → \n / \r
+ * - Bare LaTeX backslashes inside string values (e.g. \omega) → \\omega
+ * Uses a character-level state machine so structural newlines (pretty-print)
+ * are left untouched.
+ */
+function repairJson(str) {
+  let out = '';
+  let inStr = false;
+  let i = 0;
+  while (i < str.length) {
+    const ch = str[i];
+    if (inStr) {
+      if (ch === '\\') {
+        const nx = str[i + 1];
+        if (nx === undefined) { out += ch; i++; continue; }
+        // Pass through only JSON escapes that are never ambiguous with LaTeX:
+        // \", \\, \/, \n, \r, \t, \uXXXX
+        // \b (backspace) and \f (form feed) are excluded because models
+        // almost always mean \begin / \frac, not control characters.
+        if ('"\\\/nrtu'.includes(nx)) {
+          out += ch + nx; i += 2;
+        } else {
+          // Bare LaTeX backslash (\frac, \begin, \omega, \b*, \f*…) — escape it
+          out += '\\\\' + nx; i += 2;
+        }
+      } else if (ch === '"') {
+        inStr = false; out += ch; i++;
+      } else if (ch === '\n') {
+        out += '\\n'; i++;
+      } else if (ch === '\r') {
+        out += '\\r'; i++;
+      } else {
+        out += ch; i++;
+      }
+    } else {
+      if (ch === '"') inStr = true;
+      out += ch; i++;
+    }
+  }
+  return out;
+}
+
 export async function generateLesson(subject, problem) {
   const userMessage = `Subject: ${subject}\nProblem: ${problem}`;
 
@@ -74,7 +118,13 @@ export async function generateLesson(subject, problem) {
   try {
     lesson = JSON.parse(content);
   } catch {
-    throw new Error("A resposta da API não é JSON válido.");
+    // First parse failed. Apply character-level repairs (literal newlines inside
+    // strings, bare LaTeX backslashes) without touching structural whitespace.
+    try {
+      lesson = JSON.parse(repairJson(content));
+    } catch {
+      throw new Error("A resposta da API não é JSON válido.");
+    }
   }
 
   if (
