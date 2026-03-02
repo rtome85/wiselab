@@ -9,6 +9,8 @@ const MODEL = import.meta.env.VITE_OLLAMA_MODEL || "kimi-k2-thinking:cloud";
 
 const SYSTEM_PROMPT = `You are an expert educational tutor. When given a subject and problem, generate a structured step-by-step lesson in JSON format.
 
+LANGUAGE: All text shown to the user (title, step titles, explanations, tips, final_answer, real_world) must be written in European Portuguese (Portugal). Do not use Brazilian Portuguese variants. Keep field names and JSON keys in English exactly as specified.
+
 IMPORTANT: Respond with ONLY valid JSON, no markdown, no extra text.
 
 The JSON must follow this exact structure:
@@ -34,7 +36,15 @@ Rules:
 - The final_answer should be complete and clear
 - real_world should be brief and relatable
 - In formula field: write raw LaTeX without $ delimiters (e.g. "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
-- In text fields (explanation, tip, final_answer): wrap inline math with $...$ (e.g. "using $F = ma$")`;
+- In text fields (explanation, tip, final_answer): wrap inline math with $...$ (e.g. "using $F = ma$")
+
+Handling incomplete or ambiguous problems:
+Some exercises are intentionally vague or omit data — this is a deliberate pedagogical choice to test the student's critical thinking and attention. When you detect this:
+- Begin with a step titled "Analysing the problem" that identifies exactly what information is given, what is being asked, and what appears to be missing or ambiguous.
+- If standard assumptions exist (e.g. g = 9.8 m/s², ideal gas, frictionless surface, standard temperature and pressure), state them explicitly in that step and proceed to solve using those assumptions.
+- If the problem is genuinely under-determined (multiple valid answers depending on unknown data), solve the general case or the most common case, and note in the tip field why the result would change with different values.
+- Never refuse to engage. Always produce a complete lesson — the goal is to model good problem-solving reasoning, including how to handle ambiguity.
+- In final_answer, clearly state any assumptions that were required to reach the answer.`;
 
 /**
  * Fix common model JSON output issues without breaking structural whitespace:
