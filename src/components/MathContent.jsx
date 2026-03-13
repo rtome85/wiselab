@@ -1,0 +1,123 @@
+import katex from 'katex'
+
+// Split text on $$...$$ display math blocks
+function parseDisplaySegments(text) {
+  const segments = []
+  const DISPLAY_RE = /\$\$([\s\S]+?)\$\$/g
+  let lastIndex = 0
+  let match
+
+  DISPLAY_RE.lastIndex = 0
+  while ((match = DISPLAY_RE.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'text', content: text.slice(lastIndex, match.index) })
+    }
+    segments.push({ type: 'display', content: match[1].trim() })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    segments.push({ type: 'text', content: text.slice(lastIndex) })
+  }
+  return segments
+}
+
+// Split a text line on $...$ inline math
+function parseInlineParts(line) {
+  const INLINE_RE = /\$([^$\n]+)\$/g
+  const parts = []
+  let lastIndex = 0
+  let match
+
+  INLINE_RE.lastIndex = 0
+  while ((match = INLINE_RE.exec(line)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', content: line.slice(lastIndex, match.index) })
+    }
+    parts.push({ type: 'inline', content: match[1] })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < line.length) {
+    parts.push({ type: 'text', content: line.slice(lastIndex) })
+  }
+  return parts
+}
+
+function renderInline(formula) {
+  try {
+    return katex.renderToString(formula, { displayMode: false, throwOnError: false, strict: false })
+  } catch {
+    return null
+  }
+}
+
+function renderDisplay(formula) {
+  try {
+    return katex.renderToString(formula, { displayMode: true, throwOnError: false, strict: false })
+  } catch {
+    return null
+  }
+}
+
+function TextSegment({ content }) {
+  const lines = content.split('\n')
+
+  return (
+    <>
+      {lines.map((line, lineIdx) => {
+        if (!line.trim()) {
+          // blank line — add spacing
+          return <span key={lineIdx} className="block h-2" />
+        }
+
+        // Detect visual context annotation
+        const isVisualContext = line.trimStart().startsWith('[Visual context:')
+
+        const parts = parseInlineParts(line)
+
+        return (
+          <span key={lineIdx} className={`block leading-relaxed ${isVisualContext ? 'text-white/35 text-sm italic mt-2' : ''}`}>
+            {parts.map((part, i) => {
+              if (part.type === 'text') return <span key={i}>{part.content}</span>
+              const html = renderInline(part.content)
+              if (html) return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
+              return <span key={i} className="font-mono text-sm">${part.content}$</span>
+            })}
+          </span>
+        )
+      })}
+    </>
+  )
+}
+
+function DisplaySegment({ content }) {
+  const html = renderDisplay(content)
+  if (html) {
+    return (
+      <div
+        className="my-3 px-4 py-3 rounded-xl bg-black/25 border border-white/8 overflow-x-auto"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    )
+  }
+  return (
+    <div className="my-3 px-4 py-3 rounded-xl bg-black/25 border border-white/8 font-mono text-sm text-white/85 text-center">
+      {content}
+    </div>
+  )
+}
+
+export function MathContent({ children, className = '' }) {
+  if (!children) return null
+  const text = String(children)
+  const segments = parseDisplaySegments(text)
+
+  return (
+    <div className={className}>
+      {segments.map((seg, i) =>
+        seg.type === 'display'
+          ? <DisplaySegment key={i} content={seg.content} />
+          : <TextSegment key={i} content={seg.content} />
+      )}
+    </div>
+  )
+}
