@@ -4,6 +4,7 @@ import { generateLesson } from '../lib/ollama'
 export function useLesson() {
   const [lesson, setLesson] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState(null)
   const [activeStep, setActiveStep] = useState(0)
   const [completedSteps, setCompletedSteps] = useState(new Set())
@@ -11,6 +12,7 @@ export function useLesson() {
 
   const generate = useCallback(async (subject, problem, onSuccess) => {
     setLoading(true)
+    setProgress(0)
     setError(null)
     setLesson(null)
     setActiveStep(0)
@@ -18,7 +20,7 @@ export function useLesson() {
     setShowAnswer(false)
 
     try {
-      const data = await generateLesson(subject, problem)
+      const data = await generateLesson(subject, problem, setProgress)
       setLesson(data)
       onSuccess?.(data)
     } catch (err) {
@@ -65,6 +67,7 @@ export function useLesson() {
   return {
     lesson,
     loading,
+    progress,
     error,
     activeStep,
     completedSteps,

@@ -90,7 +90,9 @@ function repairJson(str) {
   return out;
 }
 
-export async function generateLesson(subject, problem) {
+const ESTIMATED_CHARS = 1500; // typical lesson JSON length
+
+export async function generateLesson(subject, problem, onProgress) {
   const userMessage = `Subject: ${subject}\nProblem: ${problem}`;
 
   const response = await fetch(API_URL, {
@@ -105,7 +107,7 @@ export async function generateLesson(subject, problem) {
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userMessage },
       ],
-      stream: false,
+      stream: true,
       format: "json",
     }),
   });
@@ -115,8 +117,37 @@ export async function generateLesson(subject, problem) {
     throw new Error(`API error ${response.status}: ${errorText}`);
   }
 
-  const data = await response.json();
-  let content = data.choices[0].message.content;
+  // Parse SSE stream and accumulate content
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let content = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop(); // hold incomplete line for next iteration
+
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue;
+      const raw = line.slice(6).trim();
+      if (raw === "[DONE]") continue;
+      try {
+        const chunk = JSON.parse(raw);
+        const delta = chunk.choices?.[0]?.delta?.content ?? "";
+        content += delta;
+        const pct = Math.min(Math.round((content.length / ESTIMATED_CHARS) * 90), 90);
+        onProgress?.(pct);
+      } catch {
+        // malformed chunk — skip
+      }
+    }
+  }
+
+  onProgress?.(100);
 
   // Some models wrap the JSON in markdown code fences (```json ... ```)
   // even when instructed not to — strip them before parsing.

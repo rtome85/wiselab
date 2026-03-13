@@ -2,37 +2,31 @@ import { StepCard } from './StepCard'
 import { FinalAnswer } from './FinalAnswer'
 import { ProgressBar } from './ProgressBar'
 
-/* Skeleton loading — skeleton screens > spinners (component.gallery best practice) */
-function SkeletonCard({ delay = 0 }) {
-  return (
-    <div
-      className="rounded-2xl border border-white/[0.05] bg-white/[0.03] p-5"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="flex items-start gap-3">
-        <div className="w-6 h-6 rounded-full skeleton flex-shrink-0 mt-0.5" />
-        <div className="flex-1 space-y-2.5 pt-0.5">
-          <div className="h-3 rounded skeleton w-3/5" />
-          <div className="h-2 rounded skeleton w-full" />
-          <div className="h-2 rounded skeleton w-4/5" />
-          <div className="h-2 rounded skeleton w-2/3" />
-        </div>
-      </div>
-    </div>
-  )
-}
+const PHASES = [
+  { max: 20, label: 'A analisar o problema...' },
+  { max: 50, label: 'A estruturar os passos...' },
+  { max: 80, label: 'A gerar explicações...' },
+  { max: 99, label: 'A finalizar a lição...' },
+  { max: 100, label: 'Pronto!' },
+]
 
-function SkeletonView() {
+function GeneratingView({ progress = 0, accentClasses }) {
+  const phase = PHASES.find((p) => progress <= p.max)?.label ?? 'A gerar...'
+
   return (
-    <div className="space-y-4 animate-fadeIn">
-      {/* Title skeleton */}
-      <div className="space-y-2 mb-6">
-        <div className="h-4 rounded skeleton w-2/5" />
-        <div className="h-0.5 rounded skeleton w-full mt-3" />
+    <div className="animate-fadeIn rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-white/50 text-sm">{phase}</p>
+        <span className={`text-sm font-mono font-semibold tabular-nums ${accentClasses.text}`}>
+          {progress}%
+        </span>
       </div>
-      <SkeletonCard delay={0} />
-      <SkeletonCard delay={80} />
-      <SkeletonCard delay={160} />
+      <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ease-out ${accentClasses.progress}`}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
     </div>
   )
 }
@@ -56,6 +50,7 @@ function ErrorCard({ message }) {
 export function LessonView({
   lesson,
   loading,
+  progress = 0,
   error,
   activeStep,
   completedSteps,
@@ -64,7 +59,7 @@ export function LessonView({
   onReset,
   accentClasses,
 }) {
-  if (loading) return <SkeletonView />
+  if (loading) return <GeneratingView progress={progress} accentClasses={accentClasses} />
   if (error) return <ErrorCard message={error} />
   if (!lesson) return null
 

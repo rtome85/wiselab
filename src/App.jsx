@@ -11,7 +11,7 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false)
 
   const {
-    lesson, loading, error,
+    lesson, loading, progress, error,
     activeStep, completedSteps, showAnswer,
     generate, restore, nextStep, reset,
   } = useLesson()
@@ -154,6 +154,7 @@ export default function App() {
         <LessonView
           lesson={lesson}
           loading={loading}
+          progress={progress}
           error={null}
           activeStep={activeStep}
           completedSteps={completedSteps}
