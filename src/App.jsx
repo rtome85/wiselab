@@ -120,6 +120,7 @@ export default function App() {
 
             <ProblemInput
               onSubmit={handleSubmit}
+              onCancel={reset}
               loading={loading}
               accentClasses={accentClasses}
             />

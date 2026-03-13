@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import ImageInput from './ImageInput'
 import { MathContent } from './MathContent'
 
-export function ProblemInput({ onSubmit, loading, accentClasses }) {
+export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
   const [value, setValue] = useState('')
   const [showImageInput, setShowImageInput] = useState(false)
   const [fromImage, setFromImage] = useState(false)
@@ -37,6 +37,7 @@ export function ProblemInput({ onSubmit, loading, accentClasses }) {
   }
 
   function handleCancel() {
+    onCancel?.()
     setValue('')
     setFromImage(false)
     setShowImageInput(false)
@@ -62,7 +63,8 @@ export function ProblemInput({ onSubmit, loading, accentClasses }) {
             <button
               type="button"
               onClick={handleEditExtracted}
-              className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/25 hover:text-white/60 hover:bg-white/8 transition-colors"
+              disabled={loading}
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/25 hover:text-white/60 hover:bg-white/8 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Editar texto extraído"
             >
               <span className="text-xs font-medium">Editar</span>
