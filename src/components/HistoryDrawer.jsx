@@ -1,10 +1,5 @@
 import { useEffect } from 'react'
 
-const SUBJECT_META = {
-  math:      { label: 'Matemática', icon: '∑', dot: 'bg-indigo-400',  text: 'text-indigo-400',  badge: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' },
-  physics:   { label: 'Física',     icon: '⚛', dot: 'bg-amber-400',   text: 'text-amber-400',   badge: 'bg-amber-500/15 text-amber-300 border-amber-500/20'   },
-  chemistry: { label: 'Química',    icon: '⚗', dot: 'bg-emerald-400', text: 'text-emerald-400', badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20' },
-}
 
 function formatDate(iso) {
   const date = new Date(iso)
@@ -35,20 +30,14 @@ function EmptyState() {
 }
 
 function HistoryItem({ entry, onSelect, onDelete }) {
-  const meta = SUBJECT_META[entry.subject] || SUBJECT_META.math
-
   return (
     <div className="group relative px-3">
       <button
         onClick={() => onSelect(entry)}
         className="w-full text-left px-3 py-3 rounded-xl hover:bg-white/[0.05] transition-colors duration-150"
       >
-        {/* Subject badge + date */}
+        {/* Date */}
         <div className="flex items-center justify-between mb-1.5">
-          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold border ${meta.badge}`}>
-            <span className="font-mono">{meta.icon}</span>
-            <span>{meta.label}</span>
-          </span>
           <span className="text-[10px] text-white/25">{formatDate(entry.createdAt)}</span>
         </div>
 

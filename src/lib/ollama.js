@@ -92,8 +92,8 @@ function repairJson(str) {
 
 const ESTIMATED_CHARS = 1500; // typical lesson JSON length
 
-export async function generateLesson(subject, problem, onProgress) {
-  const userMessage = `Subject: ${subject}\nProblem: ${problem}`;
+export async function generateLesson(problem, onProgress) {
+  const userMessage = `Problem: ${problem}`;
 
   const response = await fetch(API_URL, {
     method: "POST",
