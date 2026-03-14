@@ -7,7 +7,7 @@ const API_URL = "/v1/chat/completions";
 const API_KEY = import.meta.env.VITE_OLLAMA_API_KEY;
 const MODEL = import.meta.env.VITE_OLLAMA_MODEL || "kimi-k2-thinking:cloud";
 
-const SYSTEM_PROMPT = `You are an expert educational tutor. When given a subject and problem, generate a structured step-by-step lesson in JSON format.
+const SYSTEM_PROMPT = `You are an expert educational tutor. When given a problem, generate a structured step-by-step lesson in JSON format.
 
 LANGUAGE: All text shown to the user (title, step titles, explanations, tips, final_answer, real_world) must be written in European Portuguese (Portugal). Do not use Brazilian Portuguese variants. Keep field names and JSON keys in English exactly as specified.
 
@@ -92,8 +92,8 @@ function repairJson(str) {
 
 const ESTIMATED_CHARS = 1500; // typical lesson JSON length
 
-export async function generateLesson(subject, problem, onProgress) {
-  const userMessage = `Subject: ${subject}\nProblem: ${problem}`;
+export async function generateLesson(problem, onProgress) {
+  const userMessage = `Problem: ${problem}`;
 
   const response = await fetch(API_URL, {
     method: "POST",

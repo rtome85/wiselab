@@ -10,7 +10,7 @@ export function useLesson() {
   const [completedSteps, setCompletedSteps] = useState(new Set())
   const [showAnswer, setShowAnswer] = useState(false)
 
-  const generate = useCallback(async (subject, problem, onSuccess) => {
+  const generate = useCallback(async (problem, onSuccess) => {
     setLoading(true)
     setProgress(0)
     setError(null)
@@ -20,7 +20,7 @@ export function useLesson() {
     setShowAnswer(false)
 
     try {
-      const data = await generateLesson(subject, problem, setProgress)
+      const data = await generateLesson(problem, setProgress)
       setLesson(data)
       onSuccess?.(data)
     } catch (err) {

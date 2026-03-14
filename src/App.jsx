@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { SubjectSelector, getAccentClasses } from './components/SubjectSelector'
+import { getAccentClasses } from './components/SubjectSelector'
 import { ProblemInput } from './components/ProblemInput'
 import { LessonView } from './components/LessonView'
 import { HistoryDrawer } from './components/HistoryDrawer'
 import { useLesson } from './hooks/useLesson'
 import { useHistory } from './hooks/useHistory'
 
+const accentClasses = getAccentClasses('math')
+
 export default function App() {
-  const [subject, setSubject] = useState('math')
   const [showHistory, setShowHistory] = useState(false)
 
   const {
@@ -18,13 +19,10 @@ export default function App() {
 
   const { history, saveLesson, deleteLesson, clearHistory } = useHistory()
 
-  const accentClasses = getAccentClasses(subject)
-
   function handleSubmit(problem) {
-    generate(subject, problem, (lessonData) => {
+    generate(problem, (lessonData) => {
       saveLesson({
         id: Date.now().toString(),
-        subject,
         problem,
         lesson: lessonData,
         createdAt: new Date().toISOString(),
@@ -33,7 +31,6 @@ export default function App() {
   }
 
   function handleRestore(entry) {
-    setSubject(entry.subject)
     restore(entry.lesson)
   }
 
@@ -42,13 +39,12 @@ export default function App() {
   return (
     <div className="min-h-dvh flex flex-col">
 
-      {/* Dynamic radial glow per subject */}
+      {/* Static radial glow */}
       <div
         aria-hidden="true"
         className="fixed inset-0 pointer-events-none z-0"
         style={{
           background: `radial-gradient(ellipse 90% 55% at 50% -5%, ${accentClasses.gradientBg} 0%, transparent 65%)`,
-          transition: 'background 800ms ease',
         }}
       />
 
@@ -64,9 +60,8 @@ export default function App() {
 
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#07070c]/85 backdrop-blur-xl">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center">
 
-          {/* Left: history toggle + wordmark */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowHistory(true)}
@@ -79,7 +74,6 @@ export default function App() {
                 <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.25"/>
                 <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              {/* Dot badge when history has items */}
               {history.length > 0 && (
                 <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${accentClasses.dot}`} />
               )}
@@ -88,13 +82,7 @@ export default function App() {
             <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
               WiseLab
             </span>
-
-            <span className={`hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-widest ${accentClasses.badge}`}>
-              {subject === 'math' ? 'Matemática' : subject === 'physics' ? 'Física' : 'Química'}
-            </span>
           </div>
-
-          <SubjectSelector subject={subject} onChange={setSubject} />
         </div>
       </header>
 
