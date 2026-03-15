@@ -58,7 +58,7 @@ function renderDisplay(formula) {
   }
 }
 
-function TextSegment({ content }) {
+function TextSegment({ content, hideVisualContext }) {
   const lines = content.split('\n')
 
   return (
@@ -71,6 +71,7 @@ function TextSegment({ content }) {
 
         // Detect visual context annotation
         const isVisualContext = line.trimStart().startsWith('[Visual context:')
+        if (isVisualContext && hideVisualContext) return null
 
         const parts = parseInlineParts(line)
 
@@ -106,7 +107,7 @@ function DisplaySegment({ content }) {
   )
 }
 
-export function MathContent({ children, className = '' }) {
+export function MathContent({ children, className = '', hideVisualContext = false }) {
   if (!children) return null
   const text = String(children)
   const segments = parseDisplaySegments(text)
@@ -116,7 +117,7 @@ export function MathContent({ children, className = '' }) {
       {segments.map((seg, i) =>
         seg.type === 'display'
           ? <DisplaySegment key={i} content={seg.content} />
-          : <TextSegment key={i} content={seg.content} />
+          : <TextSegment key={i} content={seg.content} hideVisualContext={hideVisualContext} />
       )}
     </div>
   )
