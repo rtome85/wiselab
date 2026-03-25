@@ -250,3 +250,62 @@ export async function simplifyExplanation(stepTitle, stepExplanation) {
   const data = await response.json()
   return data.choices?.[0]?.message?.content?.trim() ?? ""
 }
+
+const CONFUSED_HELP_SYSTEM_PROMPT = `És um tutor paciente e encorajador. O aluno está com dificuldades num passo.
+
+IDIOMA: Escreve sempre em Português de Portugal (não uses variantes brasileiras).
+
+O TEU PAPEL:
+- Dá pistas e perguntas orientadoras, NUNCA reveles a resposta completa
+- Pergunta para esclarecer o que está a confundir
+- Usa analogias e conceitos mais simples para criar pontes de entendimento
+- Sê encorajador e supportivo
+- Se o aluno parecer perdido, começa com uma pergunta simples como "Que parte te confunde mais?"
+- Evita responder diretamente à pergunta; guia o aluno a descobrir
+
+FORMATO: Apenas a tua resposta conversacional, sem formatação especial.`
+
+export async function askConfusedHelp(stepContext, userMessage, history = []) {
+  const contextText = `Passo: "${stepContext.title}"
+Explicação: ${stepContext.explanation}
+${stepContext.formula ? `Fórmula: ${stepContext.formula}` : ''}
+${stepContext.visual ? `Visual: ${stepContext.visual}` : ''}
+${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
+
+  const messages = [
+    { role: 'system', content: CONFUSED_HELP_SYSTEM_PROMPT },
+  ]
+
+  const recentHistory = history.slice(-6)
+  for (const msg of recentHistory) {
+    if (msg.role === 'user' || msg.role === 'assistant') {
+      messages.push({ role: msg.role, content: msg.content })
+    }
+  }
+
+  messages.push({
+    role: 'user',
+    content: `Contexto do passo:\n${contextText}\n\nPergunta do aluno: ${userMessage}`
+  })
+
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages,
+      stream: false,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`API error ${response.status}: ${errorText}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content?.trim() ?? ''
+}

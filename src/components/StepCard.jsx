@@ -17,7 +17,9 @@ function LockedStep({ index }) {
 import { useState, useRef, useEffect } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
-import { simplifyExplanation } from '../lib/ollama'
+import { simplifyExplanation, askConfusedHelp } from '../lib/ollama'
+import { useConfusedChat } from '../hooks/useConfusedChat'
+import { ConfusedChat } from './ConfusedChat'
 
 function SimplifyButton({ stepTitle, stepExplanation }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -83,6 +85,51 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
         </div>
       )}
     </div>
+  )
+}
+
+function ConfusedChatWrapper({ stepIndex, stepContext }) {
+  const { getConversation, setConversations, setPendingStep, isLoading } = useConfusedChat()
+  const conversation = getConversation(stepIndex)
+  const loading = isLoading(stepIndex)
+
+  const handleSendMessage = async (idx, context, message) => {
+    setConversations(prev => ({
+      ...prev,
+      [idx]: [...(prev[idx] || []), { role: 'user', content: message }]
+    }))
+
+    setPendingStep(idx)
+
+    try {
+      const history = conversation || []
+      const response = await askConfusedHelp(context, message, history)
+      
+      setConversations(prev => ({
+        ...prev,
+        [idx]: [...(prev[idx] || []), { role: 'assistant', content: response }]
+      }))
+    } catch (err) {
+      setConversations(prev => ({
+        ...prev,
+        [idx]: [
+          ...(prev[idx] || []),
+          { role: 'error', content: 'Erro ao obter ajuda. Tenta novamente.' }
+        ]
+      }))
+    } finally {
+      setPendingStep(null)
+    }
+  }
+
+  return (
+    <ConfusedChat
+      stepIndex={stepIndex}
+      stepContext={stepContext}
+      conversation={conversation}
+      onSendMessage={handleSendMessage}
+      isLoading={loading}
+    />
   )
 }
 
@@ -276,6 +323,20 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
         {/* Simplify toggle */}
         {isActive && (
           <SimplifyButton stepTitle={step.title} stepExplanation={step.explanation} />
+        )}
+
+        {/* Confused chat */}
+        {isActive && (
+          <ConfusedChatWrapper
+            stepIndex={index}
+            stepContext={{
+              title: step.title,
+              explanation: step.explanation,
+              formula: step.formula,
+              visual: step.visual,
+              tip: step.tip,
+            }}
+          />
         )}
       </div>
     </div>
