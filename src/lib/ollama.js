@@ -183,5 +183,29 @@ export async function generateLesson(problem, onProgress) {
     throw new Error("Estrutura da lição inválida.");
   }
 
+  // Validate and sanitize challenge objects in each step
+  for (const step of lesson.steps) {
+    if (step.challenge != null) {
+      const c = step.challenge
+      const isValid =
+        typeof c === 'object' &&
+        c !== null &&
+        c.type === 'multiple_choice' &&
+        typeof c.question === 'string' &&
+        c.question.trim().length > 0 &&
+        Array.isArray(c.options) &&
+        c.options.length > 0 &&
+        c.options.every(opt => typeof opt === 'string' && opt.trim().length > 0) &&
+        typeof c.correct === 'number' &&
+        Number.isInteger(c.correct) &&
+        c.correct >= 0 &&
+        c.correct < c.options.length
+
+      if (!isValid) {
+        step.challenge = null
+      }
+    }
+  }
+
   return lesson;
 }

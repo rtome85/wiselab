@@ -14,7 +14,7 @@ function LockedStep({ index }) {
   )
 }
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
 
@@ -22,6 +22,25 @@ function Challenge({ challenge, onComplete }) {
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
+  const timeoutRef = useRef(null)
+
+  useEffect(() => {
+    setSelected(null)
+    setShowResult(false)
+    setIsCorrect(false)
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [challenge])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleSelect = (index) => {
     if (showResult) return
@@ -34,7 +53,10 @@ function Challenge({ challenge, onComplete }) {
     setIsCorrect(correct)
     setShowResult(true)
     if (correct) {
-      setTimeout(() => onComplete(), 600)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      timeoutRef.current = setTimeout(() => onComplete(), 600)
     }
   }
 
