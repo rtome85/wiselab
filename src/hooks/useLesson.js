@@ -9,6 +9,7 @@ export function useLesson() {
   const [activeStep, setActiveStep] = useState(0)
   const [completedSteps, setCompletedSteps] = useState(new Set())
   const [showAnswer, setShowAnswer] = useState(false)
+  const [challengeCompleted, setChallengeCompleted] = useState(new Set())
 
   const generate = useCallback(async (problem, onSuccess) => {
     setLoading(true)
@@ -18,6 +19,7 @@ export function useLesson() {
     setActiveStep(0)
     setCompletedSteps(new Set())
     setShowAnswer(false)
+    setChallengeCompleted(new Set())
 
     try {
       const data = await generateLesson(problem, setProgress)
@@ -35,12 +37,31 @@ export function useLesson() {
     setActiveStep(0)
     setCompletedSteps(new Set())
     setShowAnswer(false)
+    setChallengeCompleted(new Set())
     setError(null)
     setLoading(false)
   }, [])
 
+  const completeChallenge = useCallback((stepIndex) => {
+    setChallengeCompleted((prev) => {
+      const next = new Set(prev)
+      next.add(stepIndex)
+      return next
+    })
+  }, [])
+
+  const hasChallenge = useCallback((stepIndex) => {
+    return lesson?.steps?.[stepIndex]?.challenge != null
+  }, [lesson])
+
+  const canProceed = useCallback((stepIndex) => {
+    if (!lesson?.steps?.[stepIndex]?.challenge) return true
+    return challengeCompleted.has(stepIndex)
+  }, [lesson, challengeCompleted])
+
   const nextStep = useCallback(() => {
     if (!lesson) return
+    if (!canProceed(activeStep)) return
 
     setCompletedSteps((prev) => {
       const next = new Set(prev)
@@ -53,7 +74,7 @@ export function useLesson() {
     } else {
       setShowAnswer(true)
     }
-  }, [activeStep, lesson])
+  }, [activeStep, lesson, canProceed])
 
   const reset = useCallback(() => {
     setLesson(null)
@@ -62,6 +83,7 @@ export function useLesson() {
     setActiveStep(0)
     setCompletedSteps(new Set())
     setShowAnswer(false)
+    setChallengeCompleted(new Set())
   }, [])
 
   return {
@@ -72,9 +94,13 @@ export function useLesson() {
     activeStep,
     completedSteps,
     showAnswer,
+    challengeCompleted,
+    hasChallenge,
+    canProceed,
     generate,
     restore,
     nextStep,
     reset,
+    completeChallenge,
   }
 }

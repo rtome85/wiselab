@@ -14,7 +14,8 @@ export default function App() {
   const {
     lesson, loading, progress, error,
     activeStep, completedSteps, showAnswer,
-    generate, restore, nextStep, reset,
+    challengeCompleted, canProceed,
+    generate, restore, nextStep, reset, completeChallenge,
   } = useLesson()
 
   const { history, saveLesson, deleteLesson, clearHistory } = useHistory()
@@ -148,8 +149,11 @@ export default function App() {
           activeStep={activeStep}
           completedSteps={completedSteps}
           showAnswer={showAnswer}
+          challengeCompleted={challengeCompleted}
+          canProceed={canProceed}
           onNextStep={nextStep}
           onReset={reset}
+          onCompleteChallenge={completeChallenge}
           accentClasses={accentClasses}
         />
       </main>

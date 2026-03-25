@@ -14,10 +14,129 @@ function LockedStep({ index }) {
   )
 }
 
+import { useState, useRef, useEffect } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
 
-export function StepCard({ step, index, isActive, isCompleted, accentClasses }) {
+function Challenge({ challenge, onComplete }) {
+  const [selected, setSelected] = useState(null)
+  const [showResult, setShowResult] = useState(false)
+  const [isCorrect, setIsCorrect] = useState(false)
+  const timeoutRef = useRef(null)
+
+  useEffect(() => {
+    setSelected(null)
+    setShowResult(false)
+    setIsCorrect(false)
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [challenge])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  const handleSelect = (index) => {
+    if (showResult) return
+    setSelected(index)
+  }
+
+  const handleSubmit = () => {
+    if (selected === null) return
+    const correct = selected === challenge.correct
+    setIsCorrect(correct)
+    setShowResult(true)
+    if (correct) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      timeoutRef.current = setTimeout(() => onComplete(), 600)
+    }
+  }
+
+  const handleRetry = () => {
+    setSelected(null)
+    setShowResult(false)
+    setIsCorrect(false)
+  }
+
+  return (
+    <div className="mt-4 p-4 rounded-xl bg-indigo-500/8 border border-indigo-500/20">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-sm">🎯</span>
+        <span className="text-xs font-medium text-indigo-200/80 uppercase tracking-wide">Mini-desafio</span>
+      </div>
+      <p className="text-white/70 text-sm leading-relaxed mb-3">{challenge.question}</p>
+      <div className="space-y-2">
+        {challenge.options.map((option, index) => {
+          const isSelected = selected === index
+          const isCorrectOption = showResult && index === challenge.correct
+          const isWrongOption = showResult && isSelected && !isCorrect
+          
+          return (
+            <button
+              key={index}
+              onClick={() => handleSelect(index)}
+              disabled={showResult}
+              className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm transition-all duration-200 border
+                ${showResult
+                  ? isCorrectOption
+                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-200'
+                    : isWrongOption
+                    ? 'bg-red-500/15 border-red-500/40 text-red-200'
+                    : 'bg-white/[0.03] border-white/8 text-white/50'
+                  : isSelected
+                    ? 'bg-indigo-500/15 border-indigo-500/40 text-white/90'
+                    : 'bg-white/[0.03] border-white/10 text-white/70 hover:bg-white/[0.06] hover:border-white/20'
+                }
+                ${showResult ? 'cursor-default' : 'cursor-pointer'}
+              `}
+            >
+              <span className="font-medium mr-2">{String.fromCharCode(65 + index)}.</span>
+              {option}
+            </button>
+          )
+        })}
+      </div>
+      {!showResult && (
+        <button
+          onClick={handleSubmit}
+          disabled={selected === null}
+          className={`mt-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+            ${selected !== null
+              ? 'bg-indigo-500/20 text-indigo-200 hover:bg-indigo-500/30'
+              : 'bg-white/[0.03] text-white/30 cursor-not-allowed'
+            }
+          `}
+        >
+          Verificar resposta
+        </button>
+      )}
+      {showResult && !isCorrect && (
+        <button
+          onClick={handleRetry}
+          className="mt-3 px-4 py-2 rounded-lg text-sm font-medium bg-white/[0.05] text-white/70 hover:bg-white/[0.08] transition-all duration-200"
+        >
+          Tentar novamente
+        </button>
+      )}
+      {showResult && isCorrect && (
+        <div className="mt-3 flex items-center gap-2 text-emerald-300 text-sm">
+          <span>✓</span>
+          <span>Correto!</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function StepCard({ step, index, isActive, isCompleted, accentClasses, challengeCompleted, onCompleteChallenge }) {
   const isVisible = isActive || isCompleted
 
   if (!isVisible) return <LockedStep index={index} />
@@ -76,6 +195,14 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses }) 
             <span className="text-base leading-none flex-shrink-0 mt-px">💡</span>
             <MathText className="text-amber-200/75 text-xs leading-relaxed">{step.tip}</MathText>
           </div>
+        )}
+
+        {/* Challenge */}
+        {isActive && step.challenge && !challengeCompleted?.has(index) && (
+          <Challenge
+            challenge={step.challenge}
+            onComplete={() => onCompleteChallenge?.(index)}
+          />
         )}
       </div>
     </div>
