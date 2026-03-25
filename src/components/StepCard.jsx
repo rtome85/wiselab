@@ -17,6 +17,74 @@ function LockedStep({ index }) {
 import { useState, useRef, useEffect } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
+import { simplifyExplanation } from '../lib/ollama'
+
+function SimplifyButton({ stepTitle, stepExplanation }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [simplified, setSimplified] = useState(null)
+  const [error, setError] = useState(null)
+
+  const handleClick = async () => {
+    if (isOpen) {
+      setIsOpen(false)
+      return
+    }
+
+    if (simplified) {
+      setIsOpen(true)
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+    setIsOpen(true)
+
+    try {
+      const result = await simplifyExplanation(stepTitle, stepExplanation)
+      setSimplified(result)
+    } catch (err) {
+      setError(err.message || 'Erro ao simplificar.')
+      setIsOpen(false)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="mt-4">
+      <button
+        onClick={handleClick}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/50 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200"
+      >
+        <span>{isOpen ? '▲' : '▼'}</span>
+        <span>Simplificar</span>
+        {isLoading && (
+          <span className="animate-spin ml-1">⏳</span>
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="mt-2 p-3.5 rounded-xl bg-sky-500/8 border border-sky-500/20 animate-fadeIn">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm">🧒</span>
+            <span className="text-xs font-medium text-sky-200/80 uppercase tracking-wide">Versão Simples</span>
+          </div>
+          {isLoading ? (
+            <div className="space-y-2">
+              <div className="h-2.5 rounded skeleton w-full" />
+              <div className="h-2 rounded skeleton w-4/5" />
+            </div>
+          ) : error ? (
+            <p className="text-red-400/80 text-sm">{error}</p>
+          ) : simplified ? (
+            <MathText className="text-white/70 text-sm leading-relaxed">{simplified}</MathText>
+          ) : null}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function Challenge({ challenge, onComplete }) {
   const [selected, setSelected] = useState(null)
@@ -203,6 +271,11 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
             challenge={step.challenge}
             onComplete={() => onCompleteChallenge?.(index)}
           />
+        )}
+
+        {/* Simplify toggle */}
+        {isActive && (
+          <SimplifyButton stepTitle={step.title} stepExplanation={step.explanation} />
         )}
       </div>
     </div>

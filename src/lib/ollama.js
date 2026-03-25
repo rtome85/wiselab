@@ -209,3 +209,44 @@ export async function generateLesson(problem, onProgress) {
 
   return lesson;
 }
+
+const SIMPLIFY_SYSTEM_PROMPT = `You are an expert educational tutor specializing in making complex concepts accessible. When given an explanation, rephrase it as a simple analogy that a child could understand.
+
+LANGUAGE: Write your response in European Portuguese (Portugal). Do not use Brazilian Portuguese variants.
+
+IMPORTANT: Respond with ONLY the simplified explanation text, no markdown, no extra formatting, no headers or labels.
+
+Guidelines:
+- Use everyday analogies and relatable comparisons
+- Keep it concise (2-4 sentences maximum)
+- Avoid technical jargon
+- If the explanation involves math or formulas, describe what they represent conceptually
+- Make it feel like a friendly conversation, not a lecture`
+
+export async function simplifyExplanation(stepTitle, stepExplanation) {
+  const userMessage = `Step title: ${stepTitle}\n\nExplanation: ${stepExplanation}\n\nPlease provide a simple analogy explaining this concept.`
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        { role: "system", content: SIMPLIFY_SYSTEM_PROMPT },
+        { role: "user", content: userMessage },
+      ],
+      stream: false,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`API error ${response.status}: ${errorText}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content?.trim() ?? ""
+}
