@@ -22,7 +22,13 @@ The JSON must follow this exact structure:
       "explanation": "Clear explanation of this step",
       "formula": "LaTeX expression string (no $ delimiters, e.g. \\frac{mv^2}{2} or F = ma) or null",
       "visual": "optional ASCII diagram/table or null",
-      "tip": "optional insight or common mistake to avoid or null"
+      "tip": "optional insight or common mistake to avoid or null",
+      "challenge": {
+        "type": "multiple_choice",
+        "question": "A question testing understanding of this step",
+        "options": ["Option A", "Option B", "Option C", "Option D"],
+        "correct": 0
+      } or null
     }
   ],
   "final_answer": "The complete final answer",
@@ -37,6 +43,7 @@ Rules:
 - real_world should be brief and relatable
 - In formula field: write raw LaTeX without $ delimiters (e.g. "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
 - In text fields (explanation, tip, final_answer): wrap inline math with $...$ (e.g. "using $F = ma$")
+- challenge: Add a challenge every 3-4 steps (at steps with index 2, 5, etc. — roughly every third step). Set to null for other steps. The challenge tests understanding of the current step's content. Use multiple_choice type with 4 options (index 0-3). Make questions require applying the concept, not just recalling a number.
 
 Handling incomplete or ambiguous problems:
 Some exercises are intentionally vague or omit data — this is a deliberate pedagogical choice to test the student's critical thinking and attention. When you detect this:

@@ -55,8 +55,11 @@ export function LessonView({
   activeStep,
   completedSteps,
   showAnswer,
+  challengeCompleted,
+  canProceed,
   onNextStep,
   onReset,
+  onCompleteChallenge,
   accentClasses,
 }) {
   if (loading) return <GeneratingView progress={progress} accentClasses={accentClasses} />
@@ -91,6 +94,8 @@ export function LessonView({
             isActive={index === activeStep && !showAnswer}
             isCompleted={completedSteps.has(index)}
             accentClasses={accentClasses}
+            challengeCompleted={challengeCompleted}
+            onCompleteChallenge={onCompleteChallenge}
           />
         ))}
       </div>
@@ -100,9 +105,13 @@ export function LessonView({
         <div className="flex justify-end pt-1">
           <button
             onClick={onNextStep}
+            disabled={!canProceed?.(activeStep)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
                         transition-all duration-200 focus-ring shadow-lg
-                        ${accentClasses.button} ${accentClasses.glow}`}
+                        ${canProceed?.(activeStep)
+                          ? `${accentClasses.button} ${accentClasses.glow}`
+                          : 'bg-white/10 text-white/40 cursor-not-allowed'
+                        }`}
           >
             {activeStep < totalSteps - 1 ? (
               <>Próximo passo <span className="opacity-70">→</span></>
