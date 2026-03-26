@@ -5,6 +5,7 @@ let pendingStepCache = null
 
 export function clearConfusedConversations() {
   conversationCache = {}
+  pendingStepCache = null
   sessionStorage.removeItem('confusedConversations')
 }
 
