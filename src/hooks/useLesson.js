@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { generateLesson } from '../lib/ollama'
+import { clearConfusedConversations } from './useConfusedChat'
 
 export function useLesson() {
   const [lesson, setLesson] = useState(null)
@@ -12,6 +13,7 @@ export function useLesson() {
   const [challengeCompleted, setChallengeCompleted] = useState(new Set())
 
   const generate = useCallback(async (problem, onSuccess) => {
+    clearConfusedConversations()
     setLoading(true)
     setProgress(0)
     setError(null)
@@ -33,6 +35,7 @@ export function useLesson() {
   }, [])
 
   const restore = useCallback((lessonData) => {
+    clearConfusedConversations()
     setLesson(lessonData)
     setActiveStep(0)
     setCompletedSteps(new Set())
@@ -77,6 +80,7 @@ export function useLesson() {
   }, [activeStep, lesson, canProceed])
 
   const reset = useCallback(() => {
+    clearConfusedConversations()
     setLesson(null)
     setLoading(false)
     setError(null)

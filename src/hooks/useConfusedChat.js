@@ -3,18 +3,20 @@ import { useState, useCallback, useEffect } from 'react'
 let conversationCache = {}
 let pendingStepCache = null
 
+export function clearConfusedConversations() {
+  conversationCache = {}
+  sessionStorage.removeItem('confusedConversations')
+}
+
 export function useConfusedChat() {
   const [conversations, setConversations] = useState(conversationCache)
   const [pendingStep, setPendingStep] = useState(pendingStepCache)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('confusedConversations')
-    if (stored) {
-      try {
-        conversationCache = JSON.parse(stored)
-        setConversations(conversationCache)
-      } catch {}
-    }
+    // Lesson state is not persisted across page refreshes, so any stored
+    // chat data is stale — clear it on mount instead of loading it back.
+    clearConfusedConversations()
+    setConversations({})
   }, [])
 
   useEffect(() => {
