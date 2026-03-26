@@ -31,12 +31,13 @@ function MessageBubble({ message }) {
 export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessage, isLoading }) {
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
-  const messagesEndRef = useRef(null)
+  const messagesContainerRef = useRef(null)
 
   const hasMessages = conversation && conversation.length > 0
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = messagesContainerRef.current
+    if (el) el.scrollTop = el.scrollHeight
   }, [conversation])
 
   const handleSend = async () => {
@@ -76,7 +77,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
             <span className="text-xs font-medium text-violet-200/80 uppercase tracking-wide">Tutor Virtual</span>
           </div>
 
-          <div className="px-3.5 pb-2 space-y-2 max-h-48 overflow-y-auto">
+          <div ref={messagesContainerRef} className="px-3.5 pb-2 space-y-2 max-h-48 overflow-y-auto">
             {!hasMessages && (
               <p className="text-white/40 text-xs text-center py-2">
                 Escreve a tua dúvida ou usa uma das sugestões abaixo
@@ -92,7 +93,6 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           {!hasMessages && (
