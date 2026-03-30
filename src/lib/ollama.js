@@ -1,11 +1,26 @@
 // NOTE: API key is exposed in the client bundle.
 // For production, proxy requests through a Cloudflare Worker or Vercel Edge Function.
-
 // In dev: proxied by Vite (vite.config.js) → https://ollama.com/v1/chat/completions
 // In production: deploy a server-side proxy (Cloudflare Worker / Vercel Edge) at /v1
+
 const API_URL = "/v1/chat/completions";
-const API_KEY = import.meta.env.VITE_OLLAMA_API_KEY;
-const MODEL = import.meta.env.VITE_OLLAMA_MODEL || "kimi-k2-thinking:cloud";
+const DEFAULT_MODEL = "kimi-k2-thinking:cloud";
+
+export function getModel() {
+  return import.meta.env.VITE_OLLAMA_MODEL || DEFAULT_MODEL;
+}
+
+const STORAGE_KEY = 'wiselab_api_key';
+
+export function getApiKey() {
+  const storedKey = localStorage.getItem(STORAGE_KEY);
+  if (storedKey) return storedKey;
+  return import.meta.env.VITE_OLLAMA_API_KEY || '';
+}
+
+export function hasApiKey() {
+  return Boolean(localStorage.getItem(STORAGE_KEY)) || Boolean(import.meta.env.VITE_OLLAMA_API_KEY);
+}
 
 const SYSTEM_PROMPT = `You are an expert educational tutor. When given a problem, generate a structured step-by-step lesson in JSON format.
 
@@ -101,15 +116,17 @@ const ESTIMATED_CHARS = 1500; // typical lesson JSON length
 
 export async function generateLesson(problem, onProgress) {
   const userMessage = `Problem: ${problem}`;
+  const apiKey = getApiKey();
+  const model = getModel();
 
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userMessage },
@@ -225,15 +242,17 @@ Guidelines:
 
 export async function simplifyExplanation(stepTitle, stepExplanation) {
   const userMessage = `Step title: ${stepTitle}\n\nExplanation: ${stepExplanation}\n\nPlease provide a simple analogy explaining this concept.`
+  const apiKey = getApiKey();
+  const model = getModel();
 
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages: [
         { role: "system", content: SIMPLIFY_SYSTEM_PROMPT },
         { role: "user", content: userMessage },
@@ -271,6 +290,8 @@ Explicação: ${stepContext.explanation}
 ${stepContext.formula ? `Fórmula: ${stepContext.formula}` : ''}
 ${stepContext.visual ? `Visual: ${stepContext.visual}` : ''}
 ${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
+  const apiKey = getApiKey();
+  const model = getModel();
 
   const messages = [
     { role: 'system', content: CONFUSED_HELP_SYSTEM_PROMPT },
@@ -291,11 +312,11 @@ ${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages,
       stream: false,
     }),
