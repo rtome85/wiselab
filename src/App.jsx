@@ -25,7 +25,7 @@ export default function App() {
   } = useLesson()
 
   const { history, saveLesson, deleteLesson, clearHistory } = useHistory()
-  const { apiKey, setApiKey, clearApiKey, hasEnvKey, isConfigured } = useApiKey()
+  const { apiKey, setApiKey, clearApiKey, isConfigured } = useApiKey()
 
   function handleSubmit(problem) {
     generate(problem, (lessonData) => {
@@ -73,7 +73,6 @@ export default function App() {
         apiKey={apiKey}
         onSetApiKey={setApiKey}
         onClearApiKey={clearApiKey}
-        hasEnvKey={hasEnvKey}
       />
 
       {/* Header */}

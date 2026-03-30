@@ -1,6 +1,7 @@
+import { getApiKey } from './ollama'
+
 const VISION_MODEL = 'ministral-3:3b-cloud'
 const API_URL = '/v1/chat/completions'  // proxied by Vite → https://ollama.com
-const API_KEY = import.meta.env.VITE_OLLAMA_API_KEY
 
 const EXTRACTION_PROMPT = `You are an expert vision assistant for a math and science tutoring app.
 Analyze the image and respond using EXACTLY this format — two sections, nothing else:
@@ -44,7 +45,7 @@ export async function extractTextFromImage(base64Image, mimeType) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_KEY}`,
+      'Authorization': `Bearer ${getApiKey()}`,
     },
     body: JSON.stringify({
       model: VISION_MODEL,

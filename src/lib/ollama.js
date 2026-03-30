@@ -4,7 +4,7 @@
 // In production: deploy a server-side proxy (Cloudflare Worker / Vercel Edge) at /v1
 
 const API_URL = "/v1/chat/completions";
-const DEFAULT_MODEL = "kimi-k2-thinking:cloud";
+const DEFAULT_MODEL = "gemini-3-flash-preview:cloud";
 
 export function getModel() {
   return import.meta.env.VITE_OLLAMA_MODEL || DEFAULT_MODEL;
@@ -14,13 +14,11 @@ const STORAGE_KEY = 'wiselab_api_key';
 const SETTINGS_KEY = 'wiselab_settings';
 
 export function getApiKey() {
-  const storedKey = localStorage.getItem(STORAGE_KEY);
-  if (storedKey) return storedKey;
-  return import.meta.env.VITE_OLLAMA_API_KEY || '';
+  return localStorage.getItem(STORAGE_KEY) || '';
 }
 
 export function hasApiKey() {
-  return Boolean(localStorage.getItem(STORAGE_KEY)) || Boolean(import.meta.env.VITE_OLLAMA_API_KEY);
+  return Boolean(localStorage.getItem(STORAGE_KEY));
 }
 
 export const DEFAULT_SETTINGS = { language: 'PT', difficulty: 'intermediate' };
