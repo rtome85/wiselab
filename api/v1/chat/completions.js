@@ -14,11 +14,14 @@ export default async function handler(req) {
   const forwardedHeaders = new Headers(req.headers)
   forwardedHeaders.delete('host')
 
+  const body = req.method !== 'GET' && req.method !== 'HEAD'
+    ? await req.text()
+    : undefined
+
   const upstreamResponse = await fetch(UPSTREAM_URL, {
     method: req.method,
     headers: forwardedHeaders,
-    body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-    duplex: 'half',
+    body,
   })
 
   return new Response(upstreamResponse.body, {
