@@ -14,11 +14,11 @@ const STORAGE_KEY = 'wiselab_api_key';
 const SETTINGS_KEY = 'wiselab_settings';
 
 export function getApiKey() {
-  return localStorage.getItem(STORAGE_KEY) || '';
+  return (localStorage.getItem(STORAGE_KEY) ?? '').trim();
 }
 
 export function hasApiKey() {
-  return Boolean(localStorage.getItem(STORAGE_KEY));
+  return getApiKey() !== '';
 }
 
 export const DEFAULT_SETTINGS = { language: 'PT', difficulty: 'intermediate' };
