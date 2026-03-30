@@ -1,15 +1,19 @@
 import { useState } from 'react'
+import { Settings } from 'lucide-react'
 import { getAccentClasses } from './components/SubjectSelector'
 import { ProblemInput } from './components/ProblemInput'
 import { LessonView } from './components/LessonView'
 import { HistoryDrawer } from './components/HistoryDrawer'
+import { SettingsDrawer } from './components/SettingsDrawer'
 import { useLesson } from './hooks/useLesson'
 import { useHistory } from './hooks/useHistory'
+import { useApiKey } from './hooks/useApiKey'
 
 const accentClasses = getAccentClasses('math')
 
 export default function App() {
   const [showHistory, setShowHistory] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   const {
     lesson, loading, progress, error,
@@ -19,6 +23,7 @@ export default function App() {
   } = useLesson()
 
   const { history, saveLesson, deleteLesson, clearHistory } = useHistory()
+  const { apiKey, setApiKey, clearApiKey, hasEnvKey, isConfigured } = useApiKey()
 
   function handleSubmit(problem) {
     generate(problem, (lessonData) => {
@@ -59,11 +64,27 @@ export default function App() {
         onClear={clearHistory}
       />
 
+      {/* Settings drawer */}
+      <SettingsDrawer
+        open={showSettings}
+        onOpenChange={setShowSettings}
+        apiKey={apiKey}
+        onSetApiKey={setApiKey}
+        onClearApiKey={clearApiKey}
+        hasEnvKey={hasEnvKey}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#07070c]/85 backdrop-blur-xl">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
 
           <div className="flex items-center gap-3">
+            <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
+              WiseLab
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setShowHistory(true)}
               aria-label="Abrir histórico de lições"
@@ -80,15 +101,44 @@ export default function App() {
               )}
             </button>
 
-            <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
-              WiseLab
-            </span>
+            <button
+              onClick={() => setShowSettings(true)}
+              aria-label="Open settings"
+              className="w-8 h-8 rounded-xl flex items-center justify-center
+                         text-white/35 hover:text-white/70 hover:bg-white/8
+                         transition-colors duration-150 focus-ring"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main content */}
       <main className="relative z-10 flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-14">
+
+        {/* ── Warning banner for missing API key ── */}
+        {isIdle && !isConfigured && (
+          <div className="mb-6">
+            <div className="rounded-xl border border-amber-500/25 bg-amber-500/8 p-4 flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] text-amber-400 font-bold">!</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-amber-300 text-sm font-semibold mb-1">API Key Required</p>
+                <p className="text-amber-400/60 text-xs leading-relaxed">
+                  Add your Ollama Cloud API key in settings to start generating lessons.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors flex-shrink-0"
+              >
+                Configure
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── Hero + input ── */}
         {(isIdle || (loading && !lesson)) && (
