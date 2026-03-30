@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import ImageInput from './ImageInput'
 import { MathContent } from './MathContent'
+import { useI18n } from '../i18n/index.jsx'
 
 export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
+  const { t } = useI18n()
   const [value, setValue] = useState('')
   const [showImageInput, setShowImageInput] = useState(false)
   const [fromImage, setFromImage] = useState(false)
@@ -54,16 +56,16 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
           {/* Source label + edit button */}
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">
-              Extraído da imagem
+              {t('input.extractedFromImage')}
             </p>
             <button
               type="button"
               onClick={handleEditExtracted}
               disabled={loading}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/25 hover:text-white/60 hover:bg-white/8 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label="Editar texto extraído"
+              aria-label={t('input.editExtracted')}
             >
-              <span className="text-xs font-medium">Editar</span>
+              <span className="text-xs font-medium">{t('input.edit')}</span>
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round"
                   d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
@@ -84,7 +86,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
             value={value}
             onChange={(e) => { setValue(e.target.value); setFromImage(false) }}
             onKeyDown={handleKeyDown}
-            placeholder="Ex: Como calcular a área de um círculo com raio 5?"
+            placeholder={t('input.placeholder')}
             rows={4}
             disabled={loading}
             className="w-full resize-none bg-transparent px-5 pt-4 pb-2
@@ -112,8 +114,8 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
                 ${showImageInput
                   ? 'bg-indigo-600 text-white'
                   : 'text-gray-500 hover:text-gray-300 hover:bg-white/8'}`}
-              title="Usar foto"
-              aria-label="Usar foto do exercício"
+              title={t('input.usePhoto')}
+              aria-label={t('input.usePhotoAriaLabel')}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round"
@@ -145,7 +147,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
       {/* Submit row */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-white/20">
-          {value.length > 0 && `${value.length} caracteres`}
+          {value.length > 0 && t('input.chars', { count: value.length })}
         </span>
         <div className="flex items-center gap-2">
           {fromImage && value && (
@@ -156,7 +158,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
                        text-white/50 hover:text-white/80 bg-white/[0.05] hover:bg-white/[0.09]
                        border border-white/10 transition-all duration-200"
             >
-              Cancelar
+              {t('input.cancel')}
             </button>
           )}
           <button
@@ -169,11 +171,11 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
             {loading ? (
               <>
                 <span className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                A gerar…
+                {t('input.generating')}
               </>
             ) : (
               <>
-                Gerar lição
+                {t('input.generate')}
                 <span className="opacity-70">→</span>
               </>
             )}

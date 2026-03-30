@@ -1,12 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { MathText } from './MathText'
 import { askConfusedHelp } from '../lib/ollama'
-
-const QUICK_PROMPTS = [
-  'Não entendo a fórmula',
-  'Explica de outra forma',
-  'Por que este passo?',
-]
+import { useI18n } from '../i18n/index.jsx'
 
 function MessageBubble({ message }) {
   const isUser = message.role === 'user'
@@ -29,6 +24,12 @@ function MessageBubble({ message }) {
 }
 
 export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessage, isLoading }) {
+  const { t } = useI18n()
+  const QUICK_PROMPTS = [
+    t('chat.quickPrompt1'),
+    t('chat.quickPrompt2'),
+    t('chat.quickPrompt3'),
+  ]
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
   const messagesContainerRef = useRef(null)
@@ -66,7 +67,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/50 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200"
       >
         <span>{isOpen ? '▲' : '▼'}</span>
-        <span>Estou confuso</span>
+        <span>{t('step.confused')}</span>
         {hasMessages && <span className="text-violet-400 ml-1">({conversation.length})</span>}
       </button>
 
@@ -74,13 +75,13 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
         <div className="mt-2 rounded-xl bg-violet-500/8 border border-violet-500/20 animate-fadeIn">
           <div className="flex items-center gap-2 px-3.5 pt-3.5 pb-2">
             <span className="text-sm">❓</span>
-            <span className="text-xs font-medium text-violet-200/80 uppercase tracking-wide">Tutor Virtual</span>
+            <span className="text-xs font-medium text-violet-200/80 uppercase tracking-wide">{t('step.virtualTutor')}</span>
           </div>
 
           <div ref={messagesContainerRef} className="px-3.5 pb-2 space-y-2 max-h-48 overflow-y-auto">
             {!hasMessages && (
               <p className="text-white/40 text-xs text-center py-2">
-                Escreve a tua dúvida ou usa uma das sugestões abaixo
+                {t('chat.instruction')}
               </p>
             )}
             {conversation && conversation.map((msg, idx) => (
@@ -89,7 +90,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-violet-500/15 border border-violet-500/20 px-3 py-2 rounded-xl">
-                  <span className="text-xs text-violet-300 animate-pulse">A pensar...</span>
+                  <span className="text-xs text-violet-300 animate-pulse">{t('chat.thinking')}</span>
                 </div>
               </div>
             )}
@@ -116,7 +117,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Escreve a tua dúvida..."
+                placeholder={t('chat.placeholder')}
                 className="flex-1 px-3 py-2 rounded-lg text-sm bg-white/[0.04] border border-white/10 text-white/80 placeholder:text-white/30 focus:outline-none focus:border-violet-500/40"
                 disabled={isLoading}
               />
@@ -129,7 +130,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
                     : 'bg-white/[0.03] text-white/30 cursor-not-allowed'
                 }`}
               >
-                Enviar
+                {t('chat.send')}
               </button>
             </div>
           </div>

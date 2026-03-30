@@ -1,6 +1,8 @@
 import { MathText } from './MathText'
+import { useI18n } from '../i18n/index.jsx'
 
 export function FinalAnswer({ lesson, accentClasses, onReset }) {
+  const { t } = useI18n()
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] overflow-hidden animate-fadeIn">
       {/* Success banner */}
@@ -9,7 +11,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
           <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.25" />
           <path d="M4.5 7l2 2 3-3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <span className="text-xs font-semibold tracking-widest uppercase">Lição concluída</span>
+        <span className="text-xs font-semibold tracking-widest uppercase">{t('finalAnswer.completed')}</span>
       </div>
 
       {/* Content */}
@@ -18,7 +20,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
         <div>
           <div className="flex items-center gap-2 mb-2.5">
             <span className="text-sm leading-none">🎯</span>
-            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest">Resposta Final</h3>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('finalAnswer.title')}</h3>
           </div>
           <div className={`px-4 py-3.5 rounded-xl border ${accentClasses.border} bg-white/[0.04]`}>
             <MathText className="text-white/85 text-sm leading-relaxed">{lesson.final_answer}</MathText>
@@ -30,7 +32,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="text-sm leading-none">🌍</span>
-              <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest">No Mundo Real</h3>
+              <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('finalAnswer.realWorld')}</h3>
             </div>
             <div className="px-4 py-3.5 rounded-xl border border-white/8 bg-white/[0.02]">
               <MathText className="text-white/55 text-sm leading-relaxed">{lesson.real_world}</MathText>
@@ -46,7 +48,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
           className="flex items-center gap-1.5 text-sm text-white/35 hover:text-white/65 transition-colors duration-200 focus-ring"
         >
           <span>↩</span>
-          <span>Novo problema</span>
+          <span>{t('finalAnswer.newProblem')}</span>
         </button>
         <span className="text-xs text-white/20">WiseLab</span>
       </div>

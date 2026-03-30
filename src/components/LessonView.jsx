@@ -1,17 +1,18 @@
 import { StepCard } from './StepCard'
 import { FinalAnswer } from './FinalAnswer'
 import { ProgressBar } from './ProgressBar'
-
-const PHASES = [
-  { max: 20, label: 'A analisar o problema...' },
-  { max: 50, label: 'A estruturar os passos...' },
-  { max: 80, label: 'A gerar explicações...' },
-  { max: 99, label: 'A finalizar a lição...' },
-  { max: 100, label: 'Pronto!' },
-]
+import { useI18n } from '../i18n/index.jsx'
 
 function GeneratingView({ progress = 0, accentClasses }) {
-  const phase = PHASES.find((p) => progress <= p.max)?.label ?? 'A gerar...'
+  const { t } = useI18n()
+  const PHASES = [
+    { max: 20, label: t('lesson.phase1') },
+    { max: 50, label: t('lesson.phase2') },
+    { max: 80, label: t('lesson.phase3') },
+    { max: 99, label: t('lesson.phase4') },
+    { max: 100, label: t('lesson.phase5') },
+  ]
+  const phase = PHASES.find((p) => progress <= p.max)?.label ?? t('lesson.generating')
 
   return (
     <div className="animate-fadeIn rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 space-y-4">
@@ -32,6 +33,7 @@ function GeneratingView({ progress = 0, accentClasses }) {
 }
 
 function ErrorCard({ message }) {
+  const { t } = useI18n()
   return (
     <div className="rounded-2xl border border-red-500/25 bg-red-500/8 p-5 animate-fadeIn">
       <div className="flex items-start gap-3">
@@ -39,7 +41,7 @@ function ErrorCard({ message }) {
           <span className="text-[10px] text-red-400 font-bold">!</span>
         </div>
         <div>
-          <p className="text-red-300 text-sm font-semibold mb-1">Erro ao gerar a lição</p>
+          <p className="text-red-300 text-sm font-semibold mb-1">{t('lesson.error')}</p>
           <p className="text-red-400/60 text-xs leading-relaxed">{message}</p>
         </div>
       </div>
@@ -62,6 +64,8 @@ export function LessonView({
   onCompleteChallenge,
   accentClasses,
 }) {
+  const { t } = useI18n()
+
   if (loading) return <GeneratingView progress={progress} accentClasses={accentClasses} />
   if (error) return <ErrorCard message={error} />
   if (!lesson) return null
@@ -114,9 +118,9 @@ export function LessonView({
                         }`}
           >
             {activeStep < totalSteps - 1 ? (
-              <>Próximo passo <span className="opacity-70">→</span></>
+              <>{t('lesson.nextStep')} <span className="opacity-70">→</span></>
             ) : (
-              <>Ver resposta final <span className="opacity-70">→</span></>
+              <>{t('lesson.viewAnswer')} <span className="opacity-70">→</span></>
             )}
           </button>
         </div>

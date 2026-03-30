@@ -1,7 +1,7 @@
 const SUBJECTS = [
   {
     id: 'math',
-    label: 'Matemática',
+    tKey: 'subjects.math',
     icon: '∑',
     accent: 'indigo',
     activeClass: 'bg-indigo-500/15 text-indigo-300',
@@ -9,7 +9,7 @@ const SUBJECTS = [
   },
   {
     id: 'physics',
-    label: 'Física',
+    tKey: 'subjects.physics',
     icon: '⚛',
     accent: 'amber',
     activeClass: 'bg-amber-500/15 text-amber-300',
@@ -17,7 +17,7 @@ const SUBJECTS = [
   },
   {
     id: 'chemistry',
-    label: 'Química',
+    tKey: 'subjects.chemistry',
     icon: '⚗',
     accent: 'emerald',
     activeClass: 'bg-emerald-500/15 text-emerald-300',
@@ -72,11 +72,14 @@ export function getAccentClasses(subjectId) {
 }
 
 /* Segmented control — component.gallery pattern */
+import { useI18n } from '../i18n/index.jsx'
+
 export function SubjectSelector({ subject, onChange }) {
+  const { t } = useI18n()
   return (
     <div
       role="radiogroup"
-      aria-label="Disciplina"
+      aria-label={t('subjects.ariaLabel')}
       className="flex items-center bg-white/[0.06] border border-white/10 rounded-xl p-1 gap-0.5"
     >
       {SUBJECTS.map((s) => (
@@ -95,7 +98,7 @@ export function SubjectSelector({ subject, onChange }) {
             <span className={`w-1.5 h-1.5 rounded-full ${s.dotClass} flex-shrink-0`} />
           )}
           <span className="font-mono text-sm leading-none">{s.icon}</span>
-          <span className="hidden sm:inline">{s.label}</span>
+          <span className="hidden sm:inline">{t(s.tKey)}</span>
         </button>
       ))}
     </div>

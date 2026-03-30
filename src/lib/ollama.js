@@ -11,6 +11,7 @@ export function getModel() {
 }
 
 const STORAGE_KEY = 'wiselab_api_key';
+const SETTINGS_KEY = 'wiselab_settings';
 
 export function getApiKey() {
   const storedKey = localStorage.getItem(STORAGE_KEY);
@@ -22,9 +23,48 @@ export function hasApiKey() {
   return Boolean(localStorage.getItem(STORAGE_KEY)) || Boolean(import.meta.env.VITE_OLLAMA_API_KEY);
 }
 
-const SYSTEM_PROMPT = `You are an expert educational tutor. When given a problem, generate a structured step-by-step lesson in JSON format.
+export const DEFAULT_SETTINGS = { language: 'PT', difficulty: 'intermediate' };
 
-LANGUAGE: All text shown to the user (title, step titles, explanations, tips, final_answer, real_world) must be written in European Portuguese (Portugal). Do not use Brazilian Portuguese variants. Keep field names and JSON keys in English exactly as specified.
+export function getSettings() {
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+  } catch {
+    // ignore malformed data
+  }
+  return { ...DEFAULT_SETTINGS };
+}
+
+export function saveSettings(settings) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+export function hasStoredSettings() {
+  return Boolean(localStorage.getItem(SETTINGS_KEY));
+}
+
+const LANGUAGE_NAMES = {
+  PT: 'European Portuguese (Portugal). Do not use Brazilian Portuguese variants.',
+  EN: 'English.',
+  ES: 'Spanish (Castilian).',
+  FR: 'French.',
+  DE: 'German.',
+}
+
+const DIFFICULTY_INSTRUCTIONS = {
+  beginner: 'Use simple language, avoid technical jargon, and rely on everyday analogies. Target audience: middle school student.',
+  intermediate: 'Use clear explanations with moderate technical terms. Target audience: high school or early university student.',
+  advanced: 'Use precise technical language and include deeper mathematical or conceptual rigour. Target audience: university or advanced student.',
+}
+
+function buildSystemPrompt(language = 'PT', difficulty = 'intermediate') {
+  const lang = LANGUAGE_NAMES[language] ?? LANGUAGE_NAMES.PT
+  const diff = DIFFICULTY_INSTRUCTIONS[difficulty] ?? DIFFICULTY_INSTRUCTIONS.intermediate
+  return `You are an expert educational tutor. When given a problem, generate a structured step-by-step lesson in JSON format.
+
+LANGUAGE: All text shown to the user (title, step titles, explanations, tips, final_answer, real_world) must be written in ${lang} Keep field names and JSON keys in English exactly as specified.
+
+DIFFICULTY: ${diff}
 
 IMPORTANT: Respond with ONLY valid JSON, no markdown, no extra text.
 
@@ -66,7 +106,8 @@ Some exercises are intentionally vague or omit data — this is a deliberate ped
 - If standard assumptions exist (e.g. g = 9.8 m/s², ideal gas, frictionless surface, standard temperature and pressure), state them explicitly in that step and proceed to solve using those assumptions.
 - If the problem is genuinely under-determined (multiple valid answers depending on unknown data), solve the general case or the most common case, and note in the tip field why the result would change with different values.
 - Never refuse to engage. Always produce a complete lesson — the goal is to model good problem-solving reasoning, including how to handle ambiguity.
-- In final_answer, clearly state any assumptions that were required to reach the answer.`;
+- In final_answer, clearly state any assumptions that were required to reach the answer.`
+}
 
 /**
  * Fix common model JSON output issues without breaking structural whitespace:
@@ -118,6 +159,7 @@ export async function generateLesson(problem, onProgress) {
   const userMessage = `Problem: ${problem}`;
   const apiKey = getApiKey();
   const model = getModel();
+  const { language, difficulty } = getSettings();
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -128,7 +170,7 @@ export async function generateLesson(problem, onProgress) {
     body: JSON.stringify({
       model: model,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: buildSystemPrompt(language, difficulty) },
         { role: "user", content: userMessage },
       ],
       stream: true,
@@ -227,9 +269,11 @@ export async function generateLesson(problem, onProgress) {
   return lesson;
 }
 
-const SIMPLIFY_SYSTEM_PROMPT = `You are an expert educational tutor specializing in making complex concepts accessible. When given an explanation, rephrase it as a simple analogy that a child could understand.
+function buildSimplifyPrompt(language = 'PT') {
+  const lang = LANGUAGE_NAMES[language] ?? LANGUAGE_NAMES.PT
+  return `You are an expert educational tutor specializing in making complex concepts accessible. When given an explanation, rephrase it as a simple analogy that a child could understand.
 
-LANGUAGE: Write your response in European Portuguese (Portugal). Do not use Brazilian Portuguese variants.
+LANGUAGE: Write your response in ${lang}
 
 IMPORTANT: Respond with ONLY the simplified explanation text, no markdown, no extra formatting, no headers or labels.
 
@@ -239,11 +283,13 @@ Guidelines:
 - Avoid technical jargon
 - If the explanation involves math or formulas, describe what they represent conceptually
 - Make it feel like a friendly conversation, not a lecture`
+}
 
 export async function simplifyExplanation(stepTitle, stepExplanation) {
   const userMessage = `Step title: ${stepTitle}\n\nExplanation: ${stepExplanation}\n\nPlease provide a simple analogy explaining this concept.`
   const apiKey = getApiKey();
   const model = getModel();
+  const { language } = getSettings();
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -254,7 +300,7 @@ export async function simplifyExplanation(stepTitle, stepExplanation) {
     body: JSON.stringify({
       model: model,
       messages: [
-        { role: "system", content: SIMPLIFY_SYSTEM_PROMPT },
+        { role: "system", content: buildSimplifyPrompt(language) },
         { role: "user", content: userMessage },
       ],
       stream: false,
@@ -270,31 +316,35 @@ export async function simplifyExplanation(stepTitle, stepExplanation) {
   return data.choices?.[0]?.message?.content?.trim() ?? ""
 }
 
-const CONFUSED_HELP_SYSTEM_PROMPT = `És um tutor paciente e encorajador. O aluno está com dificuldades num passo.
+function buildConfusedHelpPrompt(language = 'PT') {
+  const lang = LANGUAGE_NAMES[language] ?? LANGUAGE_NAMES.PT
+  return `You are a patient and encouraging tutor. The student is struggling with a step.
 
-IDIOMA: Escreve sempre em Português de Portugal (não uses variantes brasileiras).
+LANGUAGE: Write all your responses in ${lang}
 
-O TEU PAPEL:
-- Dá pistas e perguntas orientadoras, NUNCA reveles a resposta completa
-- Pergunta para esclarecer o que está a confundir
-- Usa analogias e conceitos mais simples para criar pontes de entendimento
-- Sê encorajador e supportivo
-- Se o aluno parecer perdido, começa com uma pergunta simples como "Que parte te confunde mais?"
-- Evita responder diretamente à pergunta; guia o aluno a descobrir
+YOUR ROLE:
+- Give hints and guiding questions — NEVER reveal the full answer
+- Ask clarifying questions to understand what is confusing
+- Use analogies and simpler concepts to build bridges to understanding
+- Be encouraging and supportive
+- If the student seems lost, start with a simple question like "Which part confuses you the most?"
+- Avoid answering the question directly; guide the student to discover it
 
-FORMATO: Apenas a tua resposta conversacional, sem formatação especial.`
+FORMAT: Only your conversational response, no special formatting.`
+}
 
 export async function askConfusedHelp(stepContext, userMessage, history = []) {
-  const contextText = `Passo: "${stepContext.title}"
-Explicação: ${stepContext.explanation}
-${stepContext.formula ? `Fórmula: ${stepContext.formula}` : ''}
+  const contextText = `Step: "${stepContext.title}"
+Explanation: ${stepContext.explanation}
+${stepContext.formula ? `Formula: ${stepContext.formula}` : ''}
 ${stepContext.visual ? `Visual: ${stepContext.visual}` : ''}
-${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
+${stepContext.tip ? `Tip: ${stepContext.tip}` : ''}`
   const apiKey = getApiKey();
   const model = getModel();
+  const { language } = getSettings();
 
   const messages = [
-    { role: 'system', content: CONFUSED_HELP_SYSTEM_PROMPT },
+    { role: 'system', content: buildConfusedHelpPrompt(language) },
   ]
 
   const recentHistory = history.slice(-6)
@@ -306,7 +356,7 @@ ${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
 
   messages.push({
     role: 'user',
-    content: `Contexto do passo:\n${contextText}\n\nPergunta do aluno: ${userMessage}`
+    content: `Step context:\n${contextText}\n\nStudent question: ${userMessage}`
   })
 
   const response = await fetch(API_URL, {
