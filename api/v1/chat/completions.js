@@ -1,40 +1,59 @@
 /**
- * Vercel Edge Function — Ollama API proxy
+ * Vercel Serverless Function (Node.js) — Ollama API proxy
  *
  * Proxies POST /api/v1/chat/completions → https://api.ollama.ai/v1/chat/completions
- * Forwards Authorization and Content-Type, streams the response body back.
+ * Streams the response body back to support SSE lesson generation.
  */
-
-export const config = { runtime: 'edge' }
 
 const UPSTREAM_URL = 'https://api.ollama.ai/v1/chat/completions'
 
-export default async function handler(req) {
-  try {
-    const body = req.method !== 'GET' && req.method !== 'HEAD'
-      ? await req.text()
-      : undefined
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' })
+    return
+  }
 
-    const upstreamResponse = await fetch(UPSTREAM_URL, {
-      method: req.method,
+  try {
+    // Buffer the incoming request body
+    const chunks = []
+    for await (const chunk of req) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+    }
+    const body = Buffer.concat(chunks).toString('utf8')
+
+    const upstream = await fetch(UPSTREAM_URL, {
+      method: 'POST',
       headers: {
-        'authorization': req.headers.get('authorization') ?? '',
-        'content-type': req.headers.get('content-type') ?? 'application/json',
+        'authorization': req.headers['authorization'] ?? '',
+        'content-type': 'application/json',
       },
       body,
     })
 
-    return new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      headers: {
-        'content-type': upstreamResponse.headers.get('content-type') ?? 'application/json',
-      },
-    })
+    res.status(upstream.status)
+    const contentType = upstream.headers.get('content-type')
+    if (contentType) res.setHeader('content-type', contentType)
+    res.setHeader('cache-control', 'no-cache')
+
+    if (!upstream.body) {
+      res.end()
+      return
+    }
+
+    // Stream the upstream response back (handles both SSE and plain JSON)
+    const reader = upstream.body.getReader()
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      res.write(value)
+    }
+    res.end()
   } catch (err) {
-    console.error('[proxy error]', err.message)
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'content-type': 'application/json' },
-    })
+    console.error('[proxy error]', err.message, err.stack)
+    if (!res.headersSent) {
+      res.status(502).json({ error: err.message })
+    } else {
+      res.end()
+    }
   }
 }
