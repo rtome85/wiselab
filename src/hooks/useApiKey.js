@@ -22,11 +22,10 @@ export function useApiKey() {
   }, [])
 
   const hasApiKey = Boolean(apiKey)
-  const hasEnvKey = Boolean(import.meta.env.VITE_OLLAMA_API_KEY)
-  const isConfigured = hasApiKey || hasEnvKey
+  const isConfigured = hasApiKey
 
   const getEffectiveKey = useCallback(() => {
-    return apiKey || import.meta.env.VITE_OLLAMA_API_KEY || ''
+    return apiKey
   }, [apiKey])
 
   return {
@@ -34,7 +33,6 @@ export function useApiKey() {
     setApiKey,
     clearApiKey,
     hasApiKey,
-    hasEnvKey,
     isConfigured,
     getEffectiveKey,
   }

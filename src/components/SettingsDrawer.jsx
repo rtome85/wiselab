@@ -53,7 +53,7 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',')
 
-export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClearApiKey, hasEnvKey }) {
+export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClearApiKey }) {
   const { t, language, setLanguage } = useI18n()
   const [inputValue, setInputValue] = useState(apiKey || '')
   const [testStatus, setTestStatus] = useState(null)
@@ -228,15 +228,6 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-6">
-          {hasEnvKey && !apiKey && (
-            <div className="flex items-start gap-2 rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-sm">
-              <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <span className="text-blue-300">
-                {t('settings.envKeyNotice')}
-              </span>
-            </div>
-          )}
-
           <div className="space-y-3">
             <Label htmlFor="api-key">{t('settings.apiKeyLabel')}</Label>
             <Input
@@ -280,7 +271,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
               </Button>
             </div>
 
-            {(apiKey || hasEnvKey) && (
+            {apiKey && (
               <Button
                 variant="ghost"
                 size="sm"
