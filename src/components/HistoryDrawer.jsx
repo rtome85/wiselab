@@ -47,7 +47,7 @@ function HistoryItem({ entry, onSelect, onDelete, formatDate, t }) {
                    transition-all duration-150"
       >
         <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
-          <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </button>
     </div>
@@ -59,7 +59,7 @@ export function HistoryDrawer({ open, onClose, history, onSelect, onDelete, onCl
 
   function formatDate(iso) {
     const date = new Date(iso)
-    const now  = new Date()
+    const now = new Date()
     const diffDays = Math.floor((now - date) / 86_400_000)
     const dateLocale = DATE_LOCALES[language] || 'en-GB'
 
@@ -125,7 +125,7 @@ export function HistoryDrawer({ open, onClose, history, onSelect, onDelete, onCl
                        hover:text-white/70 hover:bg-white/8 transition-colors focus-ring"
           >
             <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
-              <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
         </div>

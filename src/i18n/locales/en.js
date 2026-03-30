@@ -77,6 +77,9 @@ export const en = {
     title: 'Final Answer',
     realWorld: 'In the Real World',
     newProblem: 'New problem',
+    copy: 'Copy',
+    copied: 'Copied!',
+    download: 'Download',
   },
   subjects: {
     ariaLabel: 'Subject',
