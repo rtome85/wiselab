@@ -4,7 +4,11 @@
 // In production: deploy a server-side proxy (Cloudflare Worker / Vercel Edge) at /v1
 
 const API_URL = "/v1/chat/completions";
-const MODEL = import.meta.env.VITE_OLLAMA_MODEL || "kimi-k2-thinking:cloud";
+const DEFAULT_MODEL = "kimi-k2-thinking:cloud";
+
+export function getModel() {
+  return import.meta.env.VITE_OLLAMA_MODEL || DEFAULT_MODEL;
+}
 
 const STORAGE_KEY = 'wiselab_api_key';
 
@@ -113,6 +117,7 @@ const ESTIMATED_CHARS = 1500; // typical lesson JSON length
 export async function generateLesson(problem, onProgress) {
   const userMessage = `Problem: ${problem}`;
   const apiKey = getApiKey();
+  const model = getModel();
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -121,7 +126,7 @@ export async function generateLesson(problem, onProgress) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userMessage },
@@ -238,6 +243,7 @@ Guidelines:
 export async function simplifyExplanation(stepTitle, stepExplanation) {
   const userMessage = `Step title: ${stepTitle}\n\nExplanation: ${stepExplanation}\n\nPlease provide a simple analogy explaining this concept.`
   const apiKey = getApiKey();
+  const model = getModel();
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -246,7 +252,7 @@ export async function simplifyExplanation(stepTitle, stepExplanation) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages: [
         { role: "system", content: SIMPLIFY_SYSTEM_PROMPT },
         { role: "user", content: userMessage },
@@ -285,6 +291,7 @@ ${stepContext.formula ? `Fórmula: ${stepContext.formula}` : ''}
 ${stepContext.visual ? `Visual: ${stepContext.visual}` : ''}
 ${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
   const apiKey = getApiKey();
+  const model = getModel();
 
   const messages = [
     { role: 'system', content: CONFUSED_HELP_SYSTEM_PROMPT },
@@ -309,7 +316,7 @@ ${stepContext.tip ? `Dica: ${stepContext.tip}` : ''}`
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: model,
       messages,
       stream: false,
     }),

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Settings, Check, AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 import { Label } from './ui/Label'
 import { cn } from '../utils/cn'
+import { getModel } from '../lib/ollama'
 
 function TestResult({ status, message }) {
   if (!status) return null
@@ -28,23 +29,72 @@ function TestResult({ status, message }) {
   )
 }
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'textarea:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',')
+
 export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClearApiKey, hasEnvKey }) {
   const [inputValue, setInputValue] = useState(apiKey || '')
   const [testStatus, setTestStatus] = useState(null)
   const [testMessage, setTestMessage] = useState('')
   const [isTesting, setIsTesting] = useState(false)
+  const drawerRef = useRef(null)
+  const previousFocusRef = useRef(null)
+
+  const handleClose = useCallback(() => {
+    setInputValue(apiKey || '')
+    setTestStatus(null)
+    setTestMessage('')
+    onOpenChange(false)
+  }, [apiKey, onOpenChange])
 
   useEffect(() => {
     if (!open) return
-    const handler = (e) => { if (e.key === 'Escape') onOpenChange(false) }
+    const handler = (e) => { if (e.key === 'Escape') handleClose() }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [open, onOpenChange])
+  }, [open, handleClose])
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [open])
+
+  useEffect(() => {
+    if (open) {
+      previousFocusRef.current = document.activeElement
+      if (drawerRef.current) {
+        const focusable = drawerRef.current.querySelector(FOCUSABLE_SELECTOR)
+        focusable?.focus()
+      }
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus()
+      previousFocusRef.current = null
+    }
+  }, [open])
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key !== 'Tab' || !drawerRef.current) return
+
+    const focusable = drawerRef.current.querySelectorAll(FOCUSABLE_SELECTOR)
+    if (focusable.length === 0) return
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }, [])
 
   const handleSave = () => {
     if (inputValue.trim()) {
@@ -80,7 +130,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'kimi-k2-thinking:cloud',
+          model: getModel(),
           messages: [{ role: 'user', content: 'Say "ok"' }],
           max_tokens: 5,
           stream: false,
@@ -112,13 +162,6 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
     }
   }
 
-  const handleClose = () => {
-    setInputValue(apiKey || '')
-    setTestStatus(null)
-    setTestMessage('')
-    onOpenChange(false)
-  }
-
   return (
     <>
       {/* Backdrop */}
@@ -131,12 +174,15 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
 
       {/* Drawer panel */}
       <aside
+        ref={drawerRef}
         role="dialog"
         aria-modal="true"
         aria-label="Settings"
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
         className={`fixed top-0 right-0 z-40 h-full w-72 sm:w-80
                     bg-[#0d0d14] border-l border-white/[0.07]
-                    flex flex-col
+                    flex flex-col outline-none
                     transition-transform duration-300 ease-out
                     ${open ? 'translate-x-0' : 'translate-x-full'}`}
       >
@@ -180,7 +226,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
               className="font-mono"
             />
             <p className="text-xs text-white/35">
-              Your key is stored locally in your browser and never sent to our servers.
+              Stored locally in your browser. Used to authenticate API requests.
             </p>
           </div>
 
