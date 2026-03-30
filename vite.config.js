@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/v1': {
-        target: 'https://ollama.com',
+        target: 'https://api.ollama.ai',
         changeOrigin: true,
         secure: true,
       },

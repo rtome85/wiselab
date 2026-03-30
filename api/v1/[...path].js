@@ -11,7 +11,7 @@
 
 export const config = { runtime: 'edge' }
 
-const UPSTREAM_BASE = 'https://ollama.com'
+const UPSTREAM_BASE = 'https://api.ollama.ai'
 
 export default async function handler(req) {
   const url = new URL(req.url)
