@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react'
-import { getSettings, saveSettings } from '../lib/ollama'
+import { getSettings, saveSettings, hasStoredSettings } from '../lib/ollama'
 import { en } from './locales/en'
 import { pt } from './locales/pt'
 import { es } from './locales/es'
@@ -33,10 +33,7 @@ const I18nContext = createContext(null)
 
 export function I18nProvider({ children }) {
   const [language, setLanguageState] = useState(() => {
-    const stored = getSettings().language
-    // If stored language is the default (PT from env default), treat it as stored
-    // but if nothing is stored yet, fall back to browser locale
-    if (stored) return stored
+    if (hasStoredSettings()) return getSettings().language
     return detectBrowserLanguage()
   })
 

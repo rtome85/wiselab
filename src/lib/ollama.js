@@ -39,6 +39,10 @@ export function saveSettings(settings) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+export function hasStoredSettings() {
+  return Boolean(localStorage.getItem(SETTINGS_KEY));
+}
+
 const LANGUAGE_NAMES = {
   PT: 'European Portuguese (Portugal). Do not use Brazilian Portuguese variants.',
   EN: 'English.',
