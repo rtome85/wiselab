@@ -12,10 +12,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/v1': {
+      '/api/v1': {
         target: 'https://api.ollama.ai',
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

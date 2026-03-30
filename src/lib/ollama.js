@@ -3,7 +3,7 @@
 // In dev: proxied by Vite (vite.config.js) → https://ollama.com/v1/chat/completions
 // In production: deploy a server-side proxy (Cloudflare Worker / Vercel Edge) at /v1
 
-const API_URL = "/v1/chat/completions";
+const API_URL = "/api/v1/chat/completions";
 const DEFAULT_MODEL = "gemini-3-flash-preview:cloud";
 
 export function getModel() {
