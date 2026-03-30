@@ -4,7 +4,22 @@ import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 import { Label } from './ui/Label'
 import { cn } from '../utils/cn'
-import { getModel } from '../lib/ollama'
+import { getModel, getSettings, saveSettings } from '../lib/ollama'
+import { useI18n } from '../i18n/index.jsx'
+
+const LANGUAGES = [
+  { code: 'PT', label: 'PT', title: 'Português' },
+  { code: 'EN', label: 'EN', title: 'English' },
+  { code: 'ES', label: 'ES', title: 'Español' },
+  { code: 'FR', label: 'FR', title: 'Français' },
+  { code: 'DE', label: 'DE', title: 'Deutsch' },
+]
+
+const DIFFICULTIES = [
+  { value: 'beginner', tKey: 'settings.beginner' },
+  { value: 'intermediate', tKey: 'settings.intermediate' },
+  { value: 'advanced', tKey: 'settings.advanced' },
+]
 
 function TestResult({ status, message }) {
   if (!status) return null
@@ -39,10 +54,12 @@ const FOCUSABLE_SELECTOR = [
 ].join(',')
 
 export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClearApiKey, hasEnvKey }) {
+  const { t, language, setLanguage } = useI18n()
   const [inputValue, setInputValue] = useState(apiKey || '')
   const [testStatus, setTestStatus] = useState(null)
   const [testMessage, setTestMessage] = useState('')
   const [isTesting, setIsTesting] = useState(false)
+  const [difficulty, setDifficulty] = useState(() => getSettings().difficulty)
   const drawerRef = useRef(null)
   const previousFocusRef = useRef(null)
 
@@ -52,6 +69,11 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
     setTestMessage('')
     onOpenChange(false)
   }, [apiKey, onOpenChange])
+
+  const handleDifficultyChange = (value) => {
+    setDifficulty(value)
+    saveSettings({ ...getSettings(), difficulty: value })
+  }
 
   useEffect(() => {
     if (!open) return
@@ -100,7 +122,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
     if (inputValue.trim()) {
       onSetApiKey(inputValue.trim())
       setTestStatus('success')
-      setTestMessage('API key saved')
+      setTestMessage(t('settings.apiKeySaved'))
     }
   }
 
@@ -114,7 +136,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
   const handleTest = async () => {
     if (!inputValue.trim()) {
       setTestStatus('error')
-      setTestMessage('Please enter an API key first')
+      setTestMessage(t('settings.noApiKey'))
       return
     }
 
@@ -139,10 +161,10 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
 
       if (response.ok) {
         setTestStatus('success')
-        setTestMessage('Connection successful! Your API key is valid.')
+        setTestMessage(t('settings.connectionSuccess'))
       } else {
         const errorText = await response.text()
-        let errorMsg = `Connection failed (${response.status})`
+        let errorMsg = t('settings.connectionFailed', { status: response.status })
         try {
           const errorJson = JSON.parse(errorText)
           if (errorJson.error?.message) {
@@ -156,7 +178,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
       }
     } catch (error) {
       setTestStatus('error')
-      setTestMessage(`Network error: ${error.message}`)
+      setTestMessage(t('settings.networkError', { message: error.message }))
     } finally {
       setIsTesting(false)
     }
@@ -177,7 +199,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
         ref={drawerRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Settings"
+        aria-label={t('settings.title')}
         onKeyDown={handleKeyDown}
         tabIndex={-1}
         className={`fixed top-0 right-0 z-40 h-full w-72 sm:w-80
@@ -190,11 +212,11 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07] flex-shrink-0">
           <div className="flex items-center gap-2">
             <Settings className="w-4 h-4 text-white/70" />
-            <h2 className="font-semibold text-white/90 text-sm">Settings</h2>
+            <h2 className="font-semibold text-white/90 text-sm">{t('settings.title')}</h2>
           </div>
           <button
             onClick={handleClose}
-            aria-label="Close settings"
+            aria-label={t('settings.close')}
             className="w-7 h-7 rounded-lg flex items-center justify-center text-white/35
                        hover:text-white/70 hover:bg-white/8 transition-colors focus-ring"
           >
@@ -210,29 +232,30 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
             <div className="flex items-start gap-2 rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 text-sm">
               <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
               <span className="text-blue-300">
-                Using API key from environment. You can override it below.
+                {t('settings.envKeyNotice')}
               </span>
             </div>
           )}
 
           <div className="space-y-3">
-            <Label htmlFor="api-key">Ollama Cloud API Key</Label>
+            <Label htmlFor="api-key">{t('settings.apiKeyLabel')}</Label>
             <Input
               id="api-key"
               type="password"
-              placeholder="Enter your API key..."
+              placeholder={t('settings.apiKeyPlaceholder')}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               className="font-mono"
             />
             <p className="text-xs text-white/35">
-              Stored locally in your browser. Used to authenticate API requests.
+              {t('settings.apiKeyDesc')}
             </p>
           </div>
 
           {testStatus && <TestResult status={testStatus} message={testMessage} />}
 
           <div className="flex flex-col gap-2">
+
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -243,17 +266,17 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
                 {isTesting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Testing...
+                    {t('settings.testing')}
                   </>
                 ) : (
-                  'Test Connection'
+                  t('settings.testConnection')
                 )}
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!inputValue.trim() || inputValue === apiKey}
               >
-                Save
+                {t('settings.save')}
               </Button>
             </div>
 
@@ -264,9 +287,70 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
                 onClick={handleClear}
                 className="text-white/40 hover:text-red-400"
               >
-                Clear saved key
+                {t('settings.clearKey')}
               </Button>
             )}
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-white/[0.07]" />
+
+          {/* Language */}
+          <div className="space-y-3">
+            <Label>{t('settings.languageLabel')}</Label>
+            <div
+              role="radiogroup"
+              aria-label={t('settings.languageAriaLabel')}
+              className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.07]"
+            >
+              {LANGUAGES.map(({ code, label, title }) => (
+                <button
+                  key={code}
+                  role="radio"
+                  aria-checked={language === code}
+                  title={title}
+                  onClick={() => setLanguage(code)}
+                  className={cn(
+                    'flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors duration-150 focus-ring',
+                    language === code
+                      ? 'bg-white/[0.12] text-white'
+                      : 'text-white/40 hover:text-white/70'
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Difficulty */}
+          <div className="space-y-3">
+            <Label>{t('settings.difficultyLabel')}</Label>
+            <div
+              role="radiogroup"
+              aria-label={t('settings.difficultyAriaLabel')}
+              className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.07]"
+            >
+              {DIFFICULTIES.map(({ value, tKey }) => (
+                <button
+                  key={value}
+                  role="radio"
+                  aria-checked={difficulty === value}
+                  onClick={() => handleDifficultyChange(value)}
+                  className={cn(
+                    'flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors duration-150 focus-ring',
+                    difficulty === value
+                      ? 'bg-white/[0.12] text-white'
+                      : 'text-white/40 hover:text-white/70'
+                  )}
+                >
+                  {t(tKey)}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-white/35">
+              {t('settings.difficultyDesc')}
+            </p>
           </div>
         </div>
       </aside>

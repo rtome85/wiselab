@@ -1,6 +1,8 @@
 import { useImageInput } from '../hooks/useImageInput'
+import { useI18n } from '../i18n/index.jsx'
 
 export default function ImageInput({ onExtracted, onClose }) {
+  const { t } = useI18n()
   const {
     status,
     preview,
@@ -15,8 +17,8 @@ export default function ImageInput({ onExtracted, onClose }) {
   const isProcessing = status === 'compressing' || status === 'extracting'
 
   const statusLabel = {
-    compressing: 'A comprimir imagem…',
-    extracting: 'A extrair texto…',
+    compressing: t('image.compressing'),
+    extracting: t('image.extracting'),
   }[status] ?? null
 
   function handleDragOver(e) {
@@ -43,7 +45,7 @@ export default function ImageInput({ onExtracted, onClose }) {
         <div className="relative">
           <img
             src={preview}
-            alt="Preview do exercício"
+            alt={t('image.preview')}
             className="w-full max-h-64 object-contain bg-black/20"
           />
 
@@ -63,7 +65,7 @@ export default function ImageInput({ onExtracted, onClose }) {
               className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center
                          rounded-full bg-black/60 text-white/70 hover:text-white hover:bg-black/80
                          transition-colors text-sm"
-              aria-label="Remover imagem"
+              aria-label={t('image.remove')}
             >
               ✕
             </button>
@@ -87,7 +89,7 @@ export default function ImageInput({ onExtracted, onClose }) {
             />
           </svg>
           <p className="text-sm text-white/30 text-center">
-            Arrasta uma foto aqui ou clica para selecionar
+            {t('image.dropzone')}
           </p>
         </div>
       )}
@@ -112,7 +114,7 @@ export default function ImageInput({ onExtracted, onClose }) {
                 d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
               />
             </svg>
-            Carregar ficheiro
+            {t('image.upload')}
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); openFilePicker('camera') }}
@@ -132,14 +134,14 @@ export default function ImageInput({ onExtracted, onClose }) {
                 d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
               />
             </svg>
-            Câmera
+            {t('image.camera')}
           </button>
           {onClose && (
             <button
               onClick={onClose}
               className="ml-auto text-xs text-white/20 hover:text-white/40 transition-colors"
             >
-              Fechar
+              {t('image.close')}
             </button>
           )}
         </div>

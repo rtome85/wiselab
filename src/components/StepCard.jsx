@@ -20,8 +20,10 @@ import { MathText } from './MathText'
 import { simplifyExplanation, askConfusedHelp } from '../lib/ollama'
 import { useConfusedChat } from '../hooks/useConfusedChat'
 import { ConfusedChat } from './ConfusedChat'
+import { useI18n } from '../i18n/index.jsx'
 
 function SimplifyButton({ stepTitle, stepExplanation }) {
+  const { t } = useI18n()
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [simplified, setSimplified] = useState(null)
@@ -46,7 +48,7 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
       const result = await simplifyExplanation(stepTitle, stepExplanation)
       setSimplified(result)
     } catch (err) {
-      setError(err.message || 'Erro ao simplificar.')
+      setError(err.message || t('step.simplifyError'))
       setIsOpen(false)
     } finally {
       setIsLoading(false)
@@ -60,7 +62,7 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/50 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200"
       >
         <span>{isOpen ? '▲' : '▼'}</span>
-        <span>Simplificar</span>
+        <span>{t('step.simplify')}</span>
         {isLoading && (
           <span className="animate-spin ml-1">⏳</span>
         )}
@@ -70,7 +72,7 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
         <div className="mt-2 p-3.5 rounded-xl bg-sky-500/8 border border-sky-500/20 animate-fadeIn">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-sm">🧒</span>
-            <span className="text-xs font-medium text-sky-200/80 uppercase tracking-wide">Versão Simples</span>
+            <span className="text-xs font-medium text-sky-200/80 uppercase tracking-wide">{t('step.simpleVersion')}</span>
           </div>
           {isLoading ? (
             <div className="space-y-2">
@@ -89,6 +91,7 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
 }
 
 function ConfusedChatWrapper({ stepIndex, stepContext }) {
+  const { t } = useI18n()
   const { getConversation, setConversations, setPendingStep, isLoading } = useConfusedChat()
   const conversation = getConversation(stepIndex)
   const loading = isLoading(stepIndex)
@@ -114,7 +117,7 @@ function ConfusedChatWrapper({ stepIndex, stepContext }) {
         ...prev,
         [idx]: [
           ...(prev[idx] || []),
-          { role: 'error', content: 'Erro ao obter ajuda. Tenta novamente.' }
+          { role: 'error', content: t('step.errorHelp') }
         ]
       }))
     } finally {
@@ -134,6 +137,7 @@ function ConfusedChatWrapper({ stepIndex, stepContext }) {
 }
 
 function Challenge({ challenge, onComplete }) {
+  const { t } = useI18n()
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
@@ -185,7 +189,7 @@ function Challenge({ challenge, onComplete }) {
     <div className="mt-4 p-4 rounded-xl bg-indigo-500/8 border border-indigo-500/20">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-sm">🎯</span>
-        <span className="text-xs font-medium text-indigo-200/80 uppercase tracking-wide">Mini-desafio</span>
+        <span className="text-xs font-medium text-indigo-200/80 uppercase tracking-wide">{t('step.challenge')}</span>
       </div>
       <p className="text-white/70 text-sm leading-relaxed mb-3">{challenge.question}</p>
       <div className="space-y-2">
@@ -230,7 +234,7 @@ function Challenge({ challenge, onComplete }) {
             }
           `}
         >
-          Verificar resposta
+          {t('step.verify')}
         </button>
       )}
       {showResult && !isCorrect && (
@@ -238,13 +242,13 @@ function Challenge({ challenge, onComplete }) {
           onClick={handleRetry}
           className="mt-3 px-4 py-2 rounded-lg text-sm font-medium bg-white/[0.05] text-white/70 hover:bg-white/[0.08] transition-all duration-200"
         >
-          Tentar novamente
+          {t('step.tryAgain')}
         </button>
       )}
       {showResult && isCorrect && (
         <div className="mt-3 flex items-center gap-2 text-emerald-300 text-sm">
           <span>✓</span>
-          <span>Correto!</span>
+          <span>{t('step.correct')}</span>
         </div>
       )}
     </div>

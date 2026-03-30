@@ -8,10 +8,12 @@ import { SettingsDrawer } from './components/SettingsDrawer'
 import { useLesson } from './hooks/useLesson'
 import { useHistory } from './hooks/useHistory'
 import { useApiKey } from './hooks/useApiKey'
+import { useI18n } from './i18n/index.jsx'
 
 const accentClasses = getAccentClasses('math')
 
 export default function App() {
+  const { t } = useI18n()
   const [showHistory, setShowHistory] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
@@ -87,7 +89,7 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowHistory(true)}
-              aria-label="Abrir histórico de lições"
+              aria-label={t('app.openHistory')}
               className="relative w-8 h-8 rounded-xl flex items-center justify-center
                          text-white/35 hover:text-white/70 hover:bg-white/8
                          transition-colors duration-150 focus-ring"
@@ -103,7 +105,7 @@ export default function App() {
 
             <button
               onClick={() => setShowSettings(true)}
-              aria-label="Open settings"
+              aria-label={t('app.openSettings')}
               className="w-8 h-8 rounded-xl flex items-center justify-center
                          text-white/35 hover:text-white/70 hover:bg-white/8
                          transition-colors duration-150 focus-ring"
@@ -125,16 +127,16 @@ export default function App() {
                 <span className="text-[10px] text-amber-400 font-bold">!</span>
               </div>
               <div className="flex-1">
-                <p className="text-amber-300 text-sm font-semibold mb-1">API Key Required</p>
+                <p className="text-amber-300 text-sm font-semibold mb-1">{t('app.apiKeyRequired')}</p>
                 <p className="text-amber-400/60 text-xs leading-relaxed">
-                  Add your Ollama Cloud API key in settings to start generating lessons.
+                  {t('app.apiKeyRequiredDesc')}
                 </p>
               </div>
               <button
                 onClick={() => setShowSettings(true)}
                 className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors flex-shrink-0"
               >
-                Configure
+                {t('app.configure')}
               </button>
             </div>
           </div>
@@ -145,15 +147,15 @@ export default function App() {
           <div className="mb-10 space-y-8">
             <div className="space-y-3">
               <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${accentClasses.text}`}>
-                Tutor de IA
+                {t('app.aiTutor')}
               </p>
               <h1 className="font-mono font-bold text-3xl sm:text-4xl text-white leading-tight tracking-tight">
-                Qual é o teu
+                {t('app.heroTitle1')}
                 <br />
-                <span className={accentClasses.text}>problema?</span>
+                <span className={accentClasses.text}>{t('app.heroTitle2')}</span>
               </h1>
               <p className="text-white/35 text-sm sm:text-base leading-relaxed max-w-md">
-                Descreve o que precisas de aprender — a IA gera uma lição interativa passo a passo.
+                {t('app.heroDesc')}
               </p>
             </div>
 
@@ -175,7 +177,7 @@ export default function App() {
                   <span className="text-[10px] text-red-400 font-bold">!</span>
                 </div>
                 <div>
-                  <p className="text-red-300 text-sm font-semibold mb-1">Erro ao gerar a lição</p>
+                  <p className="text-red-300 text-sm font-semibold mb-1">{t('app.errorTitle')}</p>
                   <p className="text-red-400/60 text-xs leading-relaxed">{error}</p>
                 </div>
               </div>
@@ -185,7 +187,7 @@ export default function App() {
               className="flex items-center gap-1.5 text-sm text-white/35 hover:text-white/65 transition-colors focus-ring"
             >
               <span>↩</span>
-              <span>Tentar novamente</span>
+              <span>{t('app.tryAgain')}</span>
             </button>
           </div>
         )}
@@ -213,7 +215,7 @@ export default function App() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <span className="text-xs text-white/15">© 2025 WiseLab</span>
           <span className="text-xs text-white/15">
-            Powered by Ollama · usar proxy em produção
+            {t('app.footerPowered')}
           </span>
         </div>
       </footer>

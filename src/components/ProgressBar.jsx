@@ -1,4 +1,7 @@
+import { useI18n } from '../i18n/index.jsx'
+
 export function ProgressBar({ current, total, accentClasses }) {
+  const { t } = useI18n()
   const percent = total > 0 ? Math.round((current / total) * 100) : 0
 
   return (
@@ -6,10 +9,10 @@ export function ProgressBar({ current, total, accentClasses }) {
       <div className="flex items-center justify-between">
         <span className="text-xs text-white/30">
           {current === 0
-            ? 'Começa pelo primeiro passo'
+            ? t('progress.startFirst')
             : current === total
-            ? 'Todos os passos concluídos'
-            : `${current} de ${total} passos`}
+            ? t('progress.allCompleted')
+            : t('progress.steps', { current, total })}
         </span>
         <span className={`text-xs font-mono font-bold ${accentClasses.text}`}>
           {percent}%
