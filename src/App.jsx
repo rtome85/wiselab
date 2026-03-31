@@ -1,31 +1,41 @@
-import { useState } from 'react'
-import { Settings } from 'lucide-react'
-import { getAccentClasses } from './components/SubjectSelector'
-import { ProblemInput } from './components/ProblemInput'
-import { LessonView } from './components/LessonView'
-import { HistoryDrawer } from './components/HistoryDrawer'
-import { SettingsDrawer } from './components/SettingsDrawer'
-import { useLesson } from './hooks/useLesson'
-import { useHistory } from './hooks/useHistory'
-import { useApiKey } from './hooks/useApiKey'
-import { useI18n } from './i18n/index.jsx'
+import { useState } from "react";
+import { Settings } from "lucide-react";
+import { getAccentClasses } from "./components/SubjectSelector";
+import { ProblemInput } from "./components/ProblemInput";
+import { LessonView } from "./components/LessonView";
+import { HistoryDrawer } from "./components/HistoryDrawer";
+import { SettingsDrawer } from "./components/SettingsDrawer";
+import { useLesson } from "./hooks/useLesson";
+import { useHistory } from "./hooks/useHistory";
+import { useApiKey } from "./hooks/useApiKey";
+import { useI18n } from "./i18n/index.jsx";
 
-const accentClasses = getAccentClasses('math')
+const accentClasses = getAccentClasses("math");
 
 export default function App() {
-  const { t } = useI18n()
-  const [showHistory, setShowHistory] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
+  const { t } = useI18n();
+  const [showHistory, setShowHistory] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const {
-    lesson, loading, progress, error,
-    activeStep, completedSteps, showAnswer,
-    challengeCompleted, canProceed,
-    generate, restore, nextStep, reset, completeChallenge,
-  } = useLesson()
+    lesson,
+    loading,
+    progress,
+    error,
+    activeStep,
+    completedSteps,
+    showAnswer,
+    challengeCompleted,
+    canProceed,
+    generate,
+    restore,
+    nextStep,
+    reset,
+    completeChallenge,
+  } = useLesson();
 
-  const { history, saveLesson, deleteLesson, clearHistory } = useHistory()
-  const { apiKey, setApiKey, clearApiKey, isConfigured } = useApiKey()
+  const { history, saveLesson, deleteLesson, clearHistory } = useHistory();
+  const { apiKey, setApiKey, clearApiKey, isConfigured } = useApiKey();
 
   function handleSubmit(problem) {
     generate(problem, (lessonData) => {
@@ -34,19 +44,18 @@ export default function App() {
         problem,
         lesson: lessonData,
         createdAt: new Date().toISOString(),
-      })
-    })
+      });
+    });
   }
 
   function handleRestore(entry) {
-    restore(entry.lesson)
+    restore(entry.lesson);
   }
 
-  const isIdle = !lesson && !loading && !error
+  const isIdle = !lesson && !loading && !error;
 
   return (
     <div className="min-h-dvh flex flex-col">
-
       {/* Static radial glow */}
       <div
         aria-hidden="true"
@@ -78,9 +87,8 @@ export default function App() {
       {/* Header */}
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#07070c]/85 backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-
-          <a href='/' className="flex items-center gap-3">
-            <img src='/logo.png' className='w-5 h-5' />
+          <a href="/" className="flex items-center gap-3">
+            <img src="/logo.png" className="w-5 h-5" />
             <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
               WiseLab
             </span>
@@ -89,23 +97,37 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowHistory(true)}
-              aria-label={t('app.openHistory')}
+              aria-label={t("app.openHistory")}
               className="relative w-8 h-8 rounded-xl flex items-center justify-center
                          text-white/35 hover:text-white/70 hover:bg-white/8
                          transition-colors duration-150 focus-ring"
             >
               <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
-                <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.25" />
-                <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                <circle
+                  cx="8"
+                  cy="8"
+                  r="6.25"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                />
+                <path
+                  d="M8 5v3.5l2 1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               {history.length > 0 && (
-                <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${accentClasses.dot}`} />
+                <span
+                  className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${accentClasses.dot}`}
+                />
               )}
             </button>
 
             <button
               onClick={() => setShowSettings(true)}
-              aria-label={t('app.openSettings')}
+              aria-label={t("app.openSettings")}
               className="w-8 h-8 rounded-xl flex items-center justify-center
                          text-white/35 hover:text-white/70 hover:bg-white/8
                          transition-colors duration-150 focus-ring"
@@ -118,7 +140,6 @@ export default function App() {
 
       {/* Main content */}
       <main className="relative z-10 flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 py-10 sm:py-14">
-
         {/* ── Warning banner for missing API key ── */}
         {isIdle && !isConfigured && (
           <div className="mb-6">
@@ -127,16 +148,18 @@ export default function App() {
                 <span className="text-[10px] text-amber-400 font-bold">!</span>
               </div>
               <div className="flex-1">
-                <p className="text-amber-300 text-sm font-semibold mb-1">{t('app.apiKeyRequired')}</p>
+                <p className="text-amber-300 text-sm font-semibold mb-1">
+                  {t("app.apiKeyRequired")}
+                </p>
                 <p className="text-amber-400/60 text-xs leading-relaxed">
-                  {t('app.apiKeyRequiredDesc')}
+                  {t("app.apiKeyRequiredDesc")}
                 </p>
               </div>
               <button
                 onClick={() => setShowSettings(true)}
                 className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors flex-shrink-0"
               >
-                {t('app.configure')}
+                {t("app.configure")}
               </button>
             </div>
           </div>
@@ -146,16 +169,20 @@ export default function App() {
         {(isIdle || (loading && !lesson)) && (
           <div className="mb-10 space-y-8">
             <div className="space-y-3">
-              <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${accentClasses.text}`}>
-                {t('app.aiTutor')}
+              <p
+                className={`text-xs font-semibold uppercase tracking-[0.2em] ${accentClasses.text}`}
+              >
+                {t("app.aiTutor")}
               </p>
               <h1 className="font-mono font-bold text-3xl sm:text-4xl text-white leading-tight tracking-tight">
-                {t('app.heroTitle1')}
+                {t("app.heroTitle1")}
                 <br />
-                <span className={accentClasses.text}>{t('app.heroTitle2')}</span>
+                <span className={accentClasses.text}>
+                  {t("app.heroTitle2")}
+                </span>
               </h1>
               <p className="text-white/35 text-sm sm:text-base leading-relaxed max-w-md">
-                {t('app.heroDesc')}
+                {t("app.heroDesc")}
               </p>
             </div>
 
@@ -177,8 +204,12 @@ export default function App() {
                   <span className="text-[10px] text-red-400 font-bold">!</span>
                 </div>
                 <div>
-                  <p className="text-red-300 text-sm font-semibold mb-1">{t('app.errorTitle')}</p>
-                  <p className="text-red-400/60 text-xs leading-relaxed">{error}</p>
+                  <p className="text-red-300 text-sm font-semibold mb-1">
+                    {t("app.errorTitle")}
+                  </p>
+                  <p className="text-red-400/60 text-xs leading-relaxed">
+                    {error}
+                  </p>
                 </div>
               </div>
             </div>
@@ -187,7 +218,7 @@ export default function App() {
               className="flex items-center gap-1.5 text-sm text-white/35 hover:text-white/65 transition-colors focus-ring"
             >
               <span>↩</span>
-              <span>{t('app.tryAgain')}</span>
+              <span>{t("app.tryAgain")}</span>
             </button>
           </div>
         )}
@@ -213,12 +244,14 @@ export default function App() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/[0.05] py-5">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-          <span className="text-xs text-white/15">© 2025 WiseLab</span>
           <span className="text-xs text-white/15">
-            {t('app.footerPowered')}
+            © {new Date().getFullYear()} WiseLab
+          </span>
+          <span className="text-xs text-white/15">
+            {t("app.footerPowered")}
           </span>
         </div>
       </footer>
     </div>
-  )
+  );
 }
