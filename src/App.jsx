@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import { Settings } from "lucide-react";
 import { getAccentClasses } from "./components/SubjectSelector";
 import { ProblemInput } from "./components/ProblemInput";
@@ -252,6 +253,7 @@ export default function App() {
           </span>
         </div>
       </footer>
+      <Analytics />
     </div>
   );
 }
