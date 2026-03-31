@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useI18n } from '../i18n/index.jsx'
 import { validateImageFile, fileToBase64 } from '../lib/imageUtils'
 import { extractTextFromImage } from '../lib/vision'
@@ -68,6 +68,11 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
   // each image: { id, preview, status: 'extracting'|'done'|'error', text, error }
   const fileInputRef = useRef(null)
   const textareaRef = useRef(null)
+  const imagesRef = useRef(images)
+  useEffect(() => { imagesRef.current = images }, [images])
+  useEffect(() => () => {
+    imagesRef.current.forEach(img => { if (img.preview) URL.revokeObjectURL(img.preview) })
+  }, [])
 
   const hasImages = images.length > 0
   const anyExtracting = images.some(img => img.status === 'extracting')
@@ -100,8 +105,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
   }
 
   function handleFileChange(e) {
-    const file = e.target.files?.[0]
-    if (file) processFile(file)
+    for (const file of e.target.files ?? []) processFile(file)
     e.target.value = ''
   }
 
@@ -147,8 +151,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
 
   function handleDrop(e) {
     e.preventDefault()
-    const file = e.dataTransfer.files?.[0]
-    if (file) processFile(file)
+    for (const file of e.dataTransfer.files ?? []) processFile(file)
   }
 
   return (
@@ -262,6 +265,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
         ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
+        multiple
         className="hidden"
         onChange={handleFileChange}
       />
