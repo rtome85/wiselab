@@ -1,21 +1,25 @@
 # WiseLab
 
-**AI-powered step-by-step learning for Math, Physics, and Chemistry.**
+An AI-powered tutoring app that turns any math or science problem into an interactive, step-by-step lesson. Type a problem or photograph an exercise sheet — WiseLab generates a structured lesson with explanations, LaTeX-rendered formulas, and inline challenges.
 
-WiseLab takes any problem — typed or photographed — and generates a structured, interactive lesson with LaTeX-rendered formulas, progressive step reveal, and real-world context. Powered by Ollama Cloud models.
+![Screenshot placeholder](docs/screenshot.png)
 
 ---
 
 ## Features
 
-- **Step-by-step lesson generation** — AI produces 3-6 structured steps with explanations, formulas, visuals, and tips
-- **LaTeX math rendering** — Inline (`$...$`) and display-level math via KaTeX
-- **Image-based input** — Photograph or upload an exercise; OCR extracts the problem automatically
-- **Multi-subject theming** — Math (indigo), Physics (amber), Chemistry (emerald) with per-subject accent colors
-- **Progressive step reveal** — Locked → Active → Completed stepper; each step unlocks on demand
-- **Lesson history** — Up to 10 recent lessons persisted in localStorage with one-click restore
-- **Dark glassmorphic UI** — `#07070c` background with dynamic radial glow per subject, 800ms transitions
-- **Keyboard shortcut** — `Ctrl+Cmd+Enter` to submit a problem
+- **Text or image input** — type a problem or upload one or more photos of exercise sheets; drag-and-drop supported
+- **Multi-image OCR** — multiple images are processed in parallel via a vision model; extracted text is combined into a single lesson
+- **Structured lessons** — AI returns 3–6 sequential steps, each with an explanation, optional LaTeX formula, ASCII visual, and a tip
+- **Inline challenges** — multiple-choice questions placed every 3–4 steps; must be answered before the next step unlocks
+- **"Simplify for me"** — on-demand plain-language analogy for any step
+- **"I'm confused" assistant** — conversational hint system that guides the student without revealing the answer
+- **Final answer + real-world application** — shown after all steps are completed
+- **Lesson history** — past lessons persisted to `localStorage`, restorable from the history drawer
+- **Export** — copy or download any lesson as a plain-text file
+- **Multi-language** — lessons generated in PT, EN, ES, FR, or DE (configurable in Settings)
+- **Difficulty levels** — beginner / intermediate / advanced; affects vocabulary and depth of explanations
+- **Runtime API key** — entered once in the Settings drawer and stored in `localStorage`; never baked into the bundle
 
 ---
 
@@ -26,11 +30,15 @@ WiseLab takes any problem — typed or photographed — and generates a structur
 | Framework | React 19 |
 | Build tool | Vite 7 |
 | Styling | Tailwind CSS 3 |
-| Math rendering | KaTeX 0.16 |
-| AI API | Ollama Cloud (OpenAI-compatible) |
-| Fonts | DM Sans (body), Space Mono (headings/mono) |
+| Math rendering | KaTeX |
+| Icons | Lucide React |
+| UI primitives | Radix UI (Dialog, Label, Slot) |
+| Lesson model | Ollama Cloud — `gemini-3-flash-preview:cloud` (default) |
+| Vision / OCR model | Ollama Cloud — `ministral-3:3b-cloud` (fixed) |
+| API protocol | OpenAI-compatible (`/v1/chat/completions`) |
+| Persistence | `localStorage` only — no backend, no database |
 
-No router, no state management library — all state is local React hooks + localStorage.
+No router, no global state library — all state is local React hooks and `localStorage`.
 
 ---
 
@@ -38,46 +46,89 @@ No router, no state management library — all state is local React hooks + loca
 
 ### Prerequisites
 
-- Node.js 18+
-- An [Ollama Cloud](https://ollama.ai) API key
+- Node.js 20+
+- An [Ollama Cloud](https://ollama.com) account and API key
 
-### Installation
+### Install
 
 ```bash
-git clone https://github.com/your-username/wiselab.git
+git clone https://github.com/your-org/wiselab.git
 cd wiselab
 npm install
 ```
 
-### Environment
+### Configure environment
 
-Create a `.env` file at the project root:
-
-```env
-VITE_OLLAMA_API_KEY=your_api_key_here
-VITE_OLLAMA_MODEL=ministral-3:14b-cloud
+```bash
+cp .env .env.local
+# edit .env.local if you want to override the default lesson model
 ```
 
-| Variable | Description | Default |
-|---|---|---|
-| `VITE_OLLAMA_API_KEY` | Ollama Cloud API key | — |
-| `VITE_OLLAMA_MODEL` | Model used for lesson generation | `llama3.1:8b` |
+The **API key is not an environment variable**. Each user enters it at runtime through the Settings drawer (gear icon in the header). It is stored in `localStorage` under `wiselab_api_key`. This means the built bundle contains no credentials.
 
-> **Security note:** Vite exposes `VITE_*` variables in the client bundle. For production, proxy API requests through a server-side function (Cloudflare Worker, Vercel Edge, etc.) so the key is never shipped to the browser.
-
-### Development
+### Run the dev server
 
 ```bash
 npm run dev
+# http://localhost:5173
 ```
 
-Opens at `http://localhost:5173`. The Vite dev server proxies `/v1/*` requests to `https://ollama.com` to avoid CORS issues.
+The Vite dev server proxies `/api/v1/*` to `https://api.ollama.ai/v1/` to avoid CORS issues in development.
 
-### Production build
+### Build for production
 
 ```bash
-npm run build     # outputs to dist/
-npm run preview   # preview the production build locally
+npm run build      # outputs to dist/
+npm run preview    # serve the production build locally
+```
+
+For production deployments you need a server-side proxy that forwards `/api/v1/*` to `https://api.ollama.ai/v1/` and injects the `Authorization` header, **or** you configure a CORS-permissive upstream. The Vite proxy is development-only.
+
+---
+
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `VITE_OLLAMA_MODEL` | No | `gemini-3-flash-preview:cloud` | Ollama Cloud model identifier used for lesson generation. |
+
+The vision/OCR model (`ministral-3:3b-cloud`) is hardcoded in `src/lib/vision.js` and is not configurable via environment variable.
+
+> Variables prefixed with `VITE_` are inlined into the browser bundle at build time by Vite. Do not store secrets here — use the runtime Settings drawer for the API key.
+
+---
+
+## How It Works
+
+```
+User input (text or images)
+        |
+        v
+  [ProblemInput]
+  - Text path  → passes raw string to generateLesson()
+  - Image path → each file sent to extractTextFromImage()
+                 (ministral-3:3b-cloud vision model, parallel)
+                 extracted texts joined with "---" separators
+        |
+        v
+  [generateLesson()] — src/lib/ollama.js
+  - Builds a system prompt with language + difficulty settings
+  - Streams the response via SSE, accumulates raw JSON
+  - Strips markdown code fences (``` blocks) if present
+  - Applies repairJson(): fixes bare LaTeX backslashes
+    and literal newlines embedded inside JSON string values
+  - Validates lesson structure and sanitises challenge objects
+        |
+        v
+  [useLesson hook] — step-progression state machine
+  - activeStep, completedSteps, canProceed, showAnswer
+  - Challenges must be answered correctly before advancing
+        |
+        v
+  [LessonView] — renders the lesson progressively
+  - StepCard: explanation + KaTeX formula + ASCII visual + tip
+  - ChallengeCard: multiple-choice question with feedback
+  - FinalAnswer: answer + real-world application + export actions
 ```
 
 ---
@@ -85,107 +136,64 @@ npm run preview   # preview the production build locally
 ## Project Structure
 
 ```
-wiselab/
-├── index.html                    # App entry point (lang="pt")
-├── vite.config.js                # Vite config with /v1 proxy
-├── tailwind.config.js            # Custom fonts (DM Sans, Space Mono)
-├── src/
-│   ├── main.jsx                  # React root + KaTeX CSS import
-│   ├── App.jsx                   # Root component, subject/history state
-│   ├── styles/
-│   │   └── index.css             # Tailwind directives + .skeleton, .glass, keyframes
-│   ├── components/
-│   │   ├── SubjectSelector.jsx   # Segmented control; exports getAccentClasses()
-│   │   ├── ProblemInput.jsx      # Textarea + image toggle + submit button
-│   │   ├── ImageInput.jsx        # Drag-drop / camera modal
-│   │   ├── LessonView.jsx        # Vertical stepper + skeleton + error states
-│   │   ├── StepCard.jsx          # Single step (locked / active / completed)
-│   │   ├── MathBlock.jsx         # Display-mode KaTeX renderer
-│   │   ├── MathText.jsx          # Inline KaTeX renderer (parses $...$)
-│   │   ├── FinalAnswer.jsx       # Solution + real-world application
-│   │   ├── ProgressBar.jsx       # Animated step progress bar
-│   │   └── HistoryDrawer.jsx     # Slide-out drawer with saved lessons
-│   ├── hooks/
-│   │   ├── useLesson.js          # generate / restore / nextStep / reset
-│   │   ├── useHistory.js         # localStorage CRUD (max 10 items)
-│   │   └── useImageInput.js      # File validation, compression, OCR pipeline
-│   └── lib/
-│       ├── ollama.js             # generateLesson() — API call + JSON repair
-│       ├── vision.js             # extractTextFromImage() — OCR via vision model
-│       └── imageUtils.js         # validateImageFile() + fileToBase64() (Canvas)
+src/
+  App.jsx                   root component — layout, state wiring, drawers
+  lib/
+    ollama.js               generateLesson(), simplifyExplanation(),
+                            askConfusedHelp(); settings/API key helpers;
+                            repairJson() character-level JSON fixer
+    vision.js               extractTextFromImage() via vision model
+    exportLesson.js         copyLesson() / downloadLesson() as plain text
+    imageUtils.js           validateImageFile(), fileToBase64()
+  hooks/
+    useLesson.js            lesson state machine (steps, challenges, progress)
+    useHistory.js           localStorage lesson history (read/save/delete)
+    useApiKey.js            API key read/write from localStorage
+  components/
+    ProblemInput.jsx        text + multi-image input, drag-and-drop, camera
+    LessonView.jsx          step orchestration, skeleton loading states
+    StepCard.jsx            single step (locked / active / completed)
+    ChallengeCard.jsx       multiple-choice challenge with answer feedback
+    FinalAnswer.jsx         final answer, real-world section, export buttons
+    MathText.jsx            inline KaTeX renderer — parses $...$ in strings
+    HistoryDrawer.jsx       slide-in past lessons panel
+    SettingsDrawer.jsx      language, difficulty, and API key configuration
+    SubjectSelector.jsx     subject picker; exports getAccentClasses()
+  i18n/
+    index.jsx               i18n context provider and useI18n() hook
+    locales/                pt.js  en.js  es.js  fr.js  de.js
+  styles/
+    index.css               Tailwind directives, shimmer keyframe, body gradient
 ```
 
 ---
 
-## How It Works
+## Lesson JSON Schema
 
-### 1. Problem input
-
-The user types a problem or uploads a photo. Images are validated (JPEG/PNG/WebP, max 10 MB), compressed via Canvas API to max 1024px width at 0.85 quality, then sent to a vision model (`ministral-3:3b-cloud`) for OCR. The extracted text auto-populates the textarea.
-
-### 2. Lesson generation
-
-`generateLesson(subject, problem)` in `src/lib/ollama.js`:
-
-1. Posts to `/v1/chat/completions` with a structured system prompt
-2. The model returns a JSON lesson:
+The AI is instructed to return strict JSON. `generateLesson()` validates the parsed object against this shape:
 
 ```json
 {
-  "title": "Newton's Second Law",
+  "title": "string",
   "steps": [
     {
-      "title": "Identify the forces",
-      "explanation": "Apply $F = ma$ to find acceleration.",
-      "formula": "F = ma",
-      "visual": "→ F\n[m] ───►",
-      "tip": "Always draw a free-body diagram first."
+      "title": "string",
+      "explanation": "string  (inline math wrapped in $...$)",
+      "formula": "string (raw LaTeX, no $ delimiters) | null",
+      "visual": "string (ASCII diagram or table) | null",
+      "tip": "string | null",
+      "challenge": {
+        "type": "multiple_choice",
+        "question": "string",
+        "options": ["string", "string", "string", "string"],
+        "correct": 0
+      } | null
     }
   ],
-  "final_answer": "a = \\frac{F}{m} = 5 \\, \\text{m/s}^2",
-  "real_world": "This is how car engines are sized for performance."
+  "final_answer": "string",
+  "real_world": "string"
 }
 ```
-
-3. A custom JSON repair function handles common model quirks: escapes bare LaTeX backslashes (`\frac` → `\\frac`), normalises embedded newlines, and strips markdown code fences.
-
-### 3. Lesson display
-
-- Steps start locked (skeleton placeholders, `opacity-35`)
-- The first step is immediately active (glowing accent border)
-- "Next step" marks the current step complete and activates the next
-- After the last step, the final answer and real-world section appear
-- A vertical connector line runs between all cards (`absolute left-[22px]`)
-
-### 4. History
-
-Each completed lesson is saved to `localStorage` under `wiselab_history` (max 10 entries). The history drawer shows subject badge, title, problem snippet, and timestamp. Click any entry to restore the lesson; hover to reveal a delete button.
-
----
-
-## Accent Theme System
-
-`getAccentClasses(subjectId)` in `SubjectSelector.jsx` returns a map of Tailwind classes per subject:
-
-| Key | Math (indigo) | Physics (amber) | Chemistry (emerald) |
-|---|---|---|---|
-| `button` | `bg-indigo-500 ...` | `bg-amber-500 ...` | `bg-emerald-500 ...` |
-| `border` | `border-indigo-500/40` | `border-amber-500/40` | `border-emerald-500/40` |
-| `text` | `text-indigo-400` | `text-amber-400` | `text-emerald-400` |
-| `progress` | `bg-indigo-500` | `bg-amber-500` | `bg-emerald-500` |
-| `glow` | `shadow-indigo-500/25` | `shadow-amber-500/25` | `shadow-emerald-500/25` |
-
-The dynamic background glow in `App.jsx` is an inline-styled `div` that transitions its `background` radial gradient over 800ms when the subject changes.
-
----
-
-## Styling Conventions
-
-- **Background:** `#07070c`
-- **Cards:** `rounded-2xl bg-white/[0.04..0.07] backdrop-blur-sm border border-white/[0.08]`
-- **Skeleton:** `.skeleton` class — shimmer gradient animation at 200% background-size
-- **Custom keyframes:** `shimmer`, `fadeIn`, `slideDown`, `spin`, `pulse-ring` (defined in `index.css`)
-- **KaTeX dark mode:** `.katex` text set to `rgba(255,255,255,0.85)` globally
 
 ---
 
@@ -195,7 +203,7 @@ The dynamic background glow in `App.jsx` is an inline-styled `div` that transiti
 |---|---|
 | `npm run dev` | Start dev server at `localhost:5173` |
 | `npm run build` | Production build to `dist/` |
-| `npm run preview` | Preview production build locally |
+| `npm run preview` | Serve the production build locally |
 | `npm run lint` | Run ESLint |
 
 ---
@@ -204,11 +212,10 @@ The dynamic background glow in `App.jsx` is an inline-styled `div` that transiti
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit your changes: `git commit -m 'feat: add your feature'`
-4. Push: `git push origin feat/your-feature`
-5. Open a pull request
+3. Commit: `git commit -m 'feat: describe your change'`
+4. Push and open a pull request
 
-Please keep PRs focused. Run `npm run lint` before submitting.
+Run `npm run lint && npm run build` before submitting to verify nothing is broken.
 
 ---
 
