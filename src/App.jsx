@@ -16,7 +16,6 @@ export default function App() {
   const { t } = useI18n()
   const [showHistory, setShowHistory] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
-  const [pendingProblems, setPendingProblems] = useState([])
 
   const {
     lesson, loading, progress, error,
@@ -39,24 +38,8 @@ export default function App() {
     })
   }
 
-  function handleReset() {
-    reset()
-    setPendingProblems([])
-  }
-
-  function handleImageProblems(problems) {
-    setPendingProblems(problems)
-  }
-
-  function handleNextExercise() {
-    const [next, ...rest] = pendingProblems
-    setPendingProblems(rest)
-    handleSubmit(next)
-  }
-
   function handleRestore(entry) {
     restore(entry.lesson)
-    setPendingProblems([])
   }
 
   const isIdle = !lesson && !loading && !error
@@ -178,10 +161,9 @@ export default function App() {
 
             <ProblemInput
               onSubmit={handleSubmit}
-              onCancel={handleReset}
+              onCancel={reset}
               loading={loading}
               accentClasses={accentClasses}
-              onImageProblems={handleImageProblems}
             />
           </div>
         )}
@@ -201,7 +183,7 @@ export default function App() {
               </div>
             </div>
             <button
-              onClick={handleReset}
+              onClick={reset}
               className="flex items-center gap-1.5 text-sm text-white/35 hover:text-white/65 transition-colors focus-ring"
             >
               <span>↩</span>
@@ -222,11 +204,9 @@ export default function App() {
           challengeCompleted={challengeCompleted}
           canProceed={canProceed}
           onNextStep={nextStep}
-          onReset={handleReset}
+          onReset={reset}
           onCompleteChallenge={completeChallenge}
           accentClasses={accentClasses}
-          pendingProblems={pendingProblems}
-          onNextExercise={handleNextExercise}
         />
       </main>
 

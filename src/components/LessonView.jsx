@@ -63,8 +63,6 @@ export function LessonView({
   onReset,
   onCompleteChallenge,
   accentClasses,
-  pendingProblems,
-  onNextExercise,
 }) {
   const { t } = useI18n()
 
@@ -134,8 +132,6 @@ export function LessonView({
           lesson={lesson}
           accentClasses={accentClasses}
           onReset={onReset}
-          pendingProblems={pendingProblems}
-          onNextExercise={onNextExercise}
         />
       )}
     </div>

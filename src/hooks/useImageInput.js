@@ -35,9 +35,9 @@ export function useImageInput({ onExtracted }) {
       const { base64, mimeType } = await fileToBase64(file)
       setStatus('extracting')
 
-      const result = await extractTextFromImage(base64, mimeType)
+      const text = await extractTextFromImage(base64, mimeType)
       setStatus('done')
-      onExtracted(result)
+      onExtracted(text)
     } catch (err) {
       setStatus('error')
       setError(err.message)
