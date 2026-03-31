@@ -1,9 +1,8 @@
-// NOTE: API key is exposed in the client bundle.
-// For production, proxy requests through a Cloudflare Worker or Vercel Edge Function.
-// In dev: proxied by Vite (vite.config.js) → https://ollama.com/v1/chat/completions
-// In production: deploy a server-side proxy (Cloudflare Worker / Vercel Edge) at /v1
+// API key is provided by each user at runtime via the Settings drawer
+// and stored in localStorage — it is never baked into the bundle.
+// Requests are made directly from the browser; no server-side proxy is needed.
 
-const API_URL = "/api/v1/chat/completions";
+const API_URL = "https://api.ollama.ai/v1/chat/completions";
 const DEFAULT_MODEL = "gemini-3-flash-preview:cloud";
 
 export function getModel() {
