@@ -80,6 +80,8 @@ export const pt = {
     copy: 'Copiar',
     copied: 'Copiado!',
     download: 'Descarregar',
+    moreExercises: 'Há mais exercícios nesta imagem.',
+    nextExercise: 'Próximo exercício',
   },
   subjects: {
     ariaLabel: 'Disciplina',

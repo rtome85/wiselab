@@ -3,7 +3,7 @@ import ImageInput from './ImageInput'
 import { MathContent } from './MathContent'
 import { useI18n } from '../i18n/index.jsx'
 
-export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
+export function ProblemInput({ onSubmit, onCancel, loading, accentClasses, onImageProblems }) {
   const { t } = useI18n()
   const [value, setValue] = useState('')
   const [showImageInput, setShowImageInput] = useState(false)
@@ -21,10 +21,11 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
     }
   }
 
-  function handleExtracted(text) {
+  function handleExtracted({ text, moreProblems }) {
     setValue(text)
     setFromImage(true)
     setShowImageInput(false)
+    onImageProblems?.(moreProblems)
   }
 
   function handleSubmit() {

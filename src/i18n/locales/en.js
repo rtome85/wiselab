@@ -80,6 +80,8 @@ export const en = {
     copy: 'Copy',
     copied: 'Copied!',
     download: 'Download',
+    moreExercises: 'There are more exercises in this image.',
+    nextExercise: 'Next exercise',
   },
   subjects: {
     ariaLabel: 'Subject',

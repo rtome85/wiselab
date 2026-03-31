@@ -3,7 +3,7 @@ import { MathText } from './MathText'
 import { useI18n } from '../i18n/index.jsx'
 import { copyLesson, downloadLesson } from '../lib/exportLesson'
 
-export function FinalAnswer({ lesson, accentClasses, onReset }) {
+export function FinalAnswer({ lesson, accentClasses, onReset, pendingProblems = [], onNextExercise }) {
   const { t } = useI18n()
   const [copied, setCopied] = useState(false)
 
@@ -57,6 +57,26 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
           </div>
         )}
       </div>
+
+      {/* Next exercise banner */}
+      {pendingProblems.length > 0 && (
+        <div className="mx-5 mb-1 px-4 py-3.5 rounded-xl border border-white/10 bg-white/[0.03] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-sm leading-none flex-shrink-0">📋</span>
+            <p className="text-xs text-white/50 leading-relaxed">
+              {t('finalAnswer.moreExercises')}
+              <span className="ml-1 text-white/30">({pendingProblems.length})</span>
+            </p>
+          </div>
+          <button
+            onClick={onNextExercise}
+            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all duration-200 focus-ring ${accentClasses.button}`}
+          >
+            {t('finalAnswer.nextExercise')}
+            <span className="opacity-70">→</span>
+          </button>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="px-5 py-3.5 border-t border-white/8 flex items-center justify-between">
