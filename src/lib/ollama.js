@@ -2,7 +2,7 @@
 // and stored in localStorage — it is never baked into the bundle.
 // Requests are made directly from the browser; no server-side proxy is needed.
 
-const API_URL = "https://api.ollama.ai/v1/chat/completions";
+const API_URL = "/api/v1/chat/completions";
 const DEFAULT_MODEL = "gemini-3-flash-preview:cloud";
 
 export function getModel() {

@@ -1,11 +1,15 @@
 /**
- * Vercel Serverless Function (Node.js) — Ollama API proxy
+ * Vercel Serverless Function — Ollama API proxy
  *
- * Proxies POST /api/v1/chat/completions → https://api.ollama.ai/v1/chat/completions
- * Streams the response body back to support SSE lesson generation.
+ * Needed because api.ollama.ai does not send CORS headers, so browsers
+ * cannot call it directly. This function proxies the request server-side
+ * and streams the response back (SSE for lesson generation).
+ *
+ * The user's API key is forwarded as-is from their Authorization header —
+ * it is never stored or logged here.
  */
 
-const UPSTREAM_URL = 'https://api.ollama.ai/v1/chat/completions'
+const UPSTREAM_URL = 'https://ollama.com/v1/chat/completions'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,7 +18,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Buffer the incoming request body
     const chunks = []
     for await (const chunk of req) {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
@@ -40,7 +43,6 @@ export default async function handler(req, res) {
       return
     }
 
-    // Stream the upstream response back (handles both SSE and plain JSON)
     const reader = upstream.body.getReader()
     while (true) {
       const { done, value } = await reader.read()
@@ -49,7 +51,7 @@ export default async function handler(req, res) {
     }
     res.end()
   } catch (err) {
-    console.error('[proxy error]', err.message, err.stack)
+    console.error('[proxy error]', err.message)
     if (!res.headersSent) {
       res.status(502).json({ error: err.message })
     } else {

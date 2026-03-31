@@ -1,7 +1,7 @@
 import { getApiKey } from './ollama'
 
 const VISION_MODEL = 'ministral-3:3b-cloud'
-const API_URL = 'https://api.ollama.ai/v1/chat/completions'
+const API_URL = '/api/v1/chat/completions'
 
 const EXTRACTION_PROMPT = `You are an expert vision assistant for a math and science tutoring app.
 Analyze the image and respond using EXACTLY this format — two sections, nothing else:

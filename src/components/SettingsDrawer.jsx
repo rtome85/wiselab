@@ -145,7 +145,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
     setTestMessage('')
 
     try {
-      const response = await fetch('https://api.ollama.ai/v1/chat/completions', {
+      const response = await fetch('/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${inputValue.trim()}`,
