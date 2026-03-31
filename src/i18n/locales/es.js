@@ -11,7 +11,7 @@ export const es = {
     heroDesc: 'Describe lo que necesitas aprender — la IA genera una lección interactiva paso a paso.',
     errorTitle: 'Error al generar la lección',
     tryAgain: 'Intentar de nuevo',
-    footerPowered: 'Desarrollado por Ollama · usar proxy en producción',
+    footerPowered: 'Powered by Ollama',
   },
   settings: {
     title: 'Ajustes',
@@ -60,6 +60,9 @@ export const es = {
     editExtracted: 'Editar texto extraído',
     edit: 'Editar',
     chars: '{count} caracteres',
+    addImage: 'Añadir imagen',
+    contextPlaceholder: 'Contexto adicional (opcional)…',
+    extractingImages: 'Extrayendo imágenes…',
   },
   lesson: {
     phase1: 'Analizando el problema...',
@@ -80,6 +83,13 @@ export const es = {
     copy: 'Copiar',
     copied: '¡Copiado!',
     download: 'Descargar',
+    moreExercises: 'Hay más ejercicios en esta imagen.',
+    nextExercise: 'Siguiente ejercicio',
+    addExercise: 'Añadir ejercicio a la cola',
+    addPlaceholder: 'Describe el siguiente ejercicio...',
+    addToQueue: 'Añadir',
+    added: '{count} ejercicio(s) añadido(s)',
+    extracting: 'Extrayendo...',
   },
   subjects: {
     ariaLabel: 'Asignatura',

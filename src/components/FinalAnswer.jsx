@@ -20,6 +20,7 @@ export function FinalAnswer({ lesson, accentClasses, onReset }) {
   function handleDownload() {
     downloadLesson(lesson)
   }
+
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.04] overflow-hidden animate-fadeIn">
       {/* Success banner */}

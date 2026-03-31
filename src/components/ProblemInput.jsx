@@ -1,18 +1,146 @@
 import { useState, useRef, useEffect } from 'react'
-import ImageInput from './ImageInput'
-import { MathContent } from './MathContent'
 import { useI18n } from '../i18n/index.jsx'
+import { validateImageFile, fileToBase64 } from '../lib/imageUtils'
+import { extractTextFromImage } from '../lib/vision'
+
+function ImageThumb({ img, onRemove }) {
+  return (
+    <div className="relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border border-white/10 bg-white/[0.04]">
+      <img src={img.preview} alt="" className="w-full h-full object-cover" draggable={false} />
+
+      {/* Status overlay */}
+      {img.status === 'extracting' && (
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+          <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+        </div>
+      )}
+      {img.status === 'done' && (
+        <div className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+          <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 10 10" fill="none">
+            <path d="M2 5l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      )}
+      {img.status === 'error' && (
+        <div className="absolute inset-0 bg-red-900/70 flex items-center justify-center">
+          <svg className="w-4 h-4 text-red-300" viewBox="0 0 14 14" fill="none">
+            <path d="M7 4v3M7 9.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.25" />
+          </svg>
+        </div>
+      )}
+
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={() => onRemove(img.id)}
+        className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black/70 text-white/60 hover:text-white flex items-center justify-center transition-colors"
+        aria-label="Remover imagem"
+      >
+        <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
+          <path d="M2.5 2.5l5 5M7.5 2.5l-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
+const CameraIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round"
+      d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175
+         C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15
+         A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169
+         a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055
+         l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0
+         2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round"
+      d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
+    />
+  </svg>
+)
 
 export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
   const { t } = useI18n()
-  const [value, setValue] = useState('')
-  const [showImageInput, setShowImageInput] = useState(false)
-  const [fromImage, setFromImage] = useState(false)
+  const [textValue, setTextValue] = useState('')
+  const [images, setImages] = useState([])
+  // each image: { id, preview, status: 'extracting'|'done'|'error', text, error }
+  const fileInputRef = useRef(null)
   const textareaRef = useRef(null)
+  const imagesRef = useRef(images)
+  useEffect(() => { imagesRef.current = images }, [images])
+  useEffect(() => () => {
+    imagesRef.current.forEach(img => { if (img.preview) URL.revokeObjectURL(img.preview) })
+  }, [])
 
-  useEffect(() => {
-    if (!fromImage) textareaRef.current?.focus()
-  }, [fromImage])
+  const hasImages = images.length > 0
+  const anyExtracting = images.some(img => img.status === 'extracting')
+  const hasContent = images.some(img => img.status === 'done') || textValue.trim().length > 0
+  const canSubmit = hasContent && !anyExtracting && !loading
+
+  async function processFile(file) {
+    let validationError = null
+    try { validateImageFile(file) } catch (err) { validationError = err.message }
+
+    const id = Date.now() + Math.random()
+    const preview = URL.createObjectURL(file)
+
+    if (validationError) {
+      setImages(prev => [...prev, { id, preview, status: 'error', text: '', error: validationError }])
+      return
+    }
+
+    setImages(prev => [...prev, { id, preview, status: 'extracting', text: '', error: null }])
+
+    try {
+      const { base64, mimeType } = await fileToBase64(file)
+      const text = await extractTextFromImage(base64, mimeType)
+      setImages(prev => prev.map(img => img.id === id ? { ...img, status: 'done', text } : img))
+    } catch (err) {
+      setImages(prev => prev.map(img =>
+        img.id === id ? { ...img, status: 'error', text: '', error: err.message } : img
+      ))
+    }
+  }
+
+  function handleFileChange(e) {
+    for (const file of e.target.files ?? []) processFile(file)
+    e.target.value = ''
+  }
+
+  function openFilePicker(source) {
+    if (!fileInputRef.current) return
+    if (source === 'camera') {
+      fileInputRef.current.setAttribute('capture', 'environment')
+    } else {
+      fileInputRef.current.removeAttribute('capture')
+    }
+    fileInputRef.current.click()
+  }
+
+  function removeImage(id) {
+    setImages(prev => {
+      const img = prev.find(i => i.id === id)
+      if (img?.preview) URL.revokeObjectURL(img.preview)
+      return prev.filter(i => i.id !== id)
+    })
+  }
+
+  function handleSubmit() {
+    const parts = images.filter(img => img.status === 'done').map(img => img.text)
+    if (textValue.trim()) parts.push(textValue.trim())
+    const combined = parts.join('\n\n---\n\n')
+    if (!combined || loading) return
+    onSubmit(combined)
+  }
+
+  function handleCancel() {
+    images.forEach(img => { if (img.preview) URL.revokeObjectURL(img.preview) })
+    setImages([])
+    setTextValue('')
+    onCancel?.()
+  }
 
   function handleKeyDown(e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -21,70 +149,89 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
     }
   }
 
-  function handleExtracted(text) {
-    setValue(text)
-    setFromImage(true)
-    setShowImageInput(false)
+  function handleDrop(e) {
+    e.preventDefault()
+    for (const file of e.dataTransfer.files ?? []) processFile(file)
   }
-
-  function handleSubmit() {
-    const trimmed = value.trim()
-    if (!trimmed || loading) return
-    onSubmit(trimmed)
-  }
-
-  function handleEditExtracted() {
-    setFromImage(false)
-    setTimeout(() => textareaRef.current?.focus(), 0)
-  }
-
-  function handleCancel() {
-    onCancel?.()
-    setValue('')
-    setFromImage(false)
-    setShowImageInput(false)
-  }
-
-  const canSubmit = value.trim().length > 0 && !loading
 
   return (
     <div className="space-y-3">
-      {/* Textarea or rendered math preview */}
-      {fromImage && value ? (
-        /* Rendered preview of extracted math text */
-        <div className="rounded-2xl bg-white/[0.06] border border-white/10 px-5 py-4 min-h-[6rem]">
-          {/* Source label + edit button */}
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">
-              {t('input.extractedFromImage')}
-            </p>
+
+      {hasImages ? (
+        /* ── Image mode ── */
+        <div
+          className="rounded-2xl bg-white/[0.06] border border-white/10 focus-within:border-white/20 transition-all duration-200"
+          onDrop={handleDrop}
+          onDragOver={e => e.preventDefault()}
+        >
+          {/* Thumbnails row */}
+          <div className="flex items-center gap-2 px-4 pt-4 flex-wrap">
+            {images.map(img => (
+              <ImageThumb key={img.id} img={img} onRemove={removeImage} />
+            ))}
+
+            {/* Add more images button */}
             <button
               type="button"
-              onClick={handleEditExtracted}
+              onClick={() => openFilePicker('file')}
               disabled={loading}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/25 hover:text-white/60 hover:bg-white/8 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              aria-label={t('input.editExtracted')}
+              title={t('input.addImage')}
+              className="flex-shrink-0 w-14 h-14 rounded-xl border border-dashed border-white/20
+                         hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.05]
+                         text-white/25 hover:text-white/55 flex items-center justify-center
+                         transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <span className="text-xs font-medium">{t('input.edit')}</span>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round"
-                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
-                />
+              <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
+                <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
           </div>
-          <MathContent className="text-white/90 text-base" hideVisualContext>
-            {value}
-          </MathContent>
+
+          {/* Optional additional context */}
+          <textarea
+            ref={textareaRef}
+            value={textValue}
+            onChange={e => setTextValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={t('input.contextPlaceholder')}
+            rows={2}
+            disabled={loading}
+            className="w-full resize-none bg-transparent px-5 pt-3 pb-2
+                       text-white/90 placeholder-white/20 text-sm leading-relaxed
+                       focus:outline-none disabled:opacity-40"
+          />
+
+          {/* Toolbar */}
+          <div className="flex items-center justify-between px-4 pb-3">
+            <div className="hidden sm:flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">↵</kbd>
+            </div>
+            <div className="sm:hidden" />
+            <button
+              type="button"
+              onClick={() => openFilePicker('camera')}
+              disabled={loading}
+              title={t('input.usePhoto')}
+              aria-label={t('input.usePhotoAriaLabel')}
+              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/8 transition-colors disabled:opacity-30"
+            >
+              <CameraIcon />
+            </button>
+          </div>
         </div>
 
       ) : (
-        /* Unified input container — textarea + toolbar share the same surface */
-        <div className="rounded-2xl bg-white/[0.06] border border-white/10 focus-within:border-white/20 focus-within:bg-white/[0.08] transition-all duration-200 disabled:opacity-40">
+        /* ── Text mode ── */
+        <div
+          className="rounded-2xl bg-white/[0.06] border border-white/10 focus-within:border-white/20 focus-within:bg-white/[0.08] transition-all duration-200"
+          onDrop={handleDrop}
+          onDragOver={e => e.preventDefault()}
+        >
           <textarea
             ref={textareaRef}
-            value={value}
-            onChange={(e) => { setValue(e.target.value); setFromImage(false) }}
+            value={textValue}
+            onChange={e => setTextValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={t('input.placeholder')}
             rows={4}
@@ -93,70 +240,68 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
                        text-white/90 placeholder-white/20 text-base leading-relaxed
                        focus:outline-none disabled:opacity-40"
           />
-          {/* Toolbar row inside the box */}
           <div className="flex items-center justify-between px-4 pb-3">
-            {/* Keyboard hint */}
             <div className="hidden sm:flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">
-                ⌘
-              </kbd>
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">
-                ↵
-              </kbd>
+              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">↵</kbd>
             </div>
             <div className="sm:hidden" />
-
-            {/* Camera toggle button */}
             <button
               type="button"
-              onClick={() => setShowImageInput(v => !v)}
-              className={`p-1.5 rounded-lg transition-colors
-                ${showImageInput
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-gray-500 hover:text-gray-300 hover:bg-white/8'}`}
+              onClick={() => openFilePicker('camera')}
+              disabled={loading}
               title={t('input.usePhoto')}
               aria-label={t('input.usePhotoAriaLabel')}
+              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/8 transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round"
-                  d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175
-                     C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15
-                     A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169
-                     a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055
-                     l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0
-                     2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
-                />
-                <path strokeLinecap="round" strokeLinejoin="round"
-                  d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
-                />
-              </svg>
+              <CameraIcon />
             </button>
           </div>
         </div>
       )}
 
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        className="hidden"
+        onChange={handleFileChange}
+      />
 
-      {/* Image input panel */}
-      {showImageInput && (
-        <ImageInput
-          onExtracted={handleExtracted}
-          onClose={() => setShowImageInput(false)}
-        />
+      {/* Extraction errors */}
+      {images.some(img => img.status === 'error') && (
+        <div className="space-y-1">
+          {images.filter(img => img.status === 'error').map(img => (
+            <p key={img.id} className="text-xs text-red-400/70 px-1">{img.error}</p>
+          ))}
+        </div>
       )}
 
       {/* Submit row */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-white/20">
-          {value.length > 0 && t('input.chars', { count: value.length })}
+          {!hasImages && textValue.length > 0
+            ? t('input.chars', { count: textValue.length })
+            : hasImages && anyExtracting
+              ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full border border-white/30 border-t-white/70 animate-spin" />
+                  {t('input.extractingImages')}
+                </span>
+              )
+              : null
+          }
         </span>
         <div className="flex items-center gap-2">
-          {fromImage && value && (
+          {hasImages && (
             <button
               type="button"
               onClick={handleCancel}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold
-                       text-white/50 hover:text-white/80 bg-white/[0.05] hover:bg-white/[0.09]
-                       border border-white/10 transition-all duration-200"
+                         text-white/50 hover:text-white/80 bg-white/[0.05] hover:bg-white/[0.09]
+                         border border-white/10 transition-all duration-200"
             >
               {t('input.cancel')}
             </button>
@@ -165,8 +310,8 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
             onClick={handleSubmit}
             disabled={!canSubmit}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white
-                      transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed
-                      focus-ring shadow-lg ${accentClasses.button} ${accentClasses.glow}`}
+                        transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed
+                        focus-ring shadow-lg ${accentClasses.button} ${accentClasses.glow}`}
           >
             {loading ? (
               <>

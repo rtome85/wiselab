@@ -11,7 +11,7 @@ export const de = {
     heroDesc: 'Beschreibe, was du lernen möchtest — die KI erstellt eine interaktive Schritt-für-Schritt-Lektion.',
     errorTitle: 'Fehler beim Generieren der Lektion',
     tryAgain: 'Erneut versuchen',
-    footerPowered: 'Powered by Ollama · Proxy in der Produktion verwenden',
+    footerPowered: 'Powered by Ollama',
   },
   settings: {
     title: 'Einstellungen',
@@ -60,6 +60,9 @@ export const de = {
     editExtracted: 'Extrahierten Text bearbeiten',
     edit: 'Bearbeiten',
     chars: '{count} Zeichen',
+    addImage: 'Bild hinzufügen',
+    contextPlaceholder: 'Zusätzlicher Kontext (optional)…',
+    extractingImages: 'Bilder werden extrahiert…',
   },
   lesson: {
     phase1: 'Problem wird analysiert...',
@@ -80,6 +83,13 @@ export const de = {
     copy: 'Kopieren',
     copied: 'Kopiert!',
     download: 'Herunterladen',
+    moreExercises: 'Es gibt weitere Aufgaben in diesem Bild.',
+    nextExercise: 'Nächste Aufgabe',
+    addExercise: 'Aufgabe zur Warteschlange hinzufügen',
+    addPlaceholder: 'Beschreibe die nächste Aufgabe...',
+    addToQueue: 'Hinzufügen',
+    added: '{count} Aufgabe(n) hinzugefügt',
+    extracting: 'Wird extrahiert...',
   },
   subjects: {
     ariaLabel: 'Fach',

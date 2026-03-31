@@ -21,7 +21,7 @@ function parseExtractionResponse(raw) {
   const visualIdx = raw.indexOf(VISUAL_TAG)
 
   if (textIdx === -1 || visualIdx === -1) {
-    return raw.trim() // fallback: model ignored format, return raw (no regression)
+    return raw.trim() // fallback: model ignored format, return raw
   }
 
   const textPart   = raw.slice(textIdx + TEXT_TAG.length, visualIdx).trim()

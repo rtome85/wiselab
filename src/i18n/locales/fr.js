@@ -11,7 +11,7 @@ export const fr = {
     heroDesc: "Décrivez ce que vous devez apprendre — l'IA génère une leçon interactive étape par étape.",
     errorTitle: 'Erreur lors de la génération de la leçon',
     tryAgain: 'Réessayer',
-    footerPowered: 'Propulsé par Ollama · utiliser un proxy en production',
+    footerPowered: 'Powered by Ollama',
   },
   settings: {
     title: 'Paramètres',
@@ -60,6 +60,9 @@ export const fr = {
     editExtracted: 'Modifier le texte extrait',
     edit: 'Modifier',
     chars: '{count} caractères',
+    addImage: 'Ajouter une image',
+    contextPlaceholder: 'Contexte supplémentaire (optionnel)…',
+    extractingImages: 'Extraction des images…',
   },
   lesson: {
     phase1: 'Analyse du problème...',
@@ -80,6 +83,13 @@ export const fr = {
     copy: 'Copier',
     copied: 'Copié !',
     download: 'Télécharger',
+    moreExercises: "Il y a d'autres exercices dans cette image.",
+    nextExercise: 'Exercice suivant',
+    addExercise: "Ajouter un exercice à la file",
+    addPlaceholder: "Décris le prochain exercice...",
+    addToQueue: 'Ajouter',
+    added: '{count} exercice(s) ajouté(s)',
+    extracting: 'Extraction...',
   },
   subjects: {
     ariaLabel: 'Matière',

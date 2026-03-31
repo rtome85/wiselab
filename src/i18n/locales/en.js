@@ -11,7 +11,7 @@ export const en = {
     heroDesc: 'Describe what you need to learn — the AI generates an interactive step-by-step lesson.',
     errorTitle: 'Error generating lesson',
     tryAgain: 'Try again',
-    footerPowered: 'Powered by Ollama · use proxy in production',
+    footerPowered: 'Powered by Ollama',
   },
   settings: {
     title: 'Settings',
@@ -60,6 +60,9 @@ export const en = {
     editExtracted: 'Edit extracted text',
     edit: 'Edit',
     chars: '{count} characters',
+    addImage: 'Add image',
+    contextPlaceholder: 'Additional context (optional)…',
+    extractingImages: 'Extracting images…',
   },
   lesson: {
     phase1: 'Analysing the problem...',
@@ -80,6 +83,13 @@ export const en = {
     copy: 'Copy',
     copied: 'Copied!',
     download: 'Download',
+    moreExercises: 'There are more exercises in this image.',
+    nextExercise: 'Next exercise',
+    addExercise: 'Add exercise to queue',
+    addPlaceholder: 'Describe the next exercise...',
+    addToQueue: 'Add',
+    added: '{count} exercise(s) added',
+    extracting: 'Extracting...',
   },
   subjects: {
     ariaLabel: 'Subject',

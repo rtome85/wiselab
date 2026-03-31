@@ -11,7 +11,7 @@ export const pt = {
     heroDesc: 'Descreve o que precisas de aprender — a IA gera uma lição interativa passo a passo.',
     errorTitle: 'Erro ao gerar a lição',
     tryAgain: 'Tentar novamente',
-    footerPowered: 'Desenvolvido por Ollama · usar proxy em produção',
+    footerPowered: 'Powered by Ollama',
   },
   settings: {
     title: 'Definições',
@@ -60,6 +60,9 @@ export const pt = {
     editExtracted: 'Editar texto extraído',
     edit: 'Editar',
     chars: '{count} caracteres',
+    addImage: 'Adicionar imagem',
+    contextPlaceholder: 'Contexto adicional (opcional)…',
+    extractingImages: 'A extrair imagens…',
   },
   lesson: {
     phase1: 'A analisar o problema...',
@@ -80,6 +83,13 @@ export const pt = {
     copy: 'Copiar',
     copied: 'Copiado!',
     download: 'Descarregar',
+    moreExercises: 'Há mais exercícios nesta imagem.',
+    nextExercise: 'Próximo exercício',
+    addExercise: 'Adicionar exercício à fila',
+    addPlaceholder: 'Descreve o próximo exercício...',
+    addToQueue: 'Adicionar',
+    added: '{count} exercício(s) adicionado(s)',
+    extracting: 'A extrair...',
   },
   subjects: {
     ariaLabel: 'Disciplina',
