@@ -79,11 +79,12 @@ export default function App() {
       <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#07070c]/85 backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
 
-          <div className="flex items-center gap-3">
+          <a href='/' className="flex items-center gap-3">
+            <img src='/logo.png' className='w-5 h-5' />
             <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
               WiseLab
             </span>
-          </div>
+          </a>
 
           <div className="flex items-center gap-2">
             <button
@@ -94,8 +95,8 @@ export default function App() {
                          transition-colors duration-150 focus-ring"
             >
               <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
-                <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.25"/>
-                <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.25" />
+                <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               {history.length > 0 && (
                 <span className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${accentClasses.dot}`} />

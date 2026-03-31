@@ -7,7 +7,7 @@ export const en = {
     configure: 'Configure',
     aiTutor: 'AI Tutor',
     heroTitle1: "What's your",
-    heroTitle2: 'problem?',
+    heroTitle2: 'challenge?',
     heroDesc: 'Describe what you need to learn — the AI generates an interactive step-by-step lesson.',
     errorTitle: 'Error generating lesson',
     tryAgain: 'Try again',

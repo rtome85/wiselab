@@ -7,7 +7,7 @@ export const de = {
     configure: 'Konfigurieren',
     aiTutor: 'KI-Tutor',
     heroTitle1: 'Was ist dein',
-    heroTitle2: 'Problem?',
+    heroTitle2: 'Herausforderung?',
     heroDesc: 'Beschreibe, was du lernen möchtest — die KI erstellt eine interaktive Schritt-für-Schritt-Lektion.',
     errorTitle: 'Fehler beim Generieren der Lektion',
     tryAgain: 'Erneut versuchen',

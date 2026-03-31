@@ -7,7 +7,7 @@ export const es = {
     configure: 'Configurar',
     aiTutor: 'Tutor de IA',
     heroTitle1: '¿Cuál es tu',
-    heroTitle2: 'problema?',
+    heroTitle2: 'desafío?',
     heroDesc: 'Describe lo que necesitas aprender — la IA genera una lección interactiva paso a paso.',
     errorTitle: 'Error al generar la lección',
     tryAgain: 'Intentar de nuevo',
