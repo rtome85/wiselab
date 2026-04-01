@@ -241,6 +241,17 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
             <p className="text-xs text-white/35">
               {t('settings.apiKeyDesc')}
             </p>
+<p className="text-xs text-white/35">
+              {t('settings.getApiKey').split('{link}')[0]}
+              <a
+                href="https://ollama.com/settings/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/50 hover:text-white/70 underline underline-offset-2"
+              >
+                ollama.com/settings/keys
+              </a>
+            </p>
           </div>
 
           {testStatus && <TestResult status={testStatus} message={testMessage} />}
