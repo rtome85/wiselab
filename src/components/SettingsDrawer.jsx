@@ -4,22 +4,10 @@ import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 import { Label } from './ui/Label'
 import { cn } from '../utils/cn'
+import { LANGUAGE_OPTIONS, DIFFICULTY_OPTIONS } from '../constants/settings'
+import { FOCUSABLE_SELECTOR } from '../constants/ui'
 import { getModel, getSettings, saveSettings } from '../lib/ollama'
 import { useI18n } from '../i18n/index.jsx'
-
-const LANGUAGES = [
-  { code: 'PT', label: 'PT', title: 'Português' },
-  { code: 'EN', label: 'EN', title: 'English' },
-  { code: 'ES', label: 'ES', title: 'Español' },
-  { code: 'FR', label: 'FR', title: 'Français' },
-  { code: 'DE', label: 'DE', title: 'Deutsch' },
-]
-
-const DIFFICULTIES = [
-  { value: 'beginner', tKey: 'settings.beginner' },
-  { value: 'intermediate', tKey: 'settings.intermediate' },
-  { value: 'advanced', tKey: 'settings.advanced' },
-]
 
 function TestResult({ status, message }) {
   if (!status) return null
@@ -43,15 +31,6 @@ function TestResult({ status, message }) {
     </div>
   )
 }
-
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'textarea:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',')
 
 export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClearApiKey }) {
   const { t, language, setLanguage } = useI18n()
@@ -305,7 +284,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
               aria-label={t('settings.languageAriaLabel')}
               className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.07]"
             >
-              {LANGUAGES.map(({ code, label, title }) => (
+              {LANGUAGE_OPTIONS.map(({ code, label, title }) => (
                 <button
                   key={code}
                   role="radio"
@@ -333,7 +312,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
               aria-label={t('settings.difficultyAriaLabel')}
               className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.07]"
             >
-              {DIFFICULTIES.map(({ value, tKey }) => (
+              {DIFFICULTY_OPTIONS.map(({ value, tKey }) => (
                 <button
                   key={value}
                   role="radio"

@@ -1,11 +1,10 @@
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const MAX_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from '../constants/image'
 
 export function validateImageFile(file) {
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     throw new Error('Tipo de ficheiro não suportado. Use JPEG, PNG ou WebP.')
   }
-  if (file.size > MAX_SIZE_BYTES) {
+  if (file.size > MAX_IMAGE_SIZE_BYTES) {
     throw new Error('Ficheiro demasiado grande. Tamanho máximo: 10MB.')
   }
 }

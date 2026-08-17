@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { Settings } from "lucide-react";
-import { getAccentClasses } from "./components/SubjectSelector";
+import { DEFAULT_ACCENT_CLASSES } from "./constants/subjects";
 import { ProblemInput } from "./components/ProblemInput";
 import { LessonView } from "./components/LessonView";
 import { HistoryDrawer } from "./components/HistoryDrawer";
@@ -10,8 +10,6 @@ import { useLesson } from "./hooks/useLesson";
 import { useHistory } from "./hooks/useHistory";
 import { useApiKey } from "./hooks/useApiKey";
 import { useI18n } from "./i18n/index.jsx";
-
-const accentClasses = getAccentClasses("math");
 
 export default function App() {
   const { t } = useI18n();
@@ -62,7 +60,7 @@ export default function App() {
         aria-hidden="true"
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          background: `radial-gradient(ellipse 90% 55% at 50% -5%, ${accentClasses.gradientBg} 0%, transparent 65%)`,
+          background: `radial-gradient(ellipse 90% 55% at 50% -5%, ${DEFAULT_ACCENT_CLASSES.gradientBg} 0%, transparent 65%)`,
         }}
       />
 
@@ -121,7 +119,7 @@ export default function App() {
               </svg>
               {history.length > 0 && (
                 <span
-                  className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${accentClasses.dot}`}
+                  className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${DEFAULT_ACCENT_CLASSES.dot}`}
                 />
               )}
             </button>
@@ -171,14 +169,14 @@ export default function App() {
           <div className="mb-10 space-y-8">
             <div className="space-y-3">
               <p
-                className={`text-xs font-semibold uppercase tracking-[0.2em] ${accentClasses.text}`}
+                className={`text-xs font-semibold uppercase tracking-[0.2em] ${DEFAULT_ACCENT_CLASSES.text}`}
               >
                 {t("app.aiTutor")}
               </p>
               <h1 className="font-mono font-bold text-3xl sm:text-4xl text-white leading-tight tracking-tight">
                 {t("app.heroTitle1")}
                 <br />
-                <span className={accentClasses.text}>
+                <span className={DEFAULT_ACCENT_CLASSES.text}>
                   {t("app.heroTitle2")}
                 </span>
               </h1>
@@ -191,7 +189,7 @@ export default function App() {
               onSubmit={handleSubmit}
               onCancel={reset}
               loading={loading}
-              accentClasses={accentClasses}
+              accentClasses={DEFAULT_ACCENT_CLASSES}
             />
           </div>
         )}
@@ -238,7 +236,7 @@ export default function App() {
           onNextStep={nextStep}
           onReset={reset}
           onCompleteChallenge={completeChallenge}
-          accentClasses={accentClasses}
+          accentClasses={DEFAULT_ACCENT_CLASSES}
         />
       </main>
 

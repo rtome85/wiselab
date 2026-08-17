@@ -1,23 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react'
 import { getSettings, saveSettings, hasStoredSettings } from '../lib/ollama'
-import { en } from './locales/en'
-import { pt } from './locales/pt'
-import { es } from './locales/es'
-import { fr } from './locales/fr'
-import { de } from './locales/de'
-
-const LOCALES = { EN: en, PT: pt, ES: es, FR: fr, DE: de }
-
-// Map browser language codes (BCP 47 prefix) to our language codes
-const BROWSER_LANG_MAP = { pt: 'PT', en: 'EN', es: 'ES', fr: 'FR', de: 'DE' }
-
-export const DATE_LOCALES = {
-  PT: 'pt-PT',
-  EN: 'en-GB',
-  ES: 'es-ES',
-  FR: 'fr-FR',
-  DE: 'de-DE',
-}
+import { BROWSER_LANG_MAP, LOCALES } from '../constants/i18n'
 
 function detectBrowserLanguage() {
   const nav = navigator.language || navigator.languages?.[0] || 'en'

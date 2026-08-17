@@ -1,23 +1,22 @@
 import { useState, useCallback } from 'react'
-
-const STORAGE_KEY = 'wiselab_api_key'
+import { API_KEY_STORAGE_KEY } from '../constants/storage'
 
 export function useApiKey() {
   const [apiKey, setApiKeyState] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) || ''
+    return localStorage.getItem(API_KEY_STORAGE_KEY) || ''
   })
 
   const setApiKey = useCallback((key) => {
     if (key) {
-      localStorage.setItem(STORAGE_KEY, key)
+      localStorage.setItem(API_KEY_STORAGE_KEY, key)
     } else {
-      localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem(API_KEY_STORAGE_KEY)
     }
     setApiKeyState(key || '')
   }, [])
 
   const clearApiKey = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(API_KEY_STORAGE_KEY)
     setApiKeyState('')
   }, [])
 

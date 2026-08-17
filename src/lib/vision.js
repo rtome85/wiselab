@@ -1,17 +1,6 @@
 import { getApiKey } from './ollama'
-
-const VISION_MODEL = 'ministral-3:3b-cloud'
-const API_URL = '/api/v1/chat/completions'
-
-const EXTRACTION_PROMPT = `You are an expert vision assistant for a math and science tutoring app.
-Analyze the image and respond using EXACTLY this format — two sections, nothing else:
-
-<<<TEXT>>>
-<the full problem or exercise text, exactly as written. Format ALL mathematical expressions using LaTeX notation: wrap inline expressions with $...$ (e.g. $x^2 + y^2 = r^2$) and wrap standalone/display equations with $$...$$ on their own line (e.g. $$\\int_0^1 f(x)\\,dx$$). Preserve the original text structure and wording.>
-<<<VISUAL>>>
-<a concise natural-language description of any visual elements: graphs (axes, labels, curve shape), geometric figures (shape names, labeled sides/angles), tables (column headers and values), diagrams (arrows, forces, labels). Write "none" if there are no visual elements.>
-
-If the image does not contain a math, science, or logic exercise, respond with exactly: NOT_A_PROBLEM`
+import { CHAT_COMPLETIONS_API_PATH } from '../constants/api'
+import { EXTRACTION_PROMPT, VISION_MODEL } from '../constants/vision'
 
 function parseExtractionResponse(raw) {
   const TEXT_TAG   = '<<<TEXT>>>'
@@ -41,7 +30,7 @@ function parseExtractionResponse(raw) {
  * @returns {Promise<string>} extracted text
  */
 export async function extractTextFromImage(base64Image, mimeType) {
-  const response = await fetch(API_URL, {
+  const response = await fetch(CHAT_COMPLETIONS_API_PATH, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

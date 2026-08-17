@@ -34,7 +34,7 @@ An AI-powered tutoring app that turns any math or science problem into an intera
 | Icons | Lucide React |
 | UI primitives | Radix UI (Dialog, Label, Slot) |
 | Lesson model | Ollama Cloud — `gemini-3-flash-preview:cloud` (default) |
-| Vision / OCR model | Ollama Cloud — `ministral-3:3b-cloud` (fixed) |
+| Vision / OCR model | Ollama Cloud — `gemma4:31b-cloud` (fixed) |
 | API protocol | OpenAI-compatible (`/v1/chat/completions`) |
 | Persistence | `localStorage` only — no backend, no database |
 
@@ -92,7 +92,7 @@ For production deployments you need a server-side proxy that forwards `/api/v1/*
 |---|---|---|---|
 | `VITE_OLLAMA_MODEL` | No | `gemini-3-flash-preview:cloud` | Ollama Cloud model identifier used for lesson generation. |
 
-The vision/OCR model (`ministral-3:3b-cloud`) is hardcoded in `src/lib/vision.js` and is not configurable via environment variable.
+The vision/OCR model is defined in `src/constants/vision.js` and is not configurable via environment variable.
 
 > Variables prefixed with `VITE_` are inlined into the browser bundle at build time by Vite. Do not store secrets here — use the runtime Settings drawer for the API key.
 
@@ -107,7 +107,7 @@ User input (text or images)
   [ProblemInput]
   - Text path  → passes raw string to generateLesson()
   - Image path → each file sent to extractTextFromImage()
-                 (ministral-3:3b-cloud vision model, parallel)
+                 (gemma4:31b-cloud vision model, parallel)
                  extracted texts joined with "---" separators
         |
         v
@@ -145,6 +145,12 @@ src/
     vision.js               extractTextFromImage() via vision model
     exportLesson.js         copyLesson() / downloadLesson() as plain text
     imageUtils.js           validateImageFile(), fileToBase64()
+  constants/
+    api.js                  API endpoint paths and upstream URLs
+    settings.js             model defaults, language/difficulty options
+    storage.js              localStorage keys
+    vision.js               OCR model and extraction prompt
+    subjects.js             subject metadata and accent classes
   hooks/
     useLesson.js            lesson state machine (steps, challenges, progress)
     useHistory.js           localStorage lesson history (read/save/delete)

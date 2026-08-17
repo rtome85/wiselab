@@ -2,29 +2,34 @@
 // and stored in localStorage — it is never baked into the bundle.
 // Requests are made directly from the browser; no server-side proxy is needed.
 
-const API_URL = "/api/v1/chat/completions";
-const DEFAULT_MODEL = "gemini-3-flash-preview:cloud";
+import { CHAT_COMPLETIONS_API_PATH } from '../constants/api'
+import {
+  DEFAULT_MODEL,
+  DEFAULT_SETTINGS,
+  DIFFICULTY_INSTRUCTIONS,
+  ESTIMATED_LESSON_CHARS,
+  LANGUAGE_NAMES,
+} from '../constants/settings'
+import {
+  API_KEY_STORAGE_KEY,
+  SETTINGS_STORAGE_KEY,
+} from '../constants/storage'
 
 export function getModel() {
   return import.meta.env.VITE_OLLAMA_MODEL || DEFAULT_MODEL;
 }
 
-const STORAGE_KEY = 'wiselab_api_key';
-const SETTINGS_KEY = 'wiselab_settings';
-
 export function getApiKey() {
-  return (localStorage.getItem(STORAGE_KEY) ?? '').trim();
+  return (localStorage.getItem(API_KEY_STORAGE_KEY) ?? '').trim();
 }
 
 export function hasApiKey() {
   return getApiKey() !== '';
 }
 
-export const DEFAULT_SETTINGS = { language: 'PT', difficulty: 'intermediate' };
-
 export function getSettings() {
   try {
-    const stored = localStorage.getItem(SETTINGS_KEY);
+    const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (stored) return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
   } catch {
     // ignore malformed data
@@ -33,25 +38,11 @@ export function getSettings() {
 }
 
 export function saveSettings(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
 }
 
 export function hasStoredSettings() {
-  return Boolean(localStorage.getItem(SETTINGS_KEY));
-}
-
-const LANGUAGE_NAMES = {
-  PT: 'European Portuguese (Portugal). Do not use Brazilian Portuguese variants.',
-  EN: 'English.',
-  ES: 'Spanish (Castilian).',
-  FR: 'French.',
-  DE: 'German.',
-}
-
-const DIFFICULTY_INSTRUCTIONS = {
-  beginner: 'Use simple language, avoid technical jargon, and rely on everyday analogies. Target audience: middle school student.',
-  intermediate: 'Use clear explanations with moderate technical terms. Target audience: high school or early university student.',
-  advanced: 'Use precise technical language and include deeper mathematical or conceptual rigour. Target audience: university or advanced student.',
+  return Boolean(localStorage.getItem(SETTINGS_STORAGE_KEY));
 }
 
 function buildSystemPrompt(language = 'PT', difficulty = 'intermediate') {
@@ -127,7 +118,7 @@ function repairJson(str) {
         // \", \\, \/, \n, \r, \t, \uXXXX
         // \b (backspace) and \f (form feed) are excluded because models
         // almost always mean \begin / \frac, not control characters.
-        if ('"\\\/nrtu'.includes(nx)) {
+        if ('"\\/nrtu'.includes(nx)) {
           out += ch + nx; i += 2;
         } else {
           // Bare LaTeX backslash (\frac, \begin, \omega, \b*, \f*…) — escape it
@@ -150,15 +141,13 @@ function repairJson(str) {
   return out;
 }
 
-const ESTIMATED_CHARS = 1500; // typical lesson JSON length
-
 export async function generateLesson(problem, onProgress) {
   const userMessage = `Problem: ${problem}`;
   const apiKey = getApiKey();
   const model = getModel();
   const { language, difficulty } = getSettings();
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(CHAT_COMPLETIONS_API_PATH, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -202,7 +191,7 @@ export async function generateLesson(problem, onProgress) {
         const chunk = JSON.parse(raw);
         const delta = chunk.choices?.[0]?.delta?.content ?? "";
         content += delta;
-        const pct = Math.min(Math.round((content.length / ESTIMATED_CHARS) * 90), 90);
+        const pct = Math.min(Math.round((content.length / ESTIMATED_LESSON_CHARS) * 90), 90);
         onProgress?.(pct);
       } catch {
         // malformed chunk — skip
@@ -288,7 +277,7 @@ export async function simplifyExplanation(stepTitle, stepExplanation) {
   const model = getModel();
   const { language } = getSettings();
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(CHAT_COMPLETIONS_API_PATH, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -356,7 +345,7 @@ ${stepContext.tip ? `Tip: ${stepContext.tip}` : ''}`
     content: `Step context:\n${contextText}\n\nStudent question: ${userMessage}`
   })
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(CHAT_COMPLETIONS_API_PATH, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

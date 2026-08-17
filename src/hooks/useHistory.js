@@ -1,11 +1,10 @@
 import { useState, useCallback } from 'react'
-
-const STORAGE_KEY = 'wiselab_history'
-const MAX_ITEMS = 10
+import { MAX_HISTORY_ITEMS } from '../constants/history'
+import { HISTORY_STORAGE_KEY } from '../constants/storage'
 
 function load() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    return JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || '[]')
   } catch {
     return []
   }
@@ -16,14 +15,14 @@ export function useHistory() {
 
   const persist = useCallback((items) => {
     setHistory(items)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(items))
   }, [])
 
   const saveLesson = useCallback(
     (entry) => {
       // entry shape: { id, subject, problem, lesson, createdAt }
       const current = load()
-      const updated = [entry, ...current].slice(0, MAX_ITEMS)
+      const updated = [entry, ...current].slice(0, MAX_HISTORY_ITEMS)
       persist(updated)
     },
     [persist]

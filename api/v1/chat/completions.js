@@ -9,7 +9,8 @@
  * it is never stored or logged here.
  */
 
-const UPSTREAM_URL = 'https://ollama.com/v1/chat/completions'
+import { Buffer } from 'node:buffer'
+import { OLLAMA_CHAT_COMPLETIONS_URL } from '../../../src/constants/api.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -24,7 +25,7 @@ export default async function handler(req, res) {
     }
     const body = Buffer.concat(chunks).toString('utf8')
 
-    const upstream = await fetch(UPSTREAM_URL, {
+    const upstream = await fetch(OLLAMA_CHAT_COMPLETIONS_URL, {
       method: 'POST',
       headers: {
         'authorization': req.headers['authorization'] ?? '',

@@ -1,6 +1,5 @@
 import katex from 'katex'
-
-const INLINE_MATH_RE = /\$([^$]+)\$/g
+import { INLINE_MATH_RE } from '../constants/math'
 
 export function MathText({ children, className = '' }) {
   if (!children) return null
@@ -8,10 +7,8 @@ export function MathText({ children, className = '' }) {
 
   const parts = []
   let lastIndex = 0
-  let match
 
-  INLINE_MATH_RE.lastIndex = 0
-  while ((match = INLINE_MATH_RE.exec(text)) !== null) {
+  for (const match of text.matchAll(INLINE_MATH_RE)) {
     if (match.index > lastIndex) {
       parts.push({ type: 'text', content: text.slice(lastIndex, match.index) })
     }
