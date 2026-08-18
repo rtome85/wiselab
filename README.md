@@ -2,7 +2,25 @@
 
 An AI-powered tutoring app that turns any math or science problem into an interactive, step-by-step lesson. Type a problem or photograph an exercise sheet — WiseLab generates a structured lesson with explanations, LaTeX-rendered formulas, and inline challenges.
 
-![Screenshot placeholder](docs/screenshot.png)
+![WiseLab hero screen](docs/screenshot.png)
+
+<table>
+  <tr>
+    <td><img src="docs/screenshot-challenge.png" alt="Lesson step with a rendered formula and answered mini-challenge" width="100%"></td>
+    <td><img src="docs/screenshot-final.png" alt="Completed lesson with final answer and real-world application" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Step-by-step lesson with a mini-challenge</sub></td>
+    <td align="center"><sub>Final answer + real-world application</sub></td>
+  </tr>
+</table>
+
+<details>
+<summary>Dark mode</summary>
+
+![WiseLab hero screen in dark mode](docs/screenshot-dark.png)
+
+</details>
 
 ---
 
@@ -19,6 +37,7 @@ An AI-powered tutoring app that turns any math or science problem into an intera
 - **Export** — copy or download any lesson as a plain-text file
 - **Multi-language** — lessons generated in PT, EN, ES, FR, or DE (configurable in Settings)
 - **Difficulty levels** — beginner / intermediate / advanced; affects vocabulary and depth of explanations
+- **Light/dark theme** — toggle in the header, persisted across sessions
 - **Runtime API key** — entered once in the Settings drawer and stored in `localStorage`; never baked into the bundle
 
 ---
@@ -52,7 +71,7 @@ No router, no global state library — all state is local React hooks and `local
 ### Install
 
 ```bash
-git clone https://github.com/your-org/wiselab.git
+git clone https://github.com/rtome85/wiselab.git
 cd wiselab
 npm install
 ```
@@ -127,7 +146,7 @@ User input (text or images)
         v
   [LessonView] — renders the lesson progressively
   - StepCard: explanation + KaTeX formula + ASCII visual + tip
-  - ChallengeCard: multiple-choice question with feedback
+             + inline Challenge (multiple-choice question with feedback)
   - FinalAnswer: answer + real-world application + export actions
 ```
 
@@ -142,29 +161,47 @@ src/
     ollama.js               generateLesson(), simplifyExplanation(),
                             askConfusedHelp(); settings/API key helpers;
                             repairJson() character-level JSON fixer
+    ollama.test.js          vitest coverage for repairJson() edge cases
     vision.js               extractTextFromImage() via vision model
-    exportLesson.js         copyLesson() / downloadLesson() as plain text
+    exportLesson.js         formatLessonMarkdown(), copyLesson(), downloadLesson()
     imageUtils.js           validateImageFile(), fileToBase64()
+    katexLoader.js          lazy-loads the KaTeX bundle on first use
+    collapsedStepLayout.js  layout math for the collapsed-step stack effect
   constants/
     api.js                  API endpoint paths and upstream URLs
     settings.js             model defaults, language/difficulty options
     storage.js              localStorage keys
     vision.js               OCR model and extraction prompt
-    subjects.js             subject metadata and accent classes
+    subjects.js             accent color classes (single brand accent)
+    history.js              max lesson history entries
+    i18n.js                 locale table, browser-language mapping, date locales
+    image.js                allowed image types, max upload size
+    math.js                 inline math ($...$) regex
+    ui.js                   focusable-element selector for focus trapping
   hooks/
     useLesson.js            lesson state machine (steps, challenges, progress)
     useHistory.js           localStorage lesson history (read/save/delete)
     useApiKey.js            API key read/write from localStorage
+    useImageInput.js        multi-image select/drop/camera + OCR extraction state
+    useConfusedChat.js      "I'm confused" conversation state per step
+    useKatex.js             lazy KaTeX instance for math components
+    useTheme.js             light/dark theme state, persisted
   components/
     ProblemInput.jsx        text + multi-image input, drag-and-drop, camera
+    ImageInput.jsx          image picker/drop-zone UI used by ProblemInput
     LessonView.jsx          step orchestration, skeleton loading states
-    StepCard.jsx            single step (locked / active / completed)
-    ChallengeCard.jsx       multiple-choice challenge with answer feedback
+    StepCard.jsx            single step (locked / active / completed) +
+                            inline Challenge (multiple-choice, answer feedback)
+    ProgressBar.jsx         step progress indicator
     FinalAnswer.jsx         final answer, real-world section, export buttons
+    ConfusedChat.jsx        "I'm confused" chat panel for a step
     MathText.jsx            inline KaTeX renderer — parses $...$ in strings
+    MathBlock.jsx           display-mode KaTeX renderer for the formula field
+    MathContent.jsx         renders text containing $$...$$ display-math blocks
     HistoryDrawer.jsx       slide-in past lessons panel
     SettingsDrawer.jsx      language, difficulty, and API key configuration
-    SubjectSelector.jsx     subject picker; exports getAccentClasses()
+    ThemeToggle.jsx         light/dark theme switch
+    ui/                     Button, Input, Label, Sheet — shared primitives
   i18n/
     index.jsx               i18n context provider and useI18n() hook
     locales/                pt.js  en.js  es.js  fr.js  de.js
@@ -192,7 +229,8 @@ The AI is instructed to return strict JSON. `generateLesson()` validates the par
         "type": "multiple_choice",
         "question": "string",
         "options": ["string", "string", "string", "string"],
-        "correct": 0
+        "correct": 0,
+        "explanations": ["string", "string", "string", "string"]
       } | null
     }
   ],
@@ -211,6 +249,7 @@ The AI is instructed to return strict JSON. `generateLesson()` validates the par
 | `npm run build` | Production build to `dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm run lint` | Run ESLint |
+| `npm run test` | Run the vitest suite |
 
 ---
 
@@ -221,7 +260,7 @@ The AI is instructed to return strict JSON. `generateLesson()` validates the par
 3. Commit: `git commit -m 'feat: describe your change'`
 4. Push and open a pull request
 
-Run `npm run lint && npm run build` before submitting to verify nothing is broken.
+Run `npm run lint && npm run test && npm run build` before submitting to verify nothing is broken.
 
 ---
 
