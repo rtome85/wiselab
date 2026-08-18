@@ -85,6 +85,7 @@ export const de = {
     generating: 'Wird generiert...',
     nextStep: 'Nächster Schritt',
     viewAnswer: 'Endantwort anzeigen',
+    goToStep: 'Zurück zu Schritt {number}: {title}',
   },
   finalAnswer: {
     completed: 'Lektion abgeschlossen',

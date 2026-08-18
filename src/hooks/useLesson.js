@@ -18,6 +18,7 @@ export function useLesson() {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState(null)
   const [activeStep, setActiveStep] = useState(0)
+  const [maxStepReached, setMaxStepReached] = useState(0)
   const [completedSteps, setCompletedSteps] = useState(new Set())
   const [showAnswer, setShowAnswer] = useState(false)
   const [challengeCompleted, setChallengeCompleted] = useState(new Set())
@@ -29,6 +30,7 @@ export function useLesson() {
     setError(null)
     setLesson(null)
     setActiveStep(0)
+    setMaxStepReached(0)
     setCompletedSteps(new Set())
     setShowAnswer(false)
     setChallengeCompleted(new Set())
@@ -48,6 +50,7 @@ export function useLesson() {
     clearConfusedConversations()
     setLesson(lessonData)
     setActiveStep(0)
+    setMaxStepReached(0)
     setCompletedSteps(new Set())
     setShowAnswer(false)
     setChallengeCompleted(new Set())
@@ -72,6 +75,13 @@ export function useLesson() {
     return challengeCompleted.has(stepIndex)
   }, [lesson, challengeCompleted])
 
+  const goToStep = useCallback((stepIndex) => {
+    if (!lesson) return
+    if (stepIndex < 0 || stepIndex > maxStepReached) return
+    setActiveStep(stepIndex)
+    setShowAnswer(false)
+  }, [lesson, maxStepReached])
+
   const nextStep = useCallback(() => {
     if (!lesson) return
     if (!canProceed(activeStep)) return
@@ -83,7 +93,9 @@ export function useLesson() {
     })
 
     if (activeStep < lesson.steps.length - 1) {
-      setActiveStep((prev) => prev + 1)
+      const nextIndex = activeStep + 1
+      setActiveStep(nextIndex)
+      setMaxStepReached((prev) => Math.max(prev, nextIndex))
     } else {
       setShowAnswer(true)
     }
@@ -95,6 +107,7 @@ export function useLesson() {
     setLoading(false)
     setError(null)
     setActiveStep(0)
+    setMaxStepReached(0)
     setCompletedSteps(new Set())
     setShowAnswer(false)
     setChallengeCompleted(new Set())
@@ -106,6 +119,7 @@ export function useLesson() {
     progress,
     error,
     activeStep,
+    maxStepReached,
     completedSteps,
     showAnswer,
     challengeCompleted,
@@ -114,6 +128,7 @@ export function useLesson() {
     generate,
     restore,
     nextStep,
+    goToStep,
     reset,
     completeChallenge,
   }

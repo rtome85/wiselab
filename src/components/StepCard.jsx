@@ -1,16 +1,51 @@
-/* Locked placeholder — bordered card with skeleton copy, matching upcoming steps in the design */
-function LockedStep({ index }) {
+/* Collapsed stack card — compact summary for a completed step tucked behind the active card */
+const COLLAPSED_HEIGHT = 56
+
+// How much of a collapsed card stays visible (its header) once the card in front of it overlaps it.
+export function collapsedPeek(depth) {
+  return Math.max(44 - (depth - 1) * 8, 16)
+}
+
+// Negative margin (toward the neighbor in front) needed to produce that peek.
+export function collapsedOverlap(depth) {
+  return -(COLLAPSED_HEIGHT - collapsedPeek(depth))
+}
+
+export function CollapsedStepCard({ step, index, depth, isFirst, side, isCompleted, accentClasses, onClick }) {
+  const { t } = useI18n()
+  const scale = Math.max(1 - depth * 0.03, 0.9)
+  const opacity = Math.max(1 - depth * 0.12, 0.45)
+
   return (
-    <div className="flex items-start gap-3 px-5 py-4 rounded-3xl border border-border bg-surface">
-      <div className="w-6 h-6 rounded-full border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-[10px] text-accent font-bold">{index + 1}</span>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={t('lesson.goToStep', { number: index + 1, title: step.title })}
+      className="relative w-full h-14 flex items-center gap-3 px-5 rounded-3xl border border-border bg-surface
+                 transition-all duration-300 ease-out cursor-pointer hover:brightness-[0.98] focus-ring"
+      style={{
+        marginTop: isFirst ? 0 : collapsedOverlap(depth),
+        zIndex: 40 - depth,
+        transform: `scale(${scale})`,
+        opacity,
+        transformOrigin: side === 'below' ? 'top center' : 'bottom center',
+      }}
+    >
+      <div
+        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 border ${
+          isCompleted ? `${accentClasses.badge} border-transparent` : 'bg-control border-border'
+        }`}
+      >
+        {isCompleted ? (
+          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ) : (
+          <span className="text-[10px] font-bold">{index + 1}</span>
+        )}
       </div>
-      <div className="flex-1 space-y-2 pt-0.5">
-        <div className="h-2.5 rounded skeleton w-2/3" />
-        <div className="h-2 rounded skeleton w-full" />
-        <div className="h-2 rounded skeleton w-4/5" />
-      </div>
-    </div>
+      <h3 className="font-bold text-ink text-sm truncate">{step.title}</h3>
+    </button>
   )
 }
 
@@ -270,7 +305,6 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
 
 export function StepCard({ step, index, isActive, isCompleted, accentClasses, challengeCompleted, onCompleteChallenge }) {
   const { t } = useI18n()
-  const isVisible = isActive || isCompleted
   const [tutorNudge, setTutorNudge] = useState({ signal: 0, prefill: '' })
 
   const handleAskTutor = (challenge) => {
@@ -279,8 +313,6 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
       prefill: t('chat.challengeHelpPrompt', { question: challenge.question }),
     })
   }
-
-  if (!isVisible) return <LockedStep index={index} />
 
   return (
     <div

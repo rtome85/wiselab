@@ -1,4 +1,4 @@
-import { StepCard } from './StepCard'
+import { StepCard, CollapsedStepCard, collapsedOverlap } from './StepCard'
 import { FinalAnswer } from './FinalAnswer'
 import { ProgressBar } from './ProgressBar'
 import { useI18n } from '../i18n/index.jsx'
@@ -55,11 +55,13 @@ export function LessonView({
   progress = 0,
   error,
   activeStep,
+  maxStepReached,
   completedSteps,
   showAnswer,
   challengeCompleted,
   canProceed,
   onNextStep,
+  onGoToStep,
   onReset,
   onCompleteChallenge,
   accentClasses,
@@ -73,6 +75,14 @@ export function LessonView({
   const totalSteps = lesson.steps.length
   const completedCount = completedSteps.size
 
+  // Steps already visited before the active one (fanned above it) and steps already visited
+  // after it — including the step you were just on — fanned below it after navigating back.
+  const beforeIndices = Array.from({ length: activeStep }, (_, i) => i)
+  const afterIndices = Array.from(
+    { length: Math.max(maxStepReached - activeStep, 0) },
+    (_, i) => activeStep + 1 + i
+  )
+
   return (
     <div className="space-y-5 animate-fadeIn">
       {/* Lesson title + progress */}
@@ -85,21 +95,49 @@ export function LessonView({
         />
       </div>
 
-      {/* Steps — vertical stepper layout */}
-      <div className="relative space-y-3">
-        {/* Vertical connector line behind the cards */}
-        <div className="absolute left-[22px] top-7 bottom-7 w-px bg-border pointer-events-none" />
-
-        {lesson.steps.map((step, index) => (
-          <StepCard
+      {/* Steps — stacked deck layout: active card in the middle, completed cards fanned out
+          above (earlier steps) and below (later steps you've already done but navigated away from) */}
+      <div className="relative">
+        {beforeIndices.map((index) => (
+          <CollapsedStepCard
             key={index}
-            step={step}
+            step={lesson.steps[index]}
             index={index}
-            isActive={index === activeStep && !showAnswer}
+            depth={activeStep - index}
+            isFirst={index === 0}
+            side="above"
             isCompleted={completedSteps.has(index)}
+            accentClasses={accentClasses}
+            onClick={() => onGoToStep?.(index)}
+          />
+        ))}
+
+        <div
+          className="relative"
+          style={{ zIndex: 50, marginTop: beforeIndices.length ? collapsedOverlap(1) : 0 }}
+        >
+          <StepCard
+            step={lesson.steps[activeStep]}
+            index={activeStep}
+            isActive={!showAnswer}
+            isCompleted={completedSteps.has(activeStep)}
             accentClasses={accentClasses}
             challengeCompleted={challengeCompleted}
             onCompleteChallenge={onCompleteChallenge}
+          />
+        </div>
+
+        {afterIndices.map((index) => (
+          <CollapsedStepCard
+            key={index}
+            step={lesson.steps[index]}
+            index={index}
+            depth={index - activeStep}
+            isFirst={false}
+            side="below"
+            isCompleted={completedSteps.has(index)}
+            accentClasses={accentClasses}
+            onClick={() => onGoToStep?.(index)}
           />
         ))}
       </div>

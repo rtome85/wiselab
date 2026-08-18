@@ -25,6 +25,7 @@ export default function App() {
     progress,
     error,
     activeStep,
+    maxStepReached,
     completedSteps,
     showAnswer,
     challengeCompleted,
@@ -32,6 +33,7 @@ export default function App() {
     generate,
     restore,
     nextStep,
+    goToStep,
     reset,
     completeChallenge,
   } = useLesson();
@@ -227,11 +229,13 @@ export default function App() {
           progress={progress}
           error={null}
           activeStep={activeStep}
+          maxStepReached={maxStepReached}
           completedSteps={completedSteps}
           showAnswer={showAnswer}
           challengeCompleted={challengeCompleted}
           canProceed={canProceed}
           onNextStep={nextStep}
+          onGoToStep={goToStep}
           onReset={reset}
           onCompleteChallenge={completeChallenge}
           accentClasses={DEFAULT_ACCENT_CLASSES}
