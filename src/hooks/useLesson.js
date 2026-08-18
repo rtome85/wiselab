@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { generateLesson } from '../lib/ollama'
 import { clearConfusedConversations } from './useConfusedChat'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 const ERROR_CODE_KEYS = {
   auth: 'errors.auth',

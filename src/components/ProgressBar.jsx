@@ -1,4 +1,4 @@
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 export function ProgressBar({ current, total, accentClasses }) {
   const { t } = useI18n()

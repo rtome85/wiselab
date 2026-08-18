@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 import { validateImageFile, fileToBase64 } from '../lib/imageUtils'
 import { extractTextFromImage } from '../lib/vision'
 

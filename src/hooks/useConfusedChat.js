@@ -16,8 +16,10 @@ export function useConfusedChat() {
   useEffect(() => {
     // Lesson state is not persisted across page refreshes, so any stored
     // chat data is stale — clear it on mount instead of loading it back.
+    // conversationCache is only ever assigned {}, so the initial useState
+    // above already seeds `conversations` correctly; this just clears the
+    // external sessionStorage copy.
     clearConfusedConversations()
-    setConversations({})
   }, [])
 
   useEffect(() => {

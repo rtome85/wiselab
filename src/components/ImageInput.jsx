@@ -1,5 +1,5 @@
 import { useImageInput } from '../hooks/useImageInput'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 export default function ImageInput({ onExtracted, onClose }) {
   const { t } = useI18n()

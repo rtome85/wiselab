@@ -7,7 +7,7 @@ import { cn } from '../utils/cn'
 import { LANGUAGE_OPTIONS, DIFFICULTY_OPTIONS } from '../constants/settings'
 import { FOCUSABLE_SELECTOR } from '../constants/ui'
 import { getModel, getSettings, saveSettings } from '../lib/ollama'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 function TestResult({ status, message }) {
   if (!status) return null
