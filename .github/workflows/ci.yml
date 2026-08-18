@@ -16,6 +16,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-        continue-on-error: true # pre-existing lint errors on main unrelated to this change; not a merge gate yet
       - run: npm test
       - run: npm run build
