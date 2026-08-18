@@ -85,6 +85,7 @@ export const es = {
     generating: 'Generando...',
     nextStep: 'Siguiente paso',
     viewAnswer: 'Ver respuesta final',
+    goToStep: 'Volver al paso {number}: {title}',
   },
   finalAnswer: {
     completed: 'Lección completada',
