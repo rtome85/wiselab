@@ -11,7 +11,7 @@ import { useLesson } from "./hooks/useLesson";
 import { useHistory } from "./hooks/useHistory";
 import { useApiKey } from "./hooks/useApiKey";
 import { useTheme } from "./hooks/useTheme";
-import { useI18n } from "./i18n/index.jsx";
+import { useI18n } from "./i18n/useI18n";
 
 export default function App() {
   const { t } = useI18n();

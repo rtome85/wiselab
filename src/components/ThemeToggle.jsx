@@ -1,5 +1,5 @@
 import { Sun, Moon } from 'lucide-react'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 export function ThemeToggle({ theme, onToggle }) {
   const { t } = useI18n()

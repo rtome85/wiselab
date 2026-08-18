@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { MathText } from './MathText'
-import { askConfusedHelp } from '../lib/ollama'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 function MessageBubble({ message }) {
   const isUser = message.role === 'user'

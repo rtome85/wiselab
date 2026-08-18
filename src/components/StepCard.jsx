@@ -1,15 +1,4 @@
-/* Collapsed stack card — compact summary for a completed step tucked behind the active card */
-const COLLAPSED_HEIGHT = 56
-
-// How much of a collapsed card stays visible (its header) once the card in front of it overlaps it.
-export function collapsedPeek(depth) {
-  return Math.max(44 - (depth - 1) * 8, 16)
-}
-
-// Negative margin (toward the neighbor in front) needed to produce that peek.
-export function collapsedOverlap(depth) {
-  return -(COLLAPSED_HEIGHT - collapsedPeek(depth))
-}
+import { collapsedOverlap } from '../lib/collapsedStepLayout'
 
 export function CollapsedStepCard({ step, index, depth, isFirst, side, isCompleted, accentClasses, onClick }) {
   const { t } = useI18n()
@@ -49,13 +38,13 @@ export function CollapsedStepCard({ step, index, depth, isFirst, side, isComplet
   )
 }
 
-import { useState, useEffect, useId } from 'react'
+import { useState, useId } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
 import { simplifyExplanation, askConfusedHelp } from '../lib/ollama'
 import { useConfusedChat } from '../hooks/useConfusedChat'
 import { ConfusedChat } from './ConfusedChat'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 function SimplifyButton({ stepTitle, stepExplanation }) {
   const { t } = useI18n()
@@ -147,7 +136,7 @@ function ConfusedChatWrapper({ stepIndex, stepContext, forceOpenSignal, prefillM
         ...prev,
         [idx]: [...(prev[idx] || []), { role: 'assistant', content: response }]
       }))
-    } catch (err) {
+    } catch {
       setConversations(prev => ({
         ...prev,
         [idx]: [
@@ -179,12 +168,6 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
-
-  useEffect(() => {
-    setSelected(null)
-    setShowResult(false)
-    setIsCorrect(false)
-  }, [challenge])
 
   const handleSelect = (index) => {
     if (showResult) return
@@ -375,6 +358,7 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
         {/* Challenge */}
         {isActive && step.challenge && !challengeCompleted?.has(index) && (
           <Challenge
+            key={step.challenge.question}
             challenge={step.challenge}
             onComplete={() => onCompleteChallenge?.(index)}
             onAskTutor={handleAskTutor}

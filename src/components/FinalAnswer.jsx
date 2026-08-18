@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { MathText } from './MathText'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 import { copyLesson, downloadLesson } from '../lib/exportLesson'
 
 export function FinalAnswer({ lesson, accentClasses, onReset }) {

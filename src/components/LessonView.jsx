@@ -1,7 +1,8 @@
-import { StepCard, CollapsedStepCard, collapsedOverlap } from './StepCard'
+import { StepCard, CollapsedStepCard } from './StepCard'
+import { collapsedOverlap } from '../lib/collapsedStepLayout'
 import { FinalAnswer } from './FinalAnswer'
 import { ProgressBar } from './ProgressBar'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 function GeneratingView({ progress = 0, accentClasses }) {
   const { t } = useI18n()

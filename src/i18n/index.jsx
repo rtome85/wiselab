@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { getSettings, saveSettings, hasStoredSettings } from '../lib/ollama'
 import { BROWSER_LANG_MAP, LOCALES } from '../constants/i18n'
+import { I18nContext } from './context'
 
 function detectBrowserLanguage() {
   const nav = navigator.language || navigator.languages?.[0] || 'en'
@@ -11,8 +12,6 @@ function detectBrowserLanguage() {
 function resolvePath(obj, path) {
   return path.split('.').reduce((o, k) => o?.[k], obj)
 }
-
-const I18nContext = createContext(null)
 
 export function I18nProvider({ children }) {
   const [language, setLanguageState] = useState(() => {
@@ -43,10 +42,4 @@ export function I18nProvider({ children }) {
       {children}
     </I18nContext.Provider>
   )
-}
-
-export function useI18n() {
-  const ctx = useContext(I18nContext)
-  if (!ctx) throw new Error('useI18n must be used within I18nProvider')
-  return ctx
 }
