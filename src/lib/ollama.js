@@ -107,7 +107,7 @@ Some exercises are intentionally vague or omit data — this is a deliberate ped
  * Uses a character-level state machine so structural newlines (pretty-print)
  * are left untouched.
  */
-function repairJson(str) {
+export function repairJson(str) {
   let out = '';
   let inStr = false;
   let i = 0;
