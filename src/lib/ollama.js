@@ -118,13 +118,17 @@ function repairJson(str) {
         const nx = str[i + 1];
         if (nx === undefined) { out += ch; i++; continue; }
         // Pass through only JSON escapes that are never ambiguous with LaTeX:
-        // \", \\, \/, \n, \r, \t, \uXXXX
-        // \b (backspace) and \f (form feed) are excluded because models
-        // almost always mean \begin / \frac, not control characters.
-        if ('"\\/nrtu'.includes(nx)) {
+        // \", \\, \/, \n
+        // \b, \f, \r, \t, \u are excluded because models almost always mean
+        // \begin, \frac, \rho/\right, \tau/\theta/\times/\to, \underline/\uparrow —
+        // not control characters or unicode escapes.
+        // \n stays safe: multi-line ASCII "visual" content relies on genuine
+        // \n line breaks, and excluding it would corrupt that far more often
+        // than it would catch \nu/\nabla/\neq.
+        if ('"\\/n'.includes(nx)) {
           out += ch + nx; i += 2;
         } else {
-          // Bare LaTeX backslash (\frac, \begin, \omega, \b*, \f*…) — escape it
+          // Bare LaTeX backslash (\frac, \begin, \omega, \b*, \f*, \r*, \t*, \u*…) — escape it
           out += '\\\\' + nx; i += 2;
         }
       } else if (ch === '"') {
