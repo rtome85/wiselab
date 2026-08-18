@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { DATE_LOCALES } from '../constants/i18n'
-import { useI18n } from '../i18n/index.jsx'
+import { useI18n } from '../i18n/useI18n'
 
 function EmptyState({ t }) {
   return (
