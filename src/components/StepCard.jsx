@@ -252,14 +252,14 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
           {!isCorrect && selectedExplanation && (
             <p className="text-sm text-red-700 dark:text-red-200/80 leading-relaxed">
               <span className="font-extrabold mr-1">{String.fromCharCode(65 + selected)}.</span>
-              {selectedExplanation}
+              <MathText>{selectedExplanation}</MathText>
             </p>
           )}
 
           {correctExplanation && (
             <p className="text-sm text-muted leading-relaxed">
               <span className="font-extrabold text-ink mr-1">{String.fromCharCode(65 + challenge.correct)}.</span>
-              {correctExplanation}
+              <MathText>{correctExplanation}</MathText>
             </p>
           )}
 
