@@ -14,7 +14,7 @@ function LockedStep({ index }) {
   )
 }
 
-import { useState, useRef, useEffect, useId } from 'react'
+import { useState, useEffect, useId } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
 import { simplifyExplanation, askConfusedHelp } from '../lib/ollama'
@@ -144,25 +144,12 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
-  const timeoutRef = useRef(null)
 
   useEffect(() => {
     setSelected(null)
     setShowResult(false)
     setIsCorrect(false)
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
   }, [challenge])
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
 
   const handleSelect = (index) => {
     if (showResult) return
@@ -171,22 +158,12 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
 
   const handleSubmit = () => {
     if (selected === null) return
-    const correct = selected === challenge.correct
-    setIsCorrect(correct)
+    setIsCorrect(selected === challenge.correct)
     setShowResult(true)
-    if (correct) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-      timeoutRef.current = setTimeout(() => onComplete(), 600)
-    }
   }
 
-  const handleRetry = () => {
-    setSelected(null)
-    setShowResult(false)
-    setIsCorrect(false)
-  }
+  const selectedExplanation = challenge.explanations?.[selected]
+  const correctExplanation = challenge.explanations?.[challenge.correct]
 
   return (
     <div className="mt-4 p-4 rounded-[18px] bg-peach">
@@ -242,28 +219,49 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
           {t('step.verify')}
         </button>
       )}
-      {showResult && !isCorrect && (
-        <div role="status" className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="sr-only">{t('step.incorrect')}</span>
-          <button
-            onClick={handleRetry}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-control text-muted hover:text-ink hover:bg-border/60 transition-all duration-200"
+      {showResult && (
+        <div className="mt-3 space-y-2.5">
+          <div
+            role="status"
+            className={`flex items-center gap-2 text-sm font-semibold ${
+              isCorrect ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-600 dark:text-red-300'
+            }`}
           >
-            {t('step.tryAgain')}
-          </button>
-          <button
-            onClick={() => onAskTutor?.(challenge)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-violet-700 dark:text-violet-200 bg-violet-500/10 hover:bg-violet-500/20 transition-all duration-200"
-          >
-            <span>❓</span>
-            <span>{t('step.stillNotSure')}</span>
-          </button>
-        </div>
-      )}
-      {showResult && isCorrect && (
-        <div role="status" className="mt-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-sm">
-          <span>✓</span>
-          <span>{t('step.correct')}</span>
+            <span>{isCorrect ? '✓' : '✗'}</span>
+            <span>{isCorrect ? t('step.correct') : t('step.incorrect')}</span>
+          </div>
+
+          {!isCorrect && selectedExplanation && (
+            <p className="text-sm text-red-700 dark:text-red-200/80 leading-relaxed">
+              <span className="font-extrabold mr-1">{String.fromCharCode(65 + selected)}.</span>
+              {selectedExplanation}
+            </p>
+          )}
+
+          {correctExplanation && (
+            <p className="text-sm text-muted leading-relaxed">
+              <span className="font-extrabold text-ink mr-1">{String.fromCharCode(65 + challenge.correct)}.</span>
+              {correctExplanation}
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <button
+              onClick={onComplete}
+              className="px-4 py-2 rounded-lg text-sm font-semibold bg-accent text-white dark:text-app hover:opacity-90 transition-all duration-200"
+            >
+              {t('step.continue')}
+            </button>
+            {!isCorrect && (
+              <button
+                onClick={() => onAskTutor?.(challenge)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-violet-700 dark:text-violet-200 bg-violet-500/10 hover:bg-violet-500/20 transition-all duration-200"
+              >
+                <span>❓</span>
+                <span>{t('step.stillNotSure')}</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

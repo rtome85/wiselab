@@ -70,7 +70,8 @@ The JSON must follow this exact structure:
         "type": "multiple_choice",
         "question": "A question testing understanding of this step",
         "options": ["Option A", "Option B", "Option C", "Option D"],
-        "correct": 0
+        "correct": 0,
+        "explanations": ["Why option A is right/wrong", "Why option B is right/wrong", "Why option C is right/wrong", "Why option D is right/wrong"]
       } or null
     }
   ],
@@ -87,6 +88,7 @@ Rules:
 - In formula field: write raw LaTeX without $ delimiters (e.g. "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
 - In text fields (explanation, tip, final_answer): wrap inline math with $...$ (e.g. "using $F = ma$")
 - challenge: Add a challenge every 3-4 steps (at steps with index 2, 5, etc. — roughly every third step). Set to null for other steps. The challenge tests understanding of the current step's content. Use multiple_choice type with 4 options (index 0-3). Make questions require applying the concept, not just recalling a number.
+- challenge.explanations: one sentence per option, same order as options, written directly to the student (e.g. "Correct — ..." or "Not quite — ..."). Explain the reasoning, not just restate the option. These are shown immediately after the student answers, so they must stand alone without another API call.
 
 Handling incomplete or ambiguous problems:
 Some exercises are intentionally vague or omit data — this is a deliberate pedagogical choice to test the student's critical thinking and attention. When you detect this:
@@ -268,6 +270,16 @@ export async function generateLesson(problem, onProgress) {
 
       if (!isValid) {
         step.challenge = null
+        continue
+      }
+
+      const hasValidExplanations =
+        Array.isArray(c.explanations) &&
+        c.explanations.length === c.options.length &&
+        c.explanations.every(exp => typeof exp === 'string' && exp.trim().length > 0)
+
+      if (!hasValidExplanations) {
+        c.explanations = null
       }
     }
   }
