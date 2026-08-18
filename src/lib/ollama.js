@@ -83,6 +83,7 @@ Rules:
 - 3 to 6 steps, each building on the previous
 - Keep explanations concise and clear
 - Use ASCII visuals for geometry, graphs, or tables when helpful
+- The visual field is for ASCII art only (arrows, boxes, tables, plotted axes) — never put LaTeX or math notation there. Numeric substitutions and calculations belong in the formula field or as inline $...$ math in explanation
 - The final_answer should be complete and clear
 - real_world should be brief and relatable
 - In formula field: write raw LaTeX without $ delimiters (e.g. "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
@@ -117,13 +118,17 @@ function repairJson(str) {
         const nx = str[i + 1];
         if (nx === undefined) { out += ch; i++; continue; }
         // Pass through only JSON escapes that are never ambiguous with LaTeX:
-        // \", \\, \/, \n, \r, \t, \uXXXX
-        // \b (backspace) and \f (form feed) are excluded because models
-        // almost always mean \begin / \frac, not control characters.
-        if ('"\\/nrtu'.includes(nx)) {
+        // \", \\, \/, \n
+        // \b, \f, \r, \t, \u are excluded because models almost always mean
+        // \begin, \frac, \rho/\right, \tau/\theta/\times/\to, \underline/\uparrow —
+        // not control characters or unicode escapes.
+        // \n stays safe: multi-line ASCII "visual" content relies on genuine
+        // \n line breaks, and excluding it would corrupt that far more often
+        // than it would catch \nu/\nabla/\neq.
+        if ('"\\/n'.includes(nx)) {
           out += ch + nx; i += 2;
         } else {
-          // Bare LaTeX backslash (\frac, \begin, \omega, \b*, \f*…) — escape it
+          // Bare LaTeX backslash (\frac, \begin, \omega, \b*, \f*, \r*, \t*, \u*…) — escape it
           out += '\\\\' + nx; i += 2;
         }
       } else if (ch === '"') {
@@ -231,12 +236,13 @@ export async function generateLesson(problem, onProgress) {
 
   let lesson;
   try {
-    lesson = JSON.parse(content);
+    // Bare LaTeX backslashes (e.g. \frac) are valid JSON escapes for control
+    // characters (\f = form feed), so a naive JSON.parse succeeds silently
+    // with corrupted values instead of throwing. Always repair first.
+    lesson = JSON.parse(repairJson(content));
   } catch {
-    // First parse failed. Apply character-level repairs (literal newlines inside
-    // strings, bare LaTeX backslashes) without touching structural whitespace.
     try {
-      lesson = JSON.parse(repairJson(content));
+      lesson = JSON.parse(content);
     } catch {
       throw apiError('malformed', 'Response is not valid JSON.');
     }

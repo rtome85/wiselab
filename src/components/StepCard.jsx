@@ -358,7 +358,9 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
         {/* ASCII Visual */}
         {step.visual && (
           <div className="rounded-xl bg-control border border-border overflow-x-auto">
-            <pre className="px-4 py-3 font-mono text-xs text-ink leading-relaxed whitespace-pre">{step.visual}</pre>
+            <pre className="px-4 py-3 font-mono text-xs text-ink leading-relaxed whitespace-pre">
+              <MathText>{step.visual}</MathText>
+            </pre>
           </div>
         )}
 
