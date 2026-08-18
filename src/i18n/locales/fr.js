@@ -126,9 +126,9 @@ export const fr = {
   step: {
     challenge: 'Mini-défi',
     verify: 'Vérifier la réponse',
-    tryAgain: 'Réessayer',
+    continue: 'Continuer',
     correct: 'Correct !',
-    incorrect: 'Pas tout à fait — réessaie.',
+    incorrect: 'Pas tout à fait.',
     simplify: 'Simplifier',
     simpleVersion: 'Version Simple',
     simplifyError: 'Erreur lors de la simplification.',
