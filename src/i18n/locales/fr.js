@@ -128,6 +128,7 @@ export const fr = {
     verify: 'Vérifier la réponse',
     tryAgain: 'Réessayer',
     correct: 'Correct !',
+    incorrect: 'Pas tout à fait — réessaie.',
     simplify: 'Simplifier',
     simpleVersion: 'Version Simple',
     simplifyError: 'Erreur lors de la simplification.',

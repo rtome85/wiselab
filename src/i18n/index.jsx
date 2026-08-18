@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { getSettings, saveSettings, hasStoredSettings } from '../lib/ollama'
 import { BROWSER_LANG_MAP, LOCALES } from '../constants/i18n'
 
@@ -24,6 +24,10 @@ export function I18nProvider({ children }) {
     setLanguageState(code)
     saveSettings({ ...getSettings(), language: code })
   }, [])
+
+  useEffect(() => {
+    document.documentElement.lang = language.toLowerCase()
+  }, [language])
 
   const t = useCallback((key, vars = {}) => {
     const locale = LOCALES[language] ?? LOCALES.EN
