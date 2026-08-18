@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-18T11:06:48Z",
+  "title": "Design System: WiseLab",
+  "extensions": {
+    "colorMeta": {
+      "coral-spark": { "role": "primary", "displayName": "Coral Spark", "canonical": "oklch(65% 0.19 25)", "tonalRamp": ["oklch(15% 0.05 25)", "oklch(28% 0.10 25)", "oklch(40% 0.14 25)", "oklch(52% 0.17 25)", "oklch(65% 0.19 25)", "oklch(75% 0.16 25)", "oklch(85% 0.10 25)", "oklch(95% 0.03 25)"] },
+      "seafoam-calm": { "role": "secondary", "displayName": "Seafoam Calm", "canonical": "oklch(62% 0.09 185)", "tonalRamp": ["oklch(15% 0.02 185)", "oklch(28% 0.04 185)", "oklch(40% 0.06 185)", "oklch(52% 0.08 185)", "oklch(62% 0.09 185)", "oklch(72% 0.08 185)", "oklch(85% 0.05 185)", "oklch(95% 0.02 185)"] },
+      "challenge-peach": { "role": "tertiary", "displayName": "Challenge Peach", "canonical": "oklch(96% 0.03 60)" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "oklch(20% 0.04 250)", "tonalRamp": ["oklch(12% 0.03 250)", "oklch(20% 0.04 250)", "oklch(32% 0.035 250)", "oklch(45% 0.03 250)", "oklch(58% 0.025 250)", "oklch(70% 0.02 250)", "oklch(85% 0.01 250)", "oklch(96% 0.005 250)"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#ffffff" },
+      "app-bg": { "role": "neutral", "displayName": "App Background", "canonical": "oklch(98% 0.005 220)" },
+      "success": { "role": "semantic-success", "displayName": "Success (emerald-500)", "canonical": "#10b981" },
+      "error": { "role": "semantic-error", "displayName": "Error (red-500)", "canonical": "#ef4444" },
+      "tip-amber": { "role": "semantic-tip", "displayName": "Tip (amber-500)", "canonical": "#f59e0b" },
+      "assistant-violet": { "role": "semantic-assistant", "displayName": "Assistant (violet-500)", "canonical": "#8b5cf6" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Idle-state hero question only." },
+      "headline": { "displayName": "Headline", "purpose": "Generated lesson title." },
+      "title": { "displayName": "Title", "purpose": "Step card heading." },
+      "body": { "displayName": "Body", "purpose": "Explanations, tips, chat, descriptions." },
+      "label": { "displayName": "Label", "purpose": "Uppercase section eyebrows." },
+      "mono": { "displayName": "Mono", "purpose": "Literal fragments: shortcuts, counts, ASCII visuals." }
+    },
+    "shadows": [
+      { "name": "cta-glow", "value": "0 18px 40px -14px rgba(255,101,76,0.45)", "purpose": "Primary CTA buttons and the active step card border, light theme." },
+      { "name": "cta-glow-dark", "value": "0 18px 40px -14px rgba(255,113,92,0.3)", "purpose": "Same CTA glow, dark theme value." },
+      { "name": "active-lift", "value": "0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)", "purpose": "Neutral lift paired with cta-glow on the active step card." },
+      { "name": "overlay", "value": "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)", "purpose": "History/Settings drawer panels." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "fadeIn / slideDown entrance easing used across cards and callouts." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Icon/nav hover color transitions." },
+      { "name": "duration-base", "value": "200ms", "purpose": "Default state transitions (buttons, options, toggles)." },
+      { "name": "duration-panel", "value": "300ms", "purpose": "Drawer slide-in/out and backdrop fade." },
+      { "name": "duration-progress", "value": "700ms", "purpose": "Progress bar fill width transition." },
+      { "name": "duration-shimmer", "value": "1.6s", "purpose": "Skeleton loading shimmer sweep." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary CTA Button",
+      "kind": "button",
+      "refersTo": "button-cta",
+      "description": "Flow-level primary action (Generate, Next Step, View Answer) — coral gradient pill with a signature glow.",
+      "html": "<button class=\"ds-btn-cta\">Generate <span class=\"ds-btn-cta-arrow\">→</span></button>",
+      "css": ".ds-btn-cta { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 18px; border: none; background: linear-gradient(to bottom, var(--color-primary-from), var(--color-primary-to)); color: #ffffff; font-size: 14px; font-weight: 600; box-shadow: 0 18px 40px -14px rgba(255,101,76,0.45); cursor: pointer; transition: filter 0.2s ease; } .ds-btn-cta:hover { filter: brightness(1.05); } .ds-btn-cta:active { filter: brightness(0.95); } .ds-btn-cta:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; } .ds-btn-cta-arrow { opacity: 0.7; } .ds-btn-cta:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action (Cancel, Test Connection) — border-only, fills with control color on hover.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--color-border); background: transparent; color: var(--color-ink); font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.15s ease, border-color 0.15s ease; } .ds-btn-outline:hover { background: var(--color-control); border-color: rgba(38,169,167,0.3); } .ds-btn-outline:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; } .ds-btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-line field (API key, settings) — control-tinted fill with a seafoam focus ring.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Type your problem…\" />",
+      "css": ".ds-input { width: 100%; height: 36px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-control); color: var(--color-ink); font-size: 14px; } .ds-input::placeholder { color: var(--color-faint); } .ds-input:focus { outline: none; border-color: rgba(38,169,167,0.4); box-shadow: 0 0 0 2px rgba(38,169,167,0.25); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Icon Button",
+      "kind": "nav",
+      "refersTo": "icon-button",
+      "description": "Header nav actions (history, settings, theme toggle) — 36px square, 14px radius, opens an overlay rather than routing.",
+      "html": "<button class=\"ds-icon-btn\" aria-label=\"Open history\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"none\"><circle cx=\"8\" cy=\"8\" r=\"6.25\" stroke=\"currentColor\" stroke-width=\"1.25\"/><path d=\"M8 5v3.5l2 1.5\" stroke=\"currentColor\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button>",
+      "css": ".ds-icon-btn { width: 36px; height: 36px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-muted); cursor: pointer; transition: color 0.15s ease; } .ds-icon-btn:hover { color: var(--color-ink); } .ds-icon-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "description": "Language/difficulty picker — a pill container of equal-width radio buttons; selection is shown with a raised surface chip, not a color fill.",
+      "html": "<div class=\"ds-segmented\" role=\"radiogroup\" aria-label=\"Difficulty\"><button class=\"ds-segmented-option ds-segmented-option--selected\" role=\"radio\" aria-checked=\"true\">Beginner</button><button class=\"ds-segmented-option\" role=\"radio\" aria-checked=\"false\">Intermediate</button><button class=\"ds-segmented-option\" role=\"radio\" aria-checked=\"false\">Advanced</button></div>",
+      "css": ".ds-segmented { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--color-control); border: 1px solid var(--color-border); } .ds-segmented-option { flex: 1; padding: 6px 0; border-radius: 8px; border: none; background: transparent; color: var(--color-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: color 0.15s ease, background-color 0.15s ease; } .ds-segmented-option:hover { color: var(--color-ink); } .ds-segmented-option--selected { background: var(--color-surface); color: var(--color-ink); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }"
+    },
+    {
+      "name": "Progress Bar",
+      "kind": "custom",
+      "refersTo": "progress",
+      "description": "Lesson completion / generation progress — seafoam track, seafoam fill, slow ease-out width transition.",
+      "html": "<div class=\"ds-progress\"><div class=\"ds-progress-fill\" style=\"width: 60%\"></div></div>",
+      "css": ".ds-progress { height: 8px; border-radius: 999px; background: var(--color-accent-soft); overflow: hidden; } .ds-progress-fill { height: 100%; border-radius: 999px; background: var(--color-accent); transition: width 0.7s ease-out; }"
+    },
+    {
+      "name": "Step Card — Active",
+      "kind": "card",
+      "refersTo": "card-active",
+      "description": "The signature component: the one lesson step currently in focus — tinted background, seafoam border, coral CTA glow, shadow-xl lift.",
+      "html": "<div class=\"ds-step-active\"><div class=\"ds-step-header\"><div class=\"ds-step-badge\">1</div><h3 class=\"ds-step-title\">Set up the equation</h3></div><div class=\"ds-step-body\">Explanation text goes here.</div></div>",
+      "css": ".ds-step-active { border-radius: 24px; border: 1px solid var(--color-accent); background: var(--color-active-bg); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1), 0 18px 40px -14px rgba(255,101,76,0.45); overflow: hidden; } .ds-step-header { display: flex; align-items: flex-start; gap: 12px; padding: 20px 20px 12px; } .ds-step-badge { width: 24px; height: 24px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: var(--color-accent-soft); color: var(--color-accent); font-size: 10px; font-weight: 700; flex-shrink: 0; } .ds-step-title { font-size: 15px; font-weight: 800; color: var(--color-ink); margin: 0; } .ds-step-body { padding: 0 20px 20px 52px; font-size: 14px; line-height: 1.625; color: var(--color-muted); }"
+    },
+    {
+      "name": "Step Card — Locked",
+      "kind": "card",
+      "description": "A not-yet-reached step: same silhouette as an active card, collapsed to a shimmering skeleton so total step count is visible without spoiling content.",
+      "html": "<div class=\"ds-step-locked\"><div class=\"ds-step-locked-badge\">2</div><div class=\"ds-step-locked-lines\"><div class=\"ds-skeleton ds-skeleton--title\"></div><div class=\"ds-skeleton ds-skeleton--line\"></div><div class=\"ds-skeleton ds-skeleton--line-short\"></div></div></div>",
+      "css": ".ds-step-locked { display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px; border-radius: 24px; border: 1px solid var(--color-border); background: var(--color-surface); } .ds-step-locked-badge { width: 24px; height: 24px; border-radius: 999px; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; color: var(--color-accent); font-size: 10px; font-weight: 700; flex-shrink: 0; } .ds-step-locked-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 2px; } .ds-skeleton { border-radius: 4px; background: linear-gradient(90deg, var(--color-control) 25%, var(--color-border) 50%, var(--color-control) 75%); background-size: 200% 100%; animation: ds-shimmer 1.6s ease-in-out infinite; } .ds-skeleton--title { height: 10px; width: 66%; } .ds-skeleton--line { height: 8px; width: 100%; } .ds-skeleton--line-short { height: 8px; width: 80%; } @keyframes ds-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Study Companion",
+    "overview": "WiseLab reads as a calm, encouraging companion sitting next to a student working through one problem — never a clinical AI console. The surface is quiet and light-first (white cards on a near-white app background, with a fully-realized dark theme as an equal citizen, not an afterthought): generous rounded corners, soft borders instead of shadows, and a two-hue accent pairing that keeps the interface warm without becoming loud. Structure carries most of the personality — a vertical stepper of cards, one revealed at a time — while small emoji glyphs (🎯 🌍 🧠 🧒 ❓ 💡) act as friendly signposts on section headers, the way a tutor's handwritten margin notes would.\n\nDepth is used sparingly and meaningfully: almost everything at rest is flat, separated only by a hairline border. The one visual reward — a warm coral glow — is reserved for whatever the student should do next (the primary call-to-action, the active step). That restraint is deliberate: it keeps the \"next action\" legible even as lessons grow to 6 steps with inline challenges, tips, and an assistant chat nested inside each card.",
+    "keyCharacteristics": [
+      "Two-hue brand accent: Coral Spark for action, Seafoam Calm for highlight/informational state — never swapped.",
+      "Flat-by-default surfaces; shadows exist only as an \"active/primary\" marker, not ambient decoration.",
+      "Large, soft radii throughout (12–24px on panels and cards, pill-shaped 18px CTAs) — no sharp corners anywhere.",
+      "Four fixed semantic hues (emerald / red / amber / violet) each locked to one meaning across the whole app.",
+      "Full light/dark parity via CSS custom properties — dark is a tuned second theme, not an inverted filter."
+    ],
+    "rules": [
+      { "name": "The Single Ignition Rule", "body": "Coral Spark fires on exactly one element per screen state: the button the student should press next. It never appears as a background tint, a badge, or a secondary accent.", "section": "colors" },
+      { "name": "The Locked-Palette Rule", "body": "No fifth semantic hue is introduced for a new state. Success/error/tip/assistant are closed — a new kind of callout reuses the nearest existing meaning rather than picking a new color.", "section": "colors" },
+      { "name": "The Mono-Is-Literal Rule", "body": "Space Mono only renders things that are literally typed or counted (shortcuts, counts, ASCII diagrams, raw LaTeX fallback) — never prose, never a heading.", "section": "typography" },
+      { "name": "The Border-Over-Shadow Rule", "body": "A card is flat until it becomes the thing the student is acting on right now. Shadows are never decorative — they always mean \"active\" or \"floating above the page\" (drawers).", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Coral Spark exclusive to the one primary action on screen (The Single Ignition Rule).",
+      "Do use Seafoam Calm for highlight/informational state only — focus rings, progress, badges, active borders — never as a button fill.",
+      "Do keep cards flat (border only) at rest; add the coral glow + shadow-xl only to mark the active step or a primary CTA.",
+      "Do pair an emoji glyph with an uppercase label on every section header (🎯 Challenge, 🌍 Real World, 🧠 History, 💡 Tip, ❓ Confused) — it's part of the Study Companion voice.",
+      "Do keep the four semantic hues locked to their single meanings (emerald=success, red=error, amber=tip, violet=assistant).",
+      "Do maintain full light/dark token parity — every new color needs both a :root and a :root.dark value, not a computed filter."
+    ],
+    "donts": [
+      "Don't add ambient drop shadows to resting surfaces — depth is a state signal, not decoration (The Border-Over-Shadow Rule).",
+      "Don't use the 18px CTA pill radius on anything but the flow-level primary actions (Generate, Next Step, Cancel); ui/Button primitives stay at 8px.",
+      "Don't fill outline/ghost/secondary buttons with either brand color — they stay border- or text-only.",
+      "Don't introduce a fifth semantic hue for a new state (The Locked-Palette Rule); map it to the nearest existing meaning instead."
+    ]
+  }
+}
