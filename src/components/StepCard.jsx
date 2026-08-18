@@ -14,7 +14,7 @@ function LockedStep({ index }) {
   )
 }
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
 import { MathBlock } from './MathBlock'
 import { MathText } from './MathText'
 import { simplifyExplanation, askConfusedHelp } from '../lib/ollama'
@@ -140,6 +140,7 @@ function ConfusedChatWrapper({ stepIndex, stepContext, forceOpenSignal, prefillM
 
 function Challenge({ challenge, onComplete, onAskTutor }) {
   const { t } = useI18n()
+  const questionId = useId()
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
@@ -188,13 +189,13 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
   }
 
   return (
-    <div className="mt-4 p-4 rounded-[18px] bg-peach dark:border dark:border-accent/40">
+    <div className="mt-4 p-4 rounded-[18px] bg-peach">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-sm">🎯</span>
         <span className="text-xs font-extrabold text-ink uppercase tracking-wide">{t('step.challenge')}</span>
       </div>
-      <p className="text-ink text-sm leading-relaxed mb-3">{challenge.question}</p>
-      <div className="space-y-2">
+      <p id={questionId} className="text-ink text-sm leading-relaxed mb-3">{challenge.question}</p>
+      <div role="radiogroup" aria-labelledby={questionId} className="space-y-2">
         {challenge.options.map((option, index) => {
           const isSelected = selected === index
           const isCorrectOption = showResult && index === challenge.correct
@@ -203,9 +204,11 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
           return (
             <button
               key={index}
+              role="radio"
+              aria-checked={isSelected}
               onClick={() => handleSelect(index)}
               disabled={showResult}
-              className={`w-full text-left px-3.5 py-2.5 rounded-[14px] text-sm font-semibold transition-all duration-200 border
+              className={`w-full text-left px-3.5 py-2.5 rounded-[14px] text-sm font-semibold transition-all duration-200 border focus-ring
                 ${showResult
                   ? isCorrectOption
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-200'
@@ -213,8 +216,8 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
                     ? 'bg-red-500/15 border-red-500/40 text-red-600 dark:text-red-200'
                     : 'bg-surface border-border text-muted'
                   : isSelected
-                    ? 'bg-accent-soft border-accent/50 text-ink'
-                    : 'bg-surface border-border text-ink dark:text-accent hover:bg-accent-soft hover:border-accent/30'
+                    ? 'bg-accent-soft border-border text-ink'
+                    : 'bg-surface border-border text-ink dark:text-accent hover:bg-accent-soft'
                 }
                 ${showResult ? 'cursor-default' : 'cursor-pointer'}
               `}
@@ -231,7 +234,7 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
           disabled={selected === null}
           className={`mt-3 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200
             ${selected !== null
-              ? 'bg-accent text-white hover:opacity-90'
+              ? 'bg-accent text-white dark:text-app hover:opacity-90'
               : 'bg-control text-faint cursor-not-allowed'
             }
           `}
@@ -240,7 +243,8 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
         </button>
       )}
       {showResult && !isCorrect && (
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div role="status" className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="sr-only">{t('step.incorrect')}</span>
           <button
             onClick={handleRetry}
             className="px-4 py-2 rounded-lg text-sm font-medium bg-control text-muted hover:text-ink hover:bg-border/60 transition-all duration-200"
@@ -257,7 +261,7 @@ function Challenge({ challenge, onComplete, onAskTutor }) {
         </div>
       )}
       {showResult && isCorrect && (
-        <div className="mt-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-sm">
+        <div role="status" className="mt-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-sm">
           <span>✓</span>
           <span>{t('step.correct')}</span>
         </div>

@@ -1,4 +1,4 @@
-import katex from 'katex'
+import { useKatex } from '../hooks/useKatex'
 
 // Split text on $$...$$ display math blocks
 function parseDisplaySegments(text) {
@@ -42,23 +42,23 @@ function parseInlineParts(line) {
   return parts
 }
 
-function renderInline(formula) {
+function renderInline(katex, formula) {
   try {
-    return katex.renderToString(formula, { displayMode: false, throwOnError: false, strict: false })
+    return katex?.renderToString(formula, { displayMode: false, throwOnError: false, strict: false }) ?? null
   } catch {
     return null
   }
 }
 
-function renderDisplay(formula) {
+function renderDisplay(katex, formula) {
   try {
-    return katex.renderToString(formula, { displayMode: true, throwOnError: false, strict: false })
+    return katex?.renderToString(formula, { displayMode: true, throwOnError: false, strict: false }) ?? null
   } catch {
     return null
   }
 }
 
-function TextSegment({ content, hideVisualContext }) {
+function TextSegment({ katex, content, hideVisualContext }) {
   const lines = content.split('\n')
 
   return (
@@ -79,7 +79,7 @@ function TextSegment({ content, hideVisualContext }) {
           <span key={lineIdx} className={`block leading-relaxed ${isVisualContext ? 'text-faint text-sm italic mt-2' : ''}`}>
             {parts.map((part, i) => {
               if (part.type === 'text') return <span key={i}>{part.content}</span>
-              const html = renderInline(part.content)
+              const html = renderInline(katex, part.content)
               if (html) return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
               return <span key={i} className="font-mono text-sm">${part.content}$</span>
             })}
@@ -90,8 +90,8 @@ function TextSegment({ content, hideVisualContext }) {
   )
 }
 
-function DisplaySegment({ content }) {
-  const html = renderDisplay(content)
+function DisplaySegment({ katex, content }) {
+  const html = renderDisplay(katex, content)
   if (html) {
     return (
       <div
@@ -108,6 +108,7 @@ function DisplaySegment({ content }) {
 }
 
 export function MathContent({ children, className = '', hideVisualContext = false }) {
+  const katex = useKatex()
   if (!children) return null
   const text = String(children)
   const segments = parseDisplaySegments(text)
@@ -116,8 +117,8 @@ export function MathContent({ children, className = '', hideVisualContext = fals
     <div className={className}>
       {segments.map((seg, i) =>
         seg.type === 'display'
-          ? <DisplaySegment key={i} content={seg.content} />
-          : <TextSegment key={i} content={seg.content} hideVisualContext={hideVisualContext} />
+          ? <DisplaySegment key={i} katex={katex} content={seg.content} />
+          : <TextSegment key={i} katex={katex} content={seg.content} hideVisualContext={hideVisualContext} />
       )}
     </div>
   )

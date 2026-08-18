@@ -89,7 +89,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
             <span className="text-xs font-medium text-violet-700 dark:text-violet-200/80 uppercase tracking-wide">{t('step.virtualTutor')}</span>
           </div>
 
-          <div ref={messagesContainerRef} className="px-3.5 pb-2 space-y-2 max-h-48 overflow-y-auto">
+          <div ref={messagesContainerRef} role="log" aria-live="polite" className="px-3.5 pb-2 space-y-2 max-h-48 overflow-y-auto">
             {!hasMessages && (
               <p className="text-faint text-xs text-center py-2">
                 {t('chat.instruction')}

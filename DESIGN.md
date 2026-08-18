@@ -130,7 +130,8 @@ The palette is deliberately narrow: one warm action color, one cool highlight co
 - **Seafoam Calm** (`#1a7573` / dark `#69d6f5`, soft tint `#ddf5f3` / dark `#12365a`): the highlight and informational accent — focus rings, progress bars, badges, borders on the active step, the logo mark, links. Never used as a solid CTA fill. Light-mode value deepened from the original `#26a9a7` (which measured 2.5–2.8:1 against app-bg/accent-soft, failing WCAG AA) to clear 4.5:1 against both.
 
 ### Tertiary
-- **Challenge Peach** (`#fff2e2` / dark `#12365a`): the background for the inline multiple-choice challenge block only — a distinct warm tint that marks "this card wants interaction," separate from both brand hues.
+- **Challenge Peach** (`#fff2e2` / dark `#2b2620`): the background for the inline multiple-choice challenge block only — a distinct warm tint that marks "this card wants interaction," separate from both brand hues. It previously matched Control exactly (`#12365a`) in dark mode, erasing the signal entirely. The dark value is a low-chroma warm graphite, not a saturated brown — WiseLab's dark theme has exactly two color families (cool navy/cyan, and rare coral) and a fully-committed third hue read as a foreign patch. Warmth here comes from a small channel shift (R>G>B) at roughly the same lightness as Control, not from hue commitment — quiet enough to sit inside the existing system rather than beside it.
+- **Logo Gradient** (light: flat `accent-soft` fill, no gradient; dark only: `#52e0e9 → #4a8bff`): the header logo badge's dark-mode fill. Exists solely for that one mark — not a general-purpose gradient.
 
 ### Neutral
 - **Ink** (`#142238` / dark `#f5f9ff`): primary text.
@@ -140,7 +141,7 @@ The palette is deliberately narrow: one warm action color, one cool highlight co
 - **Surface** (`#ffffff` / dark `#101f35`): card and panel background.
 - **Control** (`#eff7f7` / dark `#12365a`): input fields, skeleton base, secondary button fill, kbd chips.
 - **Border** (`#e6edf1` / dark `#263b59`): the single hairline that separates every flat surface from its background.
-- **Active surface** (`#f4fefe` / dark `#101f35`): the tinted background reserved for the currently-active lesson step card.
+- **Active surface** (`#f4fefe` / dark `#122a47`): the tinted background reserved for the currently-active lesson step card. The dark value is a deliberate cyan-tinted lift over Surface (`#101f35`) — it previously matched Surface exactly, so the active step's fill carried no signal in dark mode and the state read from border and shadow alone.
 
 ### Semantic (fixed, one meaning each)
 - **Success** (`#10b981`, Tailwind emerald-500): correct challenge answers only.

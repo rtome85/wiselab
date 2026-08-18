@@ -128,6 +128,7 @@ export const pt = {
     verify: 'Verificar resposta',
     tryAgain: 'Tentar novamente',
     correct: 'Correto!',
+    incorrect: 'Quase — tenta outra vez.',
     simplify: 'Simplificar',
     simpleVersion: 'Versão Simples',
     simplifyError: 'Erro ao simplificar.',

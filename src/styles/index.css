@@ -38,9 +38,11 @@
     --color-coral: #ff715c;
     --color-primary-from: #e95445;
     --color-primary-to: #ff715c;
-    --color-peach: #12365a;
-    --color-active-bg: #101f35;
+    --color-peach: #2b2620;
+    --color-active-bg: #122a47;
     --color-shadow: rgba(0, 0, 0, 0.35);
+    --color-logo-from: #52e0e9;
+    --color-logo-to: #4a8bff;
   }
 
   html {
@@ -154,4 +156,33 @@
 .focus-ring:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* ─── Reduced motion ────────────────────────────────── */
+/* Loops that sweep/scale across a large area (shimmer, pulse-ring) are
+   disabled outright — they carry no information beyond "loading", which
+   the surrounding skeleton shape already conveys. Short, single-shot
+   entrance transitions (fadeIn, slideDown) lose their transform but keep
+   a brief opacity change, so state changes are still perceivable. Spin
+   is left alone: it's a small, contained, rotation-only icon and the
+   conventional "in progress" signal — killing it removes real feedback
+   without reducing vestibular risk. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--color-control);
+  }
+
+  .animate-pulse-ring {
+    animation: none;
+    opacity: 1;
+  }
+
+  .animate-fadeIn,
+  .animate-slideDown {
+    animation-duration: 0.01ms;
+    animation-name: none;
+    transform: none;
+    opacity: 1;
+  }
 }

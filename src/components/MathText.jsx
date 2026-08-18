@@ -1,7 +1,8 @@
-import katex from 'katex'
+import { useKatex } from '../hooks/useKatex'
 import { INLINE_MATH_RE } from '../constants/math'
 
 export function MathText({ children, className = '' }) {
+  const katex = useKatex()
   if (!children) return null
   const text = String(children)
 
@@ -28,11 +29,12 @@ export function MathText({ children, className = '' }) {
       {parts.map((part, i) => {
         if (part.type === 'text') return <span key={i}>{part.content}</span>
         try {
-          const html = katex.renderToString(part.content, {
+          const html = katex?.renderToString(part.content, {
             displayMode: false,
             throwOnError: false,
             strict: false,
           })
+          if (!html) throw new Error('katex not loaded yet')
           return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
         } catch {
           return <span key={i} className="font-mono">${part.content}$</span>

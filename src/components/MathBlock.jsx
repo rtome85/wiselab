@@ -1,14 +1,20 @@
-import katex from 'katex'
+import { useKatex } from '../hooks/useKatex'
 
 export function MathBlock({ formula }) {
+  const katex = useKatex()
+
   let html
   try {
-    html = katex.renderToString(formula, {
+    html = katex?.renderToString(formula, {
       displayMode: true,
       throwOnError: false,
       strict: false,
     })
   } catch {
+    html = null
+  }
+
+  if (!html) {
     return (
       <div className="px-4 py-3 rounded-xl bg-control border border-border">
         <p className="font-mono text-sm text-ink text-center tracking-wide">{formula}</p>

@@ -44,8 +44,8 @@ function HistoryItem({ entry, onSelect, onDelete, formatDate, t }) {
         onClick={(e) => { e.stopPropagation(); onDelete(entry.id) }}
         aria-label={t('history.deleteLesson')}
         className="absolute top-3 right-3 w-6 h-6 rounded-lg flex items-center justify-center
-                   text-transparent group-hover:text-faint hover:!text-red-400 hover:bg-red-500/10
-                   transition-all duration-150"
+                   text-transparent group-hover:text-faint group-focus-within:text-faint hover:!text-red-400 hover:bg-red-500/10
+                   transition-all duration-150 focus-ring"
       >
         <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
           <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

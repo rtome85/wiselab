@@ -81,8 +81,8 @@ export default function App() {
       <header className="sticky top-0 z-20 border-b border-border bg-header backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
-            <span className="w-8 h-8 rounded-[14px] flex items-center justify-center bg-accent-soft dark:bg-gradient-to-b dark:from-[#52e0e9] dark:to-[#4a8bff]">
-              <img src="/logo.png" className="w-4 h-4" />
+            <span className="w-8 h-8 rounded-[14px] flex items-center justify-center bg-accent-soft dark:bg-gradient-to-b dark:from-[var(--color-logo-from)] dark:to-[var(--color-logo-to)]">
+              <img src="/logo.png" alt="" className="w-4 h-4" />
             </span>
             <span className="font-extrabold text-ink text-sm tracking-tight">
               WiseLab
@@ -148,7 +148,7 @@ export default function App() {
                 <p className="text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
                   {t("app.apiKeyRequired")}
                 </p>
-                <p className="text-red-600/80 dark:text-red-400/70 text-xs leading-relaxed">
+                <p className="text-red-700 dark:text-red-300 text-xs leading-relaxed">
                   {t("app.apiKeyRequiredDesc")}
                 </p>
               </div>
@@ -195,7 +195,7 @@ export default function App() {
         {/* ── Error state ── */}
         {error && !lesson && (
           <div className="space-y-5 mb-8">
-            <div className="rounded-3xl border border-red-500/25 bg-red-500/8 p-5">
+            <div role="alert" className="rounded-3xl border border-red-500/25 bg-red-500/8 p-5">
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-[10px] text-red-600 dark:text-red-400 font-bold">!</span>
@@ -204,7 +204,7 @@ export default function App() {
                   <p className="text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
                     {t("app.errorTitle")}
                   </p>
-                  <p className="text-red-600/80 dark:text-red-400/70 text-xs leading-relaxed">
+                  <p className="text-red-700 dark:text-red-300 text-xs leading-relaxed">
                     {error}
                   </p>
                 </div>
