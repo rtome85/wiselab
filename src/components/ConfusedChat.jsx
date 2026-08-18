@@ -23,7 +23,7 @@ function MessageBubble({ message }) {
   )
 }
 
-export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessage, isLoading }) {
+export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessage, isLoading, forceOpenSignal, prefillMessage }) {
   const { t } = useI18n()
   const QUICK_PROMPTS = [
     t('chat.quickPrompt1'),
@@ -33,6 +33,17 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
   const messagesContainerRef = useRef(null)
+
+  // A wrong challenge answer can nudge the student here directly, already
+  // asking about the specific question they got wrong. forceOpenSignal is a
+  // one-shot trigger (timestamp) from the parent; prefillMessage always
+  // arrives set together with it, so it's read here rather than depended on.
+  useEffect(() => {
+    if (!forceOpenSignal) return
+    setIsOpen(true)
+    if (prefillMessage) setInput(prefillMessage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceOpenSignal])
 
   const hasMessages = conversation && conversation.length > 0
 

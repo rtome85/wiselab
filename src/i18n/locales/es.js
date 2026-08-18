@@ -15,6 +15,14 @@ export const es = {
     tryAgain: 'Intentar de nuevo',
     footerPowered: 'Powered by Ollama',
   },
+  errors: {
+    auth: 'Tu clave API fue rechazada. Compruébala en Ajustes e inténtalo de nuevo.',
+    network: 'No se pudo contactar con el servidor. Comprueba tu conexión e inténtalo de nuevo.',
+    rateLimit: 'Demasiadas solicitudes ahora mismo. Espera un momento e inténtalo de nuevo.',
+    server: 'El servicio de IA tiene problemas ahora mismo. Inténtalo de nuevo en un momento.',
+    malformed: 'No se pudo leer la respuesta de la IA esta vez. Inténtalo de nuevo — suele resolverse solo.',
+    generic: 'Algo salió mal al generar tu lección. Inténtalo de nuevo.',
+  },
   settings: {
     title: 'Ajustes',
     close: 'Cerrar ajustes',
@@ -126,6 +134,7 @@ export const es = {
     confused: 'Estoy confundido',
     virtualTutor: 'Tutor Virtual',
     errorHelp: 'Error al obtener ayuda. Inténtalo de nuevo.',
+    stillNotSure: '¿Sigues sin estar seguro? Pregunta al tutor',
   },
   chat: {
     quickPrompt1: 'No entiendo la fórmula',
@@ -135,5 +144,6 @@ export const es = {
     thinking: 'Pensando...',
     placeholder: 'Escribe tu pregunta...',
     send: 'Enviar',
+    challengeHelpPrompt: 'Fallé este desafío: "{question}" — ¿puedes ayudarme a entenderlo?',
   },
 }

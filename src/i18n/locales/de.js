@@ -15,6 +15,14 @@ export const de = {
     tryAgain: 'Erneut versuchen',
     footerPowered: 'Powered by Ollama',
   },
+  errors: {
+    auth: 'Dein API-Schlüssel wurde abgelehnt. Überprüfe ihn in den Einstellungen und versuche es erneut.',
+    network: 'Der Server konnte nicht erreicht werden. Überprüfe deine Verbindung und versuche es erneut.',
+    rateLimit: 'Gerade zu viele Anfragen. Warte einen Moment und versuche es erneut.',
+    server: 'Der KI-Dienst hat gerade Probleme. Versuche es in einem Moment erneut.',
+    malformed: 'Die Antwort der KI konnte diesmal nicht gelesen werden. Versuche es erneut — das löst sich meist von selbst.',
+    generic: 'Beim Generieren deiner Lektion ist etwas schiefgelaufen. Versuche es erneut.',
+  },
   settings: {
     title: 'Einstellungen',
     close: 'Einstellungen schließen',
@@ -126,6 +134,7 @@ export const de = {
     confused: 'Ich bin verwirrt',
     virtualTutor: 'Virtueller Tutor',
     errorHelp: 'Fehler beim Abrufen der Hilfe. Erneut versuchen.',
+    stillNotSure: 'Immer noch unsicher? Frag den Tutor',
   },
   chat: {
     quickPrompt1: 'Ich verstehe die Formel nicht',
@@ -135,5 +144,6 @@ export const de = {
     thinking: 'Denke nach...',
     placeholder: 'Schreibe deine Frage...',
     send: 'Senden',
+    challengeHelpPrompt: 'Ich habe diese Aufgabe falsch beantwortet: „{question}" — kannst du mir helfen, das zu verstehen?',
   },
 }

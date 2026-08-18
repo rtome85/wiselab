@@ -3,7 +3,7 @@ name: WiseLab
 description: A calm, coral-and-teal study companion that turns one problem into a step-by-step lesson.
 colors:
   ink: "#142238"
-  muted: "#6d7a89"
+  muted: "#636f7d"
   faint: "#9aa9b6"
   app-bg: "#f8fbfc"
   surface: "#ffffff"
@@ -12,11 +12,10 @@ colors:
   coral-spark: "#ff654c"
   coral-spark-from: "#ff7b63"
   coral-spark-to: "#ff5b43"
-  seafoam-calm: "#26a9a7"
+  seafoam-calm: "#1a7573"
   seafoam-calm-soft: "#ddf5f3"
   challenge-peach: "#fff2e2"
   active-surface: "#f4fefe"
-  warning-accent: "#ff8a4c"
   success: "#10b981"
   error: "#ef4444"
   tip-amber: "#f59e0b"
@@ -128,14 +127,14 @@ The palette is deliberately narrow: one warm action color, one cool highlight co
 - **Coral Spark** (`#ff654c`, CTA gradient `#ff7b63 → #ff5b43` / dark `#e95445 → #ff715c`): the only color used for primary calls to action — the flow-level "Generate," "Next Step," and the `ui/Button` default variant. It appears on nothing else; its rarity is what makes it legible as "the next action."
 
 ### Secondary
-- **Seafoam Calm** (`#26a9a7` / dark `#69d6f5`, soft tint `#ddf5f3` / dark `#12365a`): the highlight and informational accent — focus rings, progress bars, badges, borders on the active step, the logo mark, links. Never used as a solid CTA fill.
+- **Seafoam Calm** (`#1a7573` / dark `#69d6f5`, soft tint `#ddf5f3` / dark `#12365a`): the highlight and informational accent — focus rings, progress bars, badges, borders on the active step, the logo mark, links. Never used as a solid CTA fill. Light-mode value deepened from the original `#26a9a7` (which measured 2.5–2.8:1 against app-bg/accent-soft, failing WCAG AA) to clear 4.5:1 against both.
 
 ### Tertiary
 - **Challenge Peach** (`#fff2e2` / dark `#12365a`): the background for the inline multiple-choice challenge block only — a distinct warm tint that marks "this card wants interaction," separate from both brand hues.
 
 ### Neutral
 - **Ink** (`#142238` / dark `#f5f9ff`): primary text.
-- **Muted** (`#6d7a89` / dark `#a9bad0`): secondary text — explanations, descriptions, timestamps.
+- **Muted** (`#636f7d` / dark `#a9bad0`): secondary text — explanations, descriptions, timestamps. Light-mode value darkened slightly from the original `#6d7a89` (4.2–4.4:1, just under WCAG AA) to clear 4.5:1.
 - **Faint** (`#9aa9b6` / dark `#6f88a8`): placeholder text, disabled labels, least-emphasis captions.
 - **App** (`#f8fbfc` / dark `#071426`): page background.
 - **Surface** (`#ffffff` / dark `#101f35`): card and panel background.

@@ -15,6 +15,14 @@ export const fr = {
     tryAgain: 'Réessayer',
     footerPowered: 'Powered by Ollama',
   },
+  errors: {
+    auth: 'Votre clé API a été rejetée. Vérifiez-la dans les Paramètres et réessayez.',
+    network: "Impossible de contacter le serveur. Vérifiez votre connexion et réessayez.",
+    rateLimit: "Trop de requêtes pour le moment. Attendez un instant et réessayez.",
+    server: "Le service d'IA rencontre un problème en ce moment. Réessayez dans un instant.",
+    malformed: "La réponse de l'IA n'a pas pu être lue cette fois. Réessayez — ça se résout généralement tout seul.",
+    generic: "Une erreur est survenue lors de la génération de votre leçon. Réessayez.",
+  },
   settings: {
     title: 'Paramètres',
     close: 'Fermer les paramètres',
@@ -126,6 +134,7 @@ export const fr = {
     confused: 'Je suis confus',
     virtualTutor: 'Tuteur Virtuel',
     errorHelp: "Erreur lors de l'obtention de l'aide. Réessayez.",
+    stillNotSure: 'Toujours pas sûr ? Demandez au tuteur',
   },
   chat: {
     quickPrompt1: 'Je ne comprends pas la formule',
@@ -135,5 +144,6 @@ export const fr = {
     thinking: 'Réflexion...',
     placeholder: 'Écrivez votre question...',
     send: 'Envoyer',
+    challengeHelpPrompt: 'Je me suis trompé à ce défi : « {question} » — pouvez-vous m\'aider à comprendre ?',
   },
 }

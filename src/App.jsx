@@ -140,15 +140,15 @@ export default function App() {
         {/* ── Warning banner for missing API key ── */}
         {isIdle && !isConfigured && (
           <div className="mb-6">
-            <div className="rounded-3xl border border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] p-4 flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-[var(--color-warning-accent)]/15 border border-[var(--color-warning-accent)]/40 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-[10px] text-[var(--color-warning-accent)] font-bold">!</span>
+            <div className="rounded-3xl border border-red-500/25 bg-red-500/8 p-4 flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] text-red-600 dark:text-red-400 font-bold">!</span>
               </div>
               <div className="flex-1">
-                <p className="text-ink text-sm font-semibold mb-1">
+                <p className="text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
                   {t("app.apiKeyRequired")}
                 </p>
-                <p className="text-muted text-xs leading-relaxed">
+                <p className="text-red-600/80 dark:text-red-400/70 text-xs leading-relaxed">
                   {t("app.apiKeyRequiredDesc")}
                 </p>
               </div>

@@ -141,32 +141,52 @@ function repairJson(str) {
   return out;
 }
 
+// Errors carry a `.code` so the UI layer can show a cause-specific,
+// translated message instead of a raw technical string.
+function apiError(code, message) {
+  const err = new Error(message);
+  err.code = code;
+  return err;
+}
+
+function statusToErrorCode(status) {
+  if (status === 401 || status === 403) return 'auth';
+  if (status === 429) return 'rateLimit';
+  if (status >= 500) return 'server';
+  return 'http';
+}
+
 export async function generateLesson(problem, onProgress) {
   const userMessage = `Problem: ${problem}`;
   const apiKey = getApiKey();
   const model = getModel();
   const { language, difficulty } = getSettings();
 
-  const response = await fetch(CHAT_COMPLETIONS_API_PATH, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: [
-        { role: "system", content: buildSystemPrompt(language, difficulty) },
-        { role: "user", content: userMessage },
-      ],
-      stream: true,
-      format: "json",
-    }),
-  });
+  let response;
+  try {
+    response = await fetch(CHAT_COMPLETIONS_API_PATH, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: "system", content: buildSystemPrompt(language, difficulty) },
+          { role: "user", content: userMessage },
+        ],
+        stream: true,
+        format: "json",
+      }),
+    });
+  } catch (networkErr) {
+    throw apiError('network', networkErr.message || 'Network request failed');
+  }
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`API error ${response.status}: ${errorText}`);
+    throw apiError(statusToErrorCode(response.status), `API error ${response.status}: ${errorText}`);
   }
 
   // Parse SSE stream and accumulate content
@@ -216,7 +236,7 @@ export async function generateLesson(problem, onProgress) {
     try {
       lesson = JSON.parse(repairJson(content));
     } catch {
-      throw new Error("A resposta da API não é JSON válido.");
+      throw apiError('malformed', 'Response is not valid JSON.');
     }
   }
 
@@ -225,7 +245,7 @@ export async function generateLesson(problem, onProgress) {
     !Array.isArray(lesson.steps) ||
     lesson.steps.length === 0
   ) {
-    throw new Error("Estrutura da lição inválida.");
+    throw apiError('malformed', 'Invalid lesson structure.');
   }
 
   // Validate and sanitize challenge objects in each step

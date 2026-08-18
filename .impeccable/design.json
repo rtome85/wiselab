@@ -5,7 +5,7 @@
   "extensions": {
     "colorMeta": {
       "coral-spark": { "role": "primary", "displayName": "Coral Spark", "canonical": "oklch(65% 0.19 25)", "tonalRamp": ["oklch(15% 0.05 25)", "oklch(28% 0.10 25)", "oklch(40% 0.14 25)", "oklch(52% 0.17 25)", "oklch(65% 0.19 25)", "oklch(75% 0.16 25)", "oklch(85% 0.10 25)", "oklch(95% 0.03 25)"] },
-      "seafoam-calm": { "role": "secondary", "displayName": "Seafoam Calm", "canonical": "oklch(62% 0.09 185)", "tonalRamp": ["oklch(15% 0.02 185)", "oklch(28% 0.04 185)", "oklch(40% 0.06 185)", "oklch(52% 0.08 185)", "oklch(62% 0.09 185)", "oklch(72% 0.08 185)", "oklch(85% 0.05 185)", "oklch(95% 0.02 185)"] },
+      "seafoam-calm": { "role": "secondary", "displayName": "Seafoam Calm", "canonical": "oklch(44% 0.07 185)", "tonalRamp": ["oklch(15% 0.02 185)", "oklch(28% 0.04 185)", "oklch(40% 0.06 185)", "oklch(44% 0.07 185)", "oklch(52% 0.08 185)", "oklch(62% 0.09 185)", "oklch(72% 0.08 185)", "oklch(85% 0.05 185)", "oklch(95% 0.02 185)"], "note": "Light-mode value deepened in an /impeccable audit pass to clear WCAG AA 4.5:1 against app-bg and accent-soft; original value is preserved as a lighter ramp step." },
       "challenge-peach": { "role": "tertiary", "displayName": "Challenge Peach", "canonical": "oklch(96% 0.03 60)" },
       "ink": { "role": "neutral", "displayName": "Ink", "canonical": "oklch(20% 0.04 250)", "tonalRamp": ["oklch(12% 0.03 250)", "oklch(20% 0.04 250)", "oklch(32% 0.035 250)", "oklch(45% 0.03 250)", "oklch(58% 0.025 250)", "oklch(70% 0.02 250)", "oklch(85% 0.01 250)", "oklch(96% 0.005 250)"] },
       "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#ffffff" },

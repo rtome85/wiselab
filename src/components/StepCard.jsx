@@ -90,7 +90,7 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
   )
 }
 
-function ConfusedChatWrapper({ stepIndex, stepContext }) {
+function ConfusedChatWrapper({ stepIndex, stepContext, forceOpenSignal, prefillMessage }) {
   const { t } = useI18n()
   const { getConversation, setConversations, setPendingStep, isLoading } = useConfusedChat()
   const conversation = getConversation(stepIndex)
@@ -132,11 +132,13 @@ function ConfusedChatWrapper({ stepIndex, stepContext }) {
       conversation={conversation}
       onSendMessage={handleSendMessage}
       isLoading={loading}
+      forceOpenSignal={forceOpenSignal}
+      prefillMessage={prefillMessage}
     />
   )
 }
 
-function Challenge({ challenge, onComplete }) {
+function Challenge({ challenge, onComplete, onAskTutor }) {
   const { t } = useI18n()
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
@@ -238,12 +240,21 @@ function Challenge({ challenge, onComplete }) {
         </button>
       )}
       {showResult && !isCorrect && (
-        <button
-          onClick={handleRetry}
-          className="mt-3 px-4 py-2 rounded-lg text-sm font-medium bg-control text-muted hover:text-ink hover:bg-border/60 transition-all duration-200"
-        >
-          {t('step.tryAgain')}
-        </button>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleRetry}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-control text-muted hover:text-ink hover:bg-border/60 transition-all duration-200"
+          >
+            {t('step.tryAgain')}
+          </button>
+          <button
+            onClick={() => onAskTutor?.(challenge)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-violet-700 dark:text-violet-200 bg-violet-500/10 hover:bg-violet-500/20 transition-all duration-200"
+          >
+            <span>❓</span>
+            <span>{t('step.stillNotSure')}</span>
+          </button>
+        </div>
       )}
       {showResult && isCorrect && (
         <div className="mt-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-sm">
@@ -256,7 +267,16 @@ function Challenge({ challenge, onComplete }) {
 }
 
 export function StepCard({ step, index, isActive, isCompleted, accentClasses, challengeCompleted, onCompleteChallenge }) {
+  const { t } = useI18n()
   const isVisible = isActive || isCompleted
+  const [tutorNudge, setTutorNudge] = useState({ signal: 0, prefill: '' })
+
+  const handleAskTutor = (challenge) => {
+    setTutorNudge({
+      signal: Date.now(),
+      prefill: t('chat.challengeHelpPrompt', { question: challenge.question }),
+    })
+  }
 
   if (!isVisible) return <LockedStep index={index} />
 
@@ -321,6 +341,7 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
           <Challenge
             challenge={step.challenge}
             onComplete={() => onCompleteChallenge?.(index)}
+            onAskTutor={handleAskTutor}
           />
         )}
 
@@ -340,6 +361,8 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
               visual: step.visual,
               tip: step.tip,
             }}
+            forceOpenSignal={tutorNudge.signal}
+            prefillMessage={tutorNudge.prefill}
           />
         )}
       </div>

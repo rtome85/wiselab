@@ -15,6 +15,14 @@ export const pt = {
     tryAgain: 'Tentar novamente',
     footerPowered: 'Powered by Ollama',
   },
+  errors: {
+    auth: 'A tua chave API foi rejeitada. Verifica-a em Definições e tenta novamente.',
+    network: 'Não foi possível contactar o servidor. Verifica a tua ligação e tenta novamente.',
+    rateLimit: 'Demasiados pedidos neste momento. Espera um instante e tenta novamente.',
+    server: 'O serviço de IA está com problemas neste momento. Tenta novamente daqui a pouco.',
+    malformed: 'Não foi possível ler a resposta da IA desta vez. Tenta novamente — normalmente resolve-se sozinho.',
+    generic: 'Algo correu mal ao gerar a tua lição. Tenta novamente.',
+  },
   settings: {
     title: 'Definições',
     close: 'Fechar definições',
@@ -126,6 +134,7 @@ export const pt = {
     confused: 'Estou confuso',
     virtualTutor: 'Tutor Virtual',
     errorHelp: 'Erro ao obter ajuda. Tenta novamente.',
+    stillNotSure: 'Ainda tens dúvidas? Pergunta ao tutor',
   },
   chat: {
     quickPrompt1: 'Não entendo a fórmula',
@@ -135,5 +144,6 @@ export const pt = {
     thinking: 'A pensar...',
     placeholder: 'Escreve a tua dúvida...',
     send: 'Enviar',
+    challengeHelpPrompt: 'Errei este desafio: "{question}" — podes ajudar-me a perceber?',
   },
 }

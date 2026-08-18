@@ -1,8 +1,18 @@
 import { useState, useCallback } from 'react'
 import { generateLesson } from '../lib/ollama'
 import { clearConfusedConversations } from './useConfusedChat'
+import { useI18n } from '../i18n/index.jsx'
+
+const ERROR_CODE_KEYS = {
+  auth: 'errors.auth',
+  network: 'errors.network',
+  rateLimit: 'errors.rateLimit',
+  server: 'errors.server',
+  malformed: 'errors.malformed',
+}
 
 export function useLesson() {
+  const { t } = useI18n()
   const [lesson, setLesson] = useState(null)
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -28,11 +38,11 @@ export function useLesson() {
       setLesson(data)
       onSuccess?.(data)
     } catch (err) {
-      setError(err.message || 'Erro ao gerar a lição.')
+      setError(t(ERROR_CODE_KEYS[err.code] || 'errors.generic'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   const restore = useCallback((lessonData) => {
     clearConfusedConversations()

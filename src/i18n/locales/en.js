@@ -15,6 +15,14 @@ export const en = {
     tryAgain: 'Try again',
     footerPowered: 'Powered by Ollama',
   },
+  errors: {
+    auth: 'Your API key was rejected. Check it in Settings and try again.',
+    network: "Couldn't reach the server. Check your connection and try again.",
+    rateLimit: 'Too many requests right now. Wait a moment and try again.',
+    server: 'The AI service is having trouble right now. Try again in a moment.',
+    malformed: "The AI's response couldn't be read this time. Try again — it usually works on retry.",
+    generic: 'Something went wrong generating your lesson. Try again.',
+  },
   settings: {
     title: 'Settings',
     close: 'Close settings',
@@ -126,6 +134,7 @@ export const en = {
     confused: "I'm confused",
     virtualTutor: 'Virtual Tutor',
     errorHelp: 'Error getting help. Try again.',
+    stillNotSure: 'Still not sure? Ask the tutor',
   },
   chat: {
     quickPrompt1: "I don't understand the formula",
@@ -135,5 +144,6 @@ export const en = {
     thinking: 'Thinking...',
     placeholder: 'Write your question...',
     send: 'Send',
+    challengeHelpPrompt: 'I got this challenge wrong: "{question}" — can you help me understand it?',
   },
 }
