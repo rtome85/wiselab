@@ -1,9 +1,9 @@
-/* Locked placeholder — skeleton-style, not shimmer-animated to avoid distraction */
+/* Locked placeholder — bordered card with skeleton copy, matching upcoming steps in the design */
 function LockedStep({ index }) {
   return (
-    <div className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-white/[0.05] opacity-35">
-      <div className="w-6 h-6 rounded-full border border-white/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-[10px] text-white/25 font-mono">{index + 1}</span>
+    <div className="flex items-start gap-3 px-5 py-4 rounded-3xl border border-border bg-surface">
+      <div className="w-6 h-6 rounded-full border border-border flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span className="text-[10px] text-accent font-bold">{index + 1}</span>
       </div>
       <div className="flex-1 space-y-2 pt-0.5">
         <div className="h-2.5 rounded skeleton w-2/3" />
@@ -59,7 +59,7 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
     <div className="mt-4">
       <button
         onClick={handleClick}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/50 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-ink hover:bg-control transition-all duration-200"
       >
         <span>{isOpen ? '▲' : '▼'}</span>
         <span>{t('step.simplify')}</span>
@@ -69,10 +69,10 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
       </button>
 
       {isOpen && (
-        <div className="mt-2 p-3.5 rounded-xl bg-sky-500/8 border border-sky-500/20 animate-fadeIn">
+        <div className="mt-2 p-3.5 rounded-2xl bg-accent-soft border border-accent/25 animate-fadeIn">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-sm">🧒</span>
-            <span className="text-xs font-medium text-sky-200/80 uppercase tracking-wide">{t('step.simpleVersion')}</span>
+            <span className="text-xs font-bold text-accent uppercase tracking-wide">{t('step.simpleVersion')}</span>
           </div>
           {isLoading ? (
             <div className="space-y-2">
@@ -80,9 +80,9 @@ function SimplifyButton({ stepTitle, stepExplanation }) {
               <div className="h-2 rounded skeleton w-4/5" />
             </div>
           ) : error ? (
-            <p className="text-red-400/80 text-sm">{error}</p>
+            <p className="text-red-600/90 dark:text-red-400/80 text-sm">{error}</p>
           ) : simplified ? (
-            <MathText className="text-white/70 text-sm leading-relaxed">{simplified}</MathText>
+            <MathText className="text-muted text-sm leading-relaxed">{simplified}</MathText>
           ) : null}
         </div>
       )}
@@ -186,38 +186,38 @@ function Challenge({ challenge, onComplete }) {
   }
 
   return (
-    <div className="mt-4 p-4 rounded-xl bg-indigo-500/8 border border-indigo-500/20">
+    <div className="mt-4 p-4 rounded-[18px] bg-peach dark:border dark:border-accent/40">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-sm">🎯</span>
-        <span className="text-xs font-medium text-indigo-200/80 uppercase tracking-wide">{t('step.challenge')}</span>
+        <span className="text-xs font-extrabold text-ink uppercase tracking-wide">{t('step.challenge')}</span>
       </div>
-      <p className="text-white/70 text-sm leading-relaxed mb-3">{challenge.question}</p>
+      <p className="text-ink text-sm leading-relaxed mb-3">{challenge.question}</p>
       <div className="space-y-2">
         {challenge.options.map((option, index) => {
           const isSelected = selected === index
           const isCorrectOption = showResult && index === challenge.correct
           const isWrongOption = showResult && isSelected && !isCorrect
-          
+
           return (
             <button
               key={index}
               onClick={() => handleSelect(index)}
               disabled={showResult}
-              className={`w-full text-left px-3.5 py-2.5 rounded-lg text-sm transition-all duration-200 border
+              className={`w-full text-left px-3.5 py-2.5 rounded-[14px] text-sm font-semibold transition-all duration-200 border
                 ${showResult
                   ? isCorrectOption
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-200'
+                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-200'
                     : isWrongOption
-                    ? 'bg-red-500/15 border-red-500/40 text-red-200'
-                    : 'bg-white/[0.03] border-white/8 text-white/50'
+                    ? 'bg-red-500/15 border-red-500/40 text-red-600 dark:text-red-200'
+                    : 'bg-surface border-border text-muted'
                   : isSelected
-                    ? 'bg-indigo-500/15 border-indigo-500/40 text-white/90'
-                    : 'bg-white/[0.03] border-white/10 text-white/70 hover:bg-white/[0.06] hover:border-white/20'
+                    ? 'bg-accent-soft border-accent/50 text-ink'
+                    : 'bg-surface border-border text-ink dark:text-accent hover:bg-accent-soft hover:border-accent/30'
                 }
                 ${showResult ? 'cursor-default' : 'cursor-pointer'}
               `}
             >
-              <span className="font-medium mr-2">{String.fromCharCode(65 + index)}.</span>
+              <span className="font-extrabold mr-2">{String.fromCharCode(65 + index)}.</span>
               {option}
             </button>
           )
@@ -227,10 +227,10 @@ function Challenge({ challenge, onComplete }) {
         <button
           onClick={handleSubmit}
           disabled={selected === null}
-          className={`mt-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+          className={`mt-3 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200
             ${selected !== null
-              ? 'bg-indigo-500/20 text-indigo-200 hover:bg-indigo-500/30'
-              : 'bg-white/[0.03] text-white/30 cursor-not-allowed'
+              ? 'bg-accent text-white hover:opacity-90'
+              : 'bg-control text-faint cursor-not-allowed'
             }
           `}
         >
@@ -240,13 +240,13 @@ function Challenge({ challenge, onComplete }) {
       {showResult && !isCorrect && (
         <button
           onClick={handleRetry}
-          className="mt-3 px-4 py-2 rounded-lg text-sm font-medium bg-white/[0.05] text-white/70 hover:bg-white/[0.08] transition-all duration-200"
+          className="mt-3 px-4 py-2 rounded-lg text-sm font-medium bg-control text-muted hover:text-ink hover:bg-border/60 transition-all duration-200"
         >
           {t('step.tryAgain')}
         </button>
       )}
       {showResult && isCorrect && (
-        <div className="mt-3 flex items-center gap-2 text-emerald-300 text-sm">
+        <div className="mt-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-sm">
           <span>✓</span>
           <span>{t('step.correct')}</span>
         </div>
@@ -262,10 +262,10 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
 
   return (
     <div
-      className={`rounded-2xl border backdrop-blur-sm transition-all duration-300 animate-fadeIn overflow-hidden ${
+      className={`rounded-3xl border transition-all duration-300 animate-fadeIn overflow-hidden ${
         isActive
-          ? `${accentClasses.border} bg-white/[0.07] shadow-xl ${accentClasses.glow}`
-          : 'border-white/[0.08] bg-white/[0.04]'
+          ? `border-accent bg-[var(--color-active-bg)] shadow-xl ${accentClasses.glow}`
+          : 'border-border bg-surface'
       }`}
     >
       {/* Step header */}
@@ -276,8 +276,8 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
             isCompleted
               ? `${accentClasses.badge} border-transparent`
               : isActive
-              ? `bg-white/10 ${accentClasses.border}`
-              : 'bg-white/8 border-white/15'
+              ? 'bg-accent-soft text-accent border-transparent'
+              : 'bg-control border-border'
           }`}
         >
           {isCompleted ? (
@@ -285,34 +285,34 @@ export function StepCard({ step, index, isActive, isCompleted, accentClasses, ch
               <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           ) : (
-            <span className="text-[10px] font-mono text-white/50">{index + 1}</span>
+            <span className="text-[10px] font-bold">{index + 1}</span>
           )}
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-white/90 text-sm leading-snug pt-0.5">{step.title}</h3>
+        <h3 className="font-extrabold text-ink text-[15px] leading-snug pt-0.5">{step.title}</h3>
       </div>
 
       {/* Body */}
       <div className="px-5 pb-5 pl-[3.25rem] space-y-3">
         {/* Explanation */}
-        <MathText className="text-white/60 text-sm leading-relaxed">{step.explanation}</MathText>
+        <MathText className="text-muted text-sm leading-relaxed">{step.explanation}</MathText>
 
         {/* Formula block */}
         {step.formula && <MathBlock formula={step.formula} />}
 
         {/* ASCII Visual */}
         {step.visual && (
-          <div className="rounded-xl bg-black/30 border border-white/8 overflow-x-auto">
-            <pre className="px-4 py-3 font-mono text-xs text-white/65 leading-relaxed whitespace-pre">{step.visual}</pre>
+          <div className="rounded-xl bg-control border border-border overflow-x-auto">
+            <pre className="px-4 py-3 font-mono text-xs text-ink leading-relaxed whitespace-pre">{step.visual}</pre>
           </div>
         )}
 
         {/* Tip callout */}
         {step.tip && (
-          <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-amber-500/8 border border-amber-500/20">
+          <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25">
             <span className="text-base leading-none flex-shrink-0 mt-px">💡</span>
-            <MathText className="text-amber-200/75 text-xs leading-relaxed">{step.tip}</MathText>
+            <MathText className="text-amber-700 dark:text-amber-200/75 text-xs leading-relaxed">{step.tip}</MathText>
           </div>
         )}
 

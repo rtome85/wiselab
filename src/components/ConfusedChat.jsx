@@ -11,10 +11,10 @@ function MessageBubble({ message }) {
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-[85%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
         isError
-          ? 'bg-red-500/15 text-red-300 border border-red-500/20'
+          ? 'bg-red-500/15 text-red-600 dark:text-red-300 border border-red-500/20'
           : isUser
-          ? 'bg-white/[0.08] text-white/80'
-          : 'bg-violet-500/15 text-violet-200 border border-violet-500/20'
+          ? 'bg-control text-ink'
+          : 'bg-violet-500/15 text-violet-700 dark:text-violet-200 border border-violet-500/20'
       }`}>
         {!isUser && !isError && <span className="text-xs mr-1">🧠</span>}
         <MathText>{message.content}</MathText>
@@ -64,23 +64,23 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
     <div className="mt-3">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/50 hover:text-white/70 hover:bg-white/[0.04] transition-all duration-200"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-ink hover:bg-control transition-all duration-200"
       >
         <span>{isOpen ? '▲' : '▼'}</span>
         <span>{t('step.confused')}</span>
-        {hasMessages && <span className="text-violet-400 ml-1">({conversation.length})</span>}
+        {hasMessages && <span className="text-violet-500 dark:text-violet-400 ml-1">({conversation.length})</span>}
       </button>
 
       {isOpen && (
         <div className="mt-2 rounded-xl bg-violet-500/8 border border-violet-500/20 animate-fadeIn">
           <div className="flex items-center gap-2 px-3.5 pt-3.5 pb-2">
             <span className="text-sm">❓</span>
-            <span className="text-xs font-medium text-violet-200/80 uppercase tracking-wide">{t('step.virtualTutor')}</span>
+            <span className="text-xs font-medium text-violet-700 dark:text-violet-200/80 uppercase tracking-wide">{t('step.virtualTutor')}</span>
           </div>
 
           <div ref={messagesContainerRef} className="px-3.5 pb-2 space-y-2 max-h-48 overflow-y-auto">
             {!hasMessages && (
-              <p className="text-white/40 text-xs text-center py-2">
+              <p className="text-faint text-xs text-center py-2">
                 {t('chat.instruction')}
               </p>
             )}
@@ -90,7 +90,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-violet-500/15 border border-violet-500/20 px-3 py-2 rounded-xl">
-                  <span className="text-xs text-violet-300 animate-pulse">{t('chat.thinking')}</span>
+                  <span className="text-xs text-violet-600 dark:text-violet-300 animate-pulse">{t('chat.thinking')}</span>
                 </div>
               </div>
             )}
@@ -102,7 +102,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
                 <button
                   key={prompt}
                   onClick={() => handleQuickPrompt(prompt)}
-                  className="px-2 py-1 rounded-md text-xs bg-white/[0.04] text-white/50 hover:bg-white/[0.08] hover:text-white/70 transition-all"
+                  className="px-2 py-1 rounded-md text-xs bg-control text-muted hover:bg-border/60 hover:text-ink transition-all"
                 >
                   {prompt}
                 </button>
@@ -118,7 +118,7 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t('chat.placeholder')}
-                className="flex-1 px-3 py-2 rounded-lg text-sm bg-white/[0.04] border border-white/10 text-white/80 placeholder:text-white/30 focus:outline-none focus:border-violet-500/40"
+                className="flex-1 px-3 py-2 rounded-lg text-sm bg-control border border-border text-ink placeholder:text-faint focus:outline-none focus:border-violet-500/40"
                 disabled={isLoading}
               />
               <button
@@ -126,8 +126,8 @@ export function ConfusedChat({ stepIndex, stepContext, conversation, onSendMessa
                 disabled={!input.trim() || isLoading}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   input.trim() && !isLoading
-                    ? 'bg-violet-500/20 text-violet-200 hover:bg-violet-500/30'
-                    : 'bg-white/[0.03] text-white/30 cursor-not-allowed'
+                    ? 'bg-violet-500/20 text-violet-700 dark:text-violet-200 hover:bg-violet-500/30'
+                    : 'bg-control text-faint cursor-not-allowed'
                 }`}
               >
                 {t('chat.send')}

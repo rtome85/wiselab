@@ -2,6 +2,8 @@ export const es = {
   app: {
     openHistory: 'Abrir historial de lecciones',
     openSettings: 'Abrir ajustes',
+    switchToLightMode: 'Cambiar a modo claro',
+    switchToDarkMode: 'Cambiar a modo oscuro',
     apiKeyRequired: 'Clave API Requerida',
     apiKeyRequiredDesc: 'Añade tu clave API de Ollama Cloud en los ajustes para empezar a generar lecciones.',
     configure: 'Configurar',

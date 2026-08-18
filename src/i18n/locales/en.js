@@ -2,6 +2,8 @@ export const en = {
   app: {
     openHistory: 'Open lesson history',
     openSettings: 'Open settings',
+    switchToLightMode: 'Switch to light mode',
+    switchToDarkMode: 'Switch to dark mode',
     apiKeyRequired: 'API Key Required',
     apiKeyRequiredDesc: 'Add your Ollama Cloud API key in settings to start generating lessons.',
     configure: 'Configure',

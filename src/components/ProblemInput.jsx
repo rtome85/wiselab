@@ -5,7 +5,7 @@ import { extractTextFromImage } from '../lib/vision'
 
 function ImageThumb({ img, onRemove }) {
   return (
-    <div className="relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border border-white/10 bg-white/[0.04]">
+    <div className="relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border border-border bg-control">
       <img src={img.preview} alt="" className="w-full h-full object-cover" draggable={false} />
 
       {/* Status overlay */}
@@ -160,7 +160,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
       {hasImages ? (
         /* ── Image mode ── */
         <div
-          className="rounded-2xl bg-white/[0.06] border border-white/10 focus-within:border-white/20 transition-all duration-200"
+          className="rounded-3xl bg-surface border border-border focus-within:border-accent/40 transition-all duration-200"
           onDrop={handleDrop}
           onDragOver={e => e.preventDefault()}
         >
@@ -176,9 +176,9 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
               onClick={() => openFilePicker('file')}
               disabled={loading}
               title={t('input.addImage')}
-              className="flex-shrink-0 w-14 h-14 rounded-xl border border-dashed border-white/20
-                         hover:border-white/40 bg-white/[0.02] hover:bg-white/[0.05]
-                         text-white/25 hover:text-white/55 flex items-center justify-center
+              className="flex-shrink-0 w-14 h-14 rounded-xl border border-dashed border-border
+                         hover:border-accent/40 bg-control hover:bg-accent-soft
+                         text-faint hover:text-accent flex items-center justify-center
                          transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
@@ -197,15 +197,15 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
             rows={2}
             disabled={loading}
             className="w-full resize-none bg-transparent px-5 pt-3 pb-2
-                       text-white/90 placeholder-white/20 text-sm leading-relaxed
+                       text-ink placeholder-faint text-sm leading-relaxed
                        focus:outline-none disabled:opacity-40"
           />
 
           {/* Toolbar */}
           <div className="flex items-center justify-between px-4 pb-3">
             <div className="hidden sm:flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">⌘</kbd>
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">↵</kbd>
+              <kbd className="px-1.5 py-0.5 rounded-lg bg-accent-soft border border-border text-accent text-[10px] font-bold">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 rounded-lg bg-accent-soft border border-border text-accent text-[10px] font-bold">↵</kbd>
             </div>
             <div className="sm:hidden" />
             <button
@@ -214,7 +214,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
               disabled={loading}
               title={t('input.usePhoto')}
               aria-label={t('input.usePhotoAriaLabel')}
-              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/8 transition-colors disabled:opacity-30"
+              className="p-1.5 rounded-xl bg-accent-soft text-accent hover:opacity-80 transition-opacity disabled:opacity-30"
             >
               <CameraIcon />
             </button>
@@ -224,7 +224,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
       ) : (
         /* ── Text mode ── */
         <div
-          className="rounded-2xl bg-white/[0.06] border border-white/10 focus-within:border-white/20 focus-within:bg-white/[0.08] transition-all duration-200"
+          className="rounded-3xl bg-surface border border-border focus-within:border-accent/40 transition-all duration-200"
           onDrop={handleDrop}
           onDragOver={e => e.preventDefault()}
         >
@@ -237,13 +237,13 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
             rows={4}
             disabled={loading}
             className="w-full resize-none bg-transparent px-5 pt-4 pb-2
-                       text-white/90 placeholder-white/20 text-base leading-relaxed
+                       text-ink placeholder-faint text-base leading-relaxed
                        focus:outline-none disabled:opacity-40"
           />
           <div className="flex items-center justify-between px-4 pb-3">
             <div className="hidden sm:flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">⌘</kbd>
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white/8 border border-white/10 text-white/20 text-[10px] font-mono">↵</kbd>
+              <kbd className="px-1.5 py-0.5 rounded-lg bg-accent-soft border border-border text-accent text-[10px] font-bold">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 rounded-lg bg-accent-soft border border-border text-accent text-[10px] font-bold">↵</kbd>
             </div>
             <div className="sm:hidden" />
             <button
@@ -252,7 +252,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
               disabled={loading}
               title={t('input.usePhoto')}
               aria-label={t('input.usePhotoAriaLabel')}
-              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/8 transition-colors"
+              className="p-1.5 rounded-xl bg-accent-soft text-accent hover:opacity-80 transition-opacity"
             >
               <CameraIcon />
             </button>
@@ -274,20 +274,20 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
       {images.some(img => img.status === 'error') && (
         <div className="space-y-1">
           {images.filter(img => img.status === 'error').map(img => (
-            <p key={img.id} className="text-xs text-red-400/70 px-1">{img.error}</p>
+            <p key={img.id} className="text-xs text-red-600/80 dark:text-red-400/70 px-1">{img.error}</p>
           ))}
         </div>
       )}
 
       {/* Submit row */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-white/20">
+        <span className="text-xs text-faint">
           {!hasImages && textValue.length > 0
             ? t('input.chars', { count: textValue.length })
             : hasImages && anyExtracting
               ? (
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full border border-white/30 border-t-white/70 animate-spin" />
+                  <span className="w-2.5 h-2.5 rounded-full border border-muted/40 border-t-accent animate-spin" />
                   {t('input.extractingImages')}
                 </span>
               )
@@ -299,9 +299,9 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
             <button
               type="button"
               onClick={handleCancel}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold
-                         text-white/50 hover:text-white/80 bg-white/[0.05] hover:bg-white/[0.09]
-                         border border-white/10 transition-all duration-200"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-sm font-semibold
+                         text-muted hover:text-ink bg-control hover:bg-accent-soft
+                         border border-border transition-all duration-200"
             >
               {t('input.cancel')}
             </button>
@@ -309,7 +309,7 @@ export function ProblemInput({ onSubmit, onCancel, loading, accentClasses }) {
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-[18px] text-sm font-semibold text-white
                         transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed
                         focus-ring shadow-lg ${accentClasses.button} ${accentClasses.glow}`}
           >

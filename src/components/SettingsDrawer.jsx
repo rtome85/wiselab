@@ -23,9 +23,9 @@ function TestResult({ status, message }) {
         isError && 'bg-red-500/10 border border-red-500/20'
       )}
     >
-      {isSuccess && <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />}
-      {isError && <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />}
-      <span className={cn(isSuccess && 'text-emerald-300', isError && 'text-red-300')}>
+      {isSuccess && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />}
+      {isError && <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />}
+      <span className={cn(isSuccess && 'text-emerald-700 dark:text-emerald-300', isError && 'text-red-700 dark:text-red-300')}>
         {message}
       </span>
     </div>
@@ -182,22 +182,22 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
         onKeyDown={handleKeyDown}
         tabIndex={-1}
         className={`fixed top-0 right-0 z-40 h-full w-72 sm:w-80
-                    bg-[#0d0d14] border-l border-white/[0.07]
+                    bg-surface border-l border-border
                     flex flex-col outline-none
                     transition-transform duration-300 ease-out
                     ${open ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07] flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-2">
-            <Settings className="w-4 h-4 text-white/70" />
-            <h2 className="font-semibold text-white/90 text-sm">{t('settings.title')}</h2>
+            <Settings className="w-4 h-4 text-muted" />
+            <h2 className="font-semibold text-ink text-sm">{t('settings.title')}</h2>
           </div>
           <button
             onClick={handleClose}
             aria-label={t('settings.close')}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-white/35
-                       hover:text-white/70 hover:bg-white/8 transition-colors focus-ring"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-muted
+                       hover:text-ink hover:bg-control transition-colors focus-ring"
           >
             <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
               <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -217,16 +217,16 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
               onChange={(e) => setInputValue(e.target.value)}
               className="font-mono"
             />
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-faint">
               {t('settings.apiKeyDesc')}
             </p>
-<p className="text-xs text-white/35">
+<p className="text-xs text-faint">
               {t('settings.getApiKey').split('{link}')[0]}
               <a
                 href="https://ollama.com/settings/keys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/50 hover:text-white/70 underline underline-offset-2"
+                className="text-muted hover:text-ink underline underline-offset-2"
               >
                 ollama.com/settings/keys
               </a>
@@ -266,7 +266,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
                 variant="ghost"
                 size="sm"
                 onClick={handleClear}
-                className="text-white/40 hover:text-red-400"
+                className="text-muted hover:text-red-400"
               >
                 {t('settings.clearKey')}
               </Button>
@@ -274,7 +274,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
           </div>
 
           {/* Divider */}
-          <div className="border-t border-white/[0.07]" />
+          <div className="border-t border-border" />
 
           {/* Language */}
           <div className="space-y-3">
@@ -282,7 +282,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
             <div
               role="radiogroup"
               aria-label={t('settings.languageAriaLabel')}
-              className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.07]"
+              className="flex gap-1 p-1 rounded-xl bg-control border border-border"
             >
               {LANGUAGE_OPTIONS.map(({ code, label, title }) => (
                 <button
@@ -294,8 +294,8 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
                   className={cn(
                     'flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors duration-150 focus-ring',
                     language === code
-                      ? 'bg-white/[0.12] text-white'
-                      : 'text-white/40 hover:text-white/70'
+                      ? 'bg-surface text-ink shadow-sm'
+                      : 'text-muted hover:text-ink'
                   )}
                 >
                   {label}
@@ -310,7 +310,7 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
             <div
               role="radiogroup"
               aria-label={t('settings.difficultyAriaLabel')}
-              className="flex gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/[0.07]"
+              className="flex gap-1 p-1 rounded-xl bg-control border border-border"
             >
               {DIFFICULTY_OPTIONS.map(({ value, tKey }) => (
                 <button
@@ -321,15 +321,15 @@ export function SettingsDrawer({ open, onOpenChange, apiKey, onSetApiKey, onClea
                   className={cn(
                     'flex-1 text-xs font-semibold py-1.5 rounded-lg transition-colors duration-150 focus-ring',
                     difficulty === value
-                      ? 'bg-white/[0.12] text-white'
-                      : 'text-white/40 hover:text-white/70'
+                      ? 'bg-surface text-ink shadow-sm'
+                      : 'text-muted hover:text-ink'
                   )}
                 >
                   {t(tKey)}
                 </button>
               ))}
             </div>
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-faint">
               {t('settings.difficultyDesc')}
             </p>
           </div>

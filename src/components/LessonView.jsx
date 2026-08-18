@@ -15,14 +15,14 @@ function GeneratingView({ progress = 0, accentClasses }) {
   const phase = PHASES.find((p) => progress <= p.max)?.label ?? t('lesson.generating')
 
   return (
-    <div className="animate-fadeIn rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 space-y-4">
+    <div className="animate-fadeIn rounded-3xl border border-border bg-surface p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-white/50 text-sm">{phase}</p>
-        <span className={`text-sm font-mono font-semibold tabular-nums ${accentClasses.text}`}>
+        <p className="text-muted text-sm">{phase}</p>
+        <span className={`text-sm font-semibold tabular-nums ${accentClasses.text}`}>
           {progress}%
         </span>
       </div>
-      <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+      <div className="h-1.5 rounded-full bg-accent-soft overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ease-out ${accentClasses.progress}`}
           style={{ width: `${progress}%` }}
@@ -35,14 +35,14 @@ function GeneratingView({ progress = 0, accentClasses }) {
 function ErrorCard({ message }) {
   const { t } = useI18n()
   return (
-    <div className="rounded-2xl border border-red-500/25 bg-red-500/8 p-5 animate-fadeIn">
+    <div className="rounded-3xl border border-red-500/25 bg-red-500/8 p-5 animate-fadeIn">
       <div className="flex items-start gap-3">
         <div className="w-5 h-5 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <span className="text-[10px] text-red-400 font-bold">!</span>
+          <span className="text-[10px] text-red-600 dark:text-red-400 font-bold">!</span>
         </div>
         <div>
-          <p className="text-red-300 text-sm font-semibold mb-1">{t('lesson.error')}</p>
-          <p className="text-red-400/60 text-xs leading-relaxed">{message}</p>
+          <p className="text-red-600 dark:text-red-400 text-sm font-semibold mb-1">{t('lesson.error')}</p>
+          <p className="text-red-600/80 dark:text-red-400/70 text-xs leading-relaxed">{message}</p>
         </div>
       </div>
     </div>
@@ -77,7 +77,7 @@ export function LessonView({
     <div className="space-y-5 animate-fadeIn">
       {/* Lesson title + progress */}
       <div className="space-y-4">
-        <h2 className="text-white/90 font-semibold text-lg leading-snug">{lesson.title}</h2>
+        <h2 className="text-ink font-extrabold text-lg leading-snug">{lesson.title}</h2>
         <ProgressBar
           current={completedCount}
           total={totalSteps}
@@ -88,7 +88,7 @@ export function LessonView({
       {/* Steps — vertical stepper layout */}
       <div className="relative space-y-3">
         {/* Vertical connector line behind the cards */}
-        <div className="absolute left-[22px] top-7 bottom-7 w-px bg-white/[0.07] pointer-events-none" />
+        <div className="absolute left-[22px] top-7 bottom-7 w-px bg-border pointer-events-none" />
 
         {lesson.steps.map((step, index) => (
           <StepCard
@@ -110,11 +110,11 @@ export function LessonView({
           <button
             onClick={onNextStep}
             disabled={!canProceed?.(activeStep)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-[18px] text-sm font-semibold text-white
                         transition-all duration-200 focus-ring shadow-lg
                         ${canProceed?.(activeStep)
                           ? `${accentClasses.button} ${accentClasses.glow}`
-                          : 'bg-white/10 text-white/40 cursor-not-allowed'
+                          : 'bg-control text-faint cursor-not-allowed'
                         }`}
           >
             {activeStep < totalSteps - 1 ? (

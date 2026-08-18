@@ -10,15 +10,15 @@ export function MathBlock({ formula }) {
     })
   } catch {
     return (
-      <div className="px-4 py-3 rounded-xl bg-black/25 border border-white/8">
-        <p className="font-mono text-sm text-white/85 text-center tracking-wide">{formula}</p>
+      <div className="px-4 py-3 rounded-xl bg-control border border-border">
+        <p className="font-mono text-sm text-ink text-center tracking-wide">{formula}</p>
       </div>
     )
   }
 
   return (
     <div
-      className="px-4 py-3 rounded-xl bg-black/25 border border-white/8 overflow-x-auto katex-block"
+      className="px-4 py-3 rounded-xl bg-control border border-border overflow-x-auto katex-block"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

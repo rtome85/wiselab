@@ -4,22 +4,22 @@ import { cva } from 'class-variance-authority'
 import { cn } from '../../utils/cn'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07070c] disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-app)] disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'bg-white text-[#07070c] hover:bg-white/90',
+          'bg-coral text-white hover:opacity-90',
         destructive:
-          'bg-red-500/10 text-red-400 border border-red-500/25 hover:bg-red-500/20',
+          'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/25 hover:bg-red-500/20',
         outline:
-          'border border-white/15 bg-transparent hover:bg-white/5 hover:border-white/25',
+          'border border-border bg-transparent text-ink hover:bg-control hover:border-accent/30',
         secondary:
-          'bg-white/10 text-white hover:bg-white/15',
+          'bg-control text-ink hover:bg-border/60',
         ghost:
-          'hover:bg-white/5 text-white/60 hover:text-white/90',
+          'hover:bg-control text-muted hover:text-ink',
         link:
-          'text-white/60 underline-offset-4 hover:underline hover:text-white/90',
+          'text-muted underline-offset-4 hover:underline hover:text-ink',
       },
       size: {
         default: 'h-9 px-4 py-2',

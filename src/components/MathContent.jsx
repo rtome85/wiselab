@@ -76,7 +76,7 @@ function TextSegment({ content, hideVisualContext }) {
         const parts = parseInlineParts(line)
 
         return (
-          <span key={lineIdx} className={`block leading-relaxed ${isVisualContext ? 'text-white/35 text-sm italic mt-2' : ''}`}>
+          <span key={lineIdx} className={`block leading-relaxed ${isVisualContext ? 'text-faint text-sm italic mt-2' : ''}`}>
             {parts.map((part, i) => {
               if (part.type === 'text') return <span key={i}>{part.content}</span>
               const html = renderInline(part.content)
@@ -95,13 +95,13 @@ function DisplaySegment({ content }) {
   if (html) {
     return (
       <div
-        className="my-3 px-4 py-3 rounded-xl bg-black/25 border border-white/8 overflow-x-auto"
+        className="my-3 px-4 py-3 rounded-xl bg-control border border-border overflow-x-auto"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     )
   }
   return (
-    <div className="my-3 px-4 py-3 rounded-xl bg-black/25 border border-white/8 font-mono text-sm text-white/85 text-center">
+    <div className="my-3 px-4 py-3 rounded-xl bg-control border border-border font-mono text-sm text-ink text-center">
       {content}
     </div>
   )

@@ -7,18 +7,18 @@ export function ProgressBar({ current, total, accentClasses }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-white/30">
+        <span className="text-xs font-bold text-muted">
           {current === 0
             ? t('progress.startFirst')
             : current === total
             ? t('progress.allCompleted')
             : t('progress.steps', { current, total })}
         </span>
-        <span className={`text-xs font-mono font-bold ${accentClasses.text}`}>
+        <span className="text-xs font-extrabold text-accent">
           {percent}%
         </span>
       </div>
-      <div className="h-0.5 rounded-full bg-white/8 overflow-hidden">
+      <div className="h-2 rounded-full bg-accent-soft overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ease-out ${accentClasses.progress}`}
           style={{ width: `${percent}%` }}

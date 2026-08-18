@@ -2,12 +2,27 @@ import tailwindcssAnimate from 'tailwindcss-animate'
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'sans-serif'],
+        sans: ['Inter', 'DM Sans', 'sans-serif'],
         mono: ['Space Mono', 'monospace'],
+      },
+      colors: {
+        app: 'var(--color-app)',
+        surface: 'var(--color-surface)',
+        header: 'var(--color-header)',
+        control: 'var(--color-control)',
+        ink: 'var(--color-ink)',
+        muted: 'var(--color-muted)',
+        faint: 'var(--color-faint)',
+        border: 'var(--color-border)',
+        accent: 'var(--color-accent)',
+        'accent-soft': 'var(--color-accent-soft)',
+        coral: 'var(--color-coral)',
+        peach: 'var(--color-peach)',
       },
       keyframes: {
         'accordion-down': {

@@ -6,15 +6,18 @@ import { ProblemInput } from "./components/ProblemInput";
 import { LessonView } from "./components/LessonView";
 import { HistoryDrawer } from "./components/HistoryDrawer";
 import { SettingsDrawer } from "./components/SettingsDrawer";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { useLesson } from "./hooks/useLesson";
 import { useHistory } from "./hooks/useHistory";
 import { useApiKey } from "./hooks/useApiKey";
+import { useTheme } from "./hooks/useTheme";
 import { useI18n } from "./i18n/index.jsx";
 
 export default function App() {
   const { t } = useI18n();
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const {
     lesson,
@@ -54,16 +57,7 @@ export default function App() {
   const isIdle = !lesson && !loading && !error;
 
   return (
-    <div className="min-h-dvh flex flex-col">
-      {/* Static radial glow */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          background: `radial-gradient(ellipse 90% 55% at 50% -5%, ${DEFAULT_ACCENT_CLASSES.gradientBg} 0%, transparent 65%)`,
-        }}
-      />
-
+    <div className="min-h-dvh flex flex-col bg-app">
       {/* History drawer */}
       <HistoryDrawer
         open={showHistory}
@@ -84,11 +78,13 @@ export default function App() {
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#07070c]/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-20 border-b border-border bg-header backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
-            <img src="/logo.png" className="w-5 h-5" />
-            <span className="font-mono font-bold text-white/90 text-sm tracking-tight">
+            <span className="w-8 h-8 rounded-[14px] flex items-center justify-center bg-accent-soft dark:bg-gradient-to-b dark:from-[#52e0e9] dark:to-[#4a8bff]">
+              <img src="/logo.png" className="w-4 h-4" />
+            </span>
+            <span className="font-extrabold text-ink text-sm tracking-tight">
               WiseLab
             </span>
           </a>
@@ -97,9 +93,9 @@ export default function App() {
             <button
               onClick={() => setShowHistory(true)}
               aria-label={t("app.openHistory")}
-              className="relative w-8 h-8 rounded-xl flex items-center justify-center
-                         text-white/35 hover:text-white/70 hover:bg-white/8
-                         transition-colors duration-150 focus-ring"
+              className="relative w-9 h-9 rounded-[14px] flex items-center justify-center
+                         bg-surface border border-border text-muted
+                         hover:text-ink transition-colors duration-150 focus-ring"
             >
               <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
                 <circle
@@ -119,7 +115,7 @@ export default function App() {
               </svg>
               {history.length > 0 && (
                 <span
-                  className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${DEFAULT_ACCENT_CLASSES.dot}`}
+                  className={`absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${DEFAULT_ACCENT_CLASSES.dot}`}
                 />
               )}
             </button>
@@ -127,12 +123,14 @@ export default function App() {
             <button
               onClick={() => setShowSettings(true)}
               aria-label={t("app.openSettings")}
-              className="w-8 h-8 rounded-xl flex items-center justify-center
-                         text-white/35 hover:text-white/70 hover:bg-white/8
-                         transition-colors duration-150 focus-ring"
+              className="w-9 h-9 rounded-[14px] flex items-center justify-center
+                         bg-surface border border-border text-muted
+                         hover:text-ink transition-colors duration-150 focus-ring"
             >
               <Settings className="w-4 h-4" />
             </button>
+
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
         </div>
       </header>
@@ -142,21 +140,21 @@ export default function App() {
         {/* ── Warning banner for missing API key ── */}
         {isIdle && !isConfigured && (
           <div className="mb-6">
-            <div className="rounded-xl border border-amber-500/25 bg-amber-500/8 p-4 flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-[10px] text-amber-400 font-bold">!</span>
+            <div className="rounded-3xl border border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] p-4 flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-[var(--color-warning-accent)]/15 border border-[var(--color-warning-accent)]/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-[10px] text-[var(--color-warning-accent)] font-bold">!</span>
               </div>
               <div className="flex-1">
-                <p className="text-amber-300 text-sm font-semibold mb-1">
+                <p className="text-ink text-sm font-semibold mb-1">
                   {t("app.apiKeyRequired")}
                 </p>
-                <p className="text-amber-400/60 text-xs leading-relaxed">
+                <p className="text-muted text-xs leading-relaxed">
                   {t("app.apiKeyRequiredDesc")}
                 </p>
               </div>
               <button
                 onClick={() => setShowSettings(true)}
-                className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors flex-shrink-0"
+                className="text-xs text-accent hover:opacity-80 font-medium transition-opacity flex-shrink-0"
               >
                 {t("app.configure")}
               </button>
@@ -169,18 +167,18 @@ export default function App() {
           <div className="mb-10 space-y-8">
             <div className="space-y-3">
               <p
-                className={`text-xs font-semibold uppercase tracking-[0.2em] ${DEFAULT_ACCENT_CLASSES.text}`}
+                className={`text-xs font-extrabold uppercase tracking-[0.2em] ${DEFAULT_ACCENT_CLASSES.text}`}
               >
                 {t("app.aiTutor")}
               </p>
-              <h1 className="font-mono font-bold text-3xl sm:text-4xl text-white leading-tight tracking-tight">
+              <h1 className="font-extrabold text-3xl sm:text-4xl text-ink leading-tight tracking-tight">
                 {t("app.heroTitle1")}
                 <br />
                 <span className={DEFAULT_ACCENT_CLASSES.text}>
                   {t("app.heroTitle2")}
                 </span>
               </h1>
-              <p className="text-white/35 text-sm sm:text-base leading-relaxed max-w-md">
+              <p className="text-muted text-sm sm:text-base leading-relaxed max-w-md">
                 {t("app.heroDesc")}
               </p>
             </div>
@@ -197,16 +195,16 @@ export default function App() {
         {/* ── Error state ── */}
         {error && !lesson && (
           <div className="space-y-5 mb-8">
-            <div className="rounded-2xl border border-red-500/25 bg-red-500/8 p-5">
+            <div className="rounded-3xl border border-red-500/25 bg-red-500/8 p-5">
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-[10px] text-red-400 font-bold">!</span>
+                  <span className="text-[10px] text-red-600 dark:text-red-400 font-bold">!</span>
                 </div>
                 <div>
-                  <p className="text-red-300 text-sm font-semibold mb-1">
+                  <p className="text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
                     {t("app.errorTitle")}
                   </p>
-                  <p className="text-red-400/60 text-xs leading-relaxed">
+                  <p className="text-red-600/80 dark:text-red-400/70 text-xs leading-relaxed">
                     {error}
                   </p>
                 </div>
@@ -214,7 +212,7 @@ export default function App() {
             </div>
             <button
               onClick={reset}
-              className="flex items-center gap-1.5 text-sm text-white/35 hover:text-white/65 transition-colors focus-ring"
+              className="flex items-center gap-1.5 text-sm text-muted hover:text-ink transition-colors focus-ring"
             >
               <span>↩</span>
               <span>{t("app.tryAgain")}</span>
@@ -241,12 +239,12 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/[0.05] py-5">
+      <footer className="relative z-10 border-t border-border py-5">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-          <span className="text-xs text-white/15">
+          <span className="text-xs text-muted">
             © {new Date().getFullYear()} WiseLab
           </span>
-          <span className="text-xs text-white/15">
+          <span className="text-xs text-muted">
             {t("app.footerPowered")}
           </span>
         </div>
